@@ -1,0 +1,363 @@
+/* ==========================================================================
+   1. GLOBAL STYLES & TYPOGRAPHY
+   ========================================================================== */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #333;
+  overflow-x: hidden;            /* Prevents unwanted horizontal scrolling */
+  padding-top: 70px;             /* Offset for fixed navbar on mobile/tablet */
+}
+
+@media (min-width: 992px) {
+  body {
+    padding-top: 80px;           /* Slightly more offset for larger navbar on desktop */
+  }
+}
+
+/* Smooth scrolling for Navbar links */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;      /* Offset for the fixed navbar when using #anchors */
+}
+
+/* ==========================================================================
+   2. NAVBAR TWEAKS
+   ========================================================================== */
+.navbar-brand span {
+  letter-spacing: 0.5px;
+}
+
+.nav-link {
+  font-size: 0.95rem;
+  color: #4b5563;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #ffa500;
+ /* Dubilist Orange */
+}
+
+/* ==========================================================================
+   3. HERO SECTION (Welcome & Emirates)
+   ========================================================================== */
+.hero-section {
+  position: relative;
+  background-image: url("/assets/images/landingPage_bg.jpg");
+  background-size: cover;        /* Image always covers */
+  background-position: center;   /* Keep important center part visible */
+  background-repeat: no-repeat;
+  color: #ffffff;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45); /* Dark overlay for readability */
+  z-index: 0;
+}
+
+.hero-wrapper {
+  min-height: 420px;
+  display: flex;
+  align-items: center;           /* Vertical center */
+  justify-content: center;
+  position: relative;
+  padding: 60px 15px 40px;
+}
+
+.hero-text-box {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 850px;
+}
+
+/* Headline */
+.hd1,
+.hero-text-box h1 {
+  font-weight: 800;
+  font-size: calc(1.6rem + 1.2vw); /* Responsive font size */
+}
+
+/* Emirate city cards */
+.city-card {
+  border-radius: 0.5rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.city-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.2);
+  border-color: #ffa500;
+  color:  #ffa500;
+}
+
+.city:hover {
+  color: #ffa500;
+}
+
+/* ==========================================================================
+   4. WHY DUBILIST SECTION (Feature Grid)
+   ========================================================================== */
+.dubilist-features-section {
+  background-color: #f7f7f7;
+  margin-top: 0;
+}
+
+/* Two-column layout container */
+.container1 {
+  margin: 0 auto;
+  padding: 80px 20px;
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping on mobile */
+}
+
+.why-dubilist-column {
+  flex: 1 1 350px;
+}
+
+.section-title-highlight {
+  color: #ffa500;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+
+.section-headline {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Feature boxes inside the grid */
+.features-grid {
+  flex: 2 1 600px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.feature-box {
+  border-radius: 12px;
+  padding: 25px;
+  background: #fff;
+  transition: transform 0.3s ease;
+}
+
+.feature-box:hover {
+  transform: translateY(-5px);
+}
+
+.feature-box h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 10px 0;
+}
+
+.feature-box p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Icon backgrounds */
+.feature-icon {
+  width: 40px;
+
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.icon-1 { background-color: #f7a030; }
+.icon-2 { background-color: #ffc107; }
+.icon-3 { background-color: #ff9900; }
+.icon-4 { background-color: #6c757d; }
+.icon-5 { background-color: #3399ff; }
+.icon-6 { background-color: #f06292; }
+
+/* ==========================================================================
+   5. SELLING PROCESS (Steps)
+   ========================================================================== */
+.steps-container {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 20px;
+  position: relative;
+}
+
+.connection-line {
+  position: absolute;
+  top: 45px;
+  left: 15%;
+  right: 15%;
+  height: 2px;
+  background-color: #eee;
+  z-index: 0;
+}
+
+.step-item {
+  position: relative;
+  z-index: 1;
+}
+
+.icon-circle {
+  width: 85px;
+  height: 85px;
+  background-color: #fff;
+  border: 4px solid #fff3e0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: #ffa500;
+  font-size: 1.8rem;
+}
+
+/* ==========================================================================
+   6. SAFETY SECTION
+   ========================================================================== */
+.safety-section {
+  background-color: #f9f9f9;
+}
+
+.text-warning-emphasis {
+  color: #ffa500 !important;
+}
+
+.safety-icon-wrapper {
+  font-size: 1.4rem;
+  min-width: 45px;
+}
+
+/* Illustration Tilt Effect */
+.safety-image-container img {
+  transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+  transition: transform 0.5s ease;
+}
+
+.safety-image-container:hover img {
+  transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+}
+
+/* ==========================================================================
+   7. APP DOWNLOAD SECTION
+   ========================================================================== */
+.app-download-section {
+  background-color: #ffd17f;
+}
+
+.app-description {
+  font-size: 1.1rem;
+  color: #5d4037;
+  max-width: 450px;
+}
+
+/* THE BADGE FIX: Same Height, Fluid Width */
+.badge-img {
+  height: 48px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.badge-img:hover {
+  transform: scale(1.05);
+}
+
+/* ==========================================================================
+   8. FOOTER STYLES
+   ========================================================================== */
+
+/* ==========================================================================
+   9. RESPONSIVE MEDIA QUERIES
+   ========================================================================== */
+
+/* Tablets & Small Laptops */
+@media (max-width: 992px) {
+  .hero-wrapper {
+    min-height: 500px;
+  }
+
+  .hero-text-box h1 {
+    font-size: 2rem;
+  }
+
+  .container1 {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .why-dubilist-column {
+    padding-right: 0;
+  }
+
+  .features-grid {
+    padding: 0;
+  }
+
+  .safety-image-container img {
+    max-width: 350px;
+    margin-top: 40px;
+    transform: none; /* Disable tilt for mobile/tablet */
+  }
+}
+
+/* Mobile Phones */
+@media (max-width: 768px) {
+  .hero-wrapper {
+    min-height: 520px;
+    padding-top: 40px;
+  }
+
+  .hero-text-box h1 {
+    font-size: 1.8rem;
+  }
+
+  .steps-container {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .connection-line {
+    display: none;
+  }
+
+  .app-download-section {
+    text-align: center;
+  }
+
+  .app-description {
+    margin: 0 auto 30px;
+  }
+
+  .badge-img {
+    height: 40px; /* Slightly smaller badges for mobile */
+  }
+}
+
+
+/* Override Bootstrap warning background + text utilities */
+.bg-warning {
+  background-color: #ffa500 !important;
+}
+
+.text-warning {
+  color: #ffa500 !important;
+}
+
+
+.btn-warning {
+  background-color: #ffa500 !important;
+  border-color: #ffa500 !important;
+}

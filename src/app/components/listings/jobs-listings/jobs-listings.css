@@ -1,0 +1,744 @@
+/* =========================================
+   1. GLOBAL VARIABLES & RESET
+   ========================================= */
+:host {
+  /* Brand Colors */
+  --primary-orange: #ff9b00;       /* Matching the UI Orange */
+  --primary-orange-hover: #e68a00;
+  --success-green: #28a745;        /* Matching the Salary Green */
+  --dark-green-bg: #1a4d2e;        /* The dark green box for Logo in Details */
+  
+  /* Text Colors */
+  --text-main: #333333;
+  --text-secondary: #666666;
+  --text-light: #999999;
+  --text-placeholder: #cecece;
+
+  /* UI Colors */
+  --bg-body: #ffffff;
+  --bg-light: #f8f9fa;
+  --border-color: #e0e0e0;
+  --border-focus: #ff9b00;         /* Orange border on focus */
+  
+  /* Spacing & sizing */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-pill: 50px;
+}
+
+/* Reset for the component */
+* {
+  box-sizing: border-box;
+}
+
+.jobs-app-container {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text-main);
+  background-color: var(--bg-body);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  margin-top: 40px;
+  min-height: 100vh;
+}
+
+/* Common Button Styles */
+button {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+/* Orange Action Button (Used widely) */
+.btn-orange-block,
+.btn-orange-wide {
+  background-color: var(--primary-orange);
+  color: white;
+  border: none;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+}
+
+.btn-orange-block:hover,
+.btn-orange-wide:hover {
+  background-color: var(--primary-orange-hover);
+}
+
+.btn-orange-block {
+  width: 100%;
+  padding: 12px;
+}
+
+.btn-orange-wide {
+  padding: 12px 40px;
+}
+
+/* Secondary Button (Cancel/Save) */
+.btn-secondary, .btn-cancel, .btn-save {
+  background-color: #fff3e0;
+  color: var(--text-main);
+  border: none;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 12px 30px;
+}
+
+.btn-secondary:hover, .btn-cancel:hover, .btn-save:hover {
+  background-color: #ffe0b2;
+}
+
+
+/* =========================================
+   2. LAYOUT GRID (SIDEBAR + MAIN)
+   ========================================= */
+.layout-grid {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  padding-right: 20px;
+  border-right: 1px solid var(--bg-light); /* Subtle separator */
+}
+
+.main-content {
+  flex-grow: 1;
+  max-width: 900px; /* Prevents job cards from stretching too wide */
+}
+
+/* Responsive: Stack on mobile */
+@media (max-width: 992px) {
+  .layout-grid {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+  .main-content {
+    max-width: 100%;
+  }
+}
+
+
+/* =========================================
+   3. SIDEBAR FILTERS
+   ========================================= */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.sidebar-header h3 {
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.btn-reset {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  text-decoration: underline;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.filter-group {
+  margin-bottom: 30px;
+}
+
+.filter-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  color: var(--text-main);
+}
+
+/* Chips / Pills */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.chip {
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.chip:hover {
+  border-color: var(--primary-orange);
+  color: var(--primary-orange);
+}
+
+.chip.active {
+  background-color: var(--primary-orange);
+  color: white;
+  border-color: var(--primary-orange);
+}
+
+/* Inputs in Sidebar */
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding: 10px 10px 10px 35px; /* Left padding for icon */
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.input-with-icon .icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+}
+
+.salary-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.salary-inputs input {
+  width: 50%;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+/* Focus states for inputs */
+input:focus, select:focus, textarea:focus {
+  border-color: var(--border-focus) !important;
+}
+
+
+/* =========================================
+   4. MAIN LIST CONTENT
+   ========================================= */
+.main-header {
+  margin-bottom: 30px;
+}
+
+.main-header h1 {
+  font-size: 2rem;
+  margin: 0 0 5px 0;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: var(--primary-orange);
+  font-size: 1rem;
+  margin: 0 0 25px 0;
+}
+
+/* Big Search Bar */
+.search-bar {
+  position: relative;
+  width: 100%;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 14px 14px 14px 45px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  outline: none;
+}
+
+.search-bar .search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-light);
+  font-size: 1.2rem;
+}
+
+.results-header h2 {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  color: var(--text-main);
+}
+
+/* --- JOB CARD --- */
+.job-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 25px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.job-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  border-color: #d1d1d1;
+}
+
+.job-card-left {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.badge-featured {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-main);
+  margin-bottom: 5px;
+  letter-spacing: 0.5px;
+}
+
+.job-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 5px 0;
+  color: var(--text-main);
+}
+
+.company-name {
+  color: var(--primary-orange);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.job-pill {
+  display: inline-block;
+  border: 1px solid var(--border-color);
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 15px;
+}
+
+.salary-text {
+  color: var(--success-green);
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin: 0 0 5px 0;
+}
+
+.location-text {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Right side of Card (Image + Bookmark) */
+.job-card-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  min-width: 140px;
+}
+
+.btn-bookmark {
+  background: white;
+  border: 1px solid var(--border-color);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  padding: 0;
+}
+
+.btn-bookmark:hover {
+  background-color: #f0f0f0;
+  color: var(--primary-orange);
+  border-color: var(--primary-orange);
+}
+
+.card-image img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  display: block;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 40px;
+}
+
+.page-number, .page-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.page-arrow:hover:not(:disabled),
+.page-number:hover {
+  background-color: #f0f0f0;
+}
+
+.page-number.active {
+  background-color: var(--primary-orange);
+  color: white;
+  font-weight: 600;
+}
+
+
+/* =========================================
+   5. DETAIL VIEW
+   ========================================= */
+.details-layout {
+  padding-top: 20px;
+}
+
+.details-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Navigation */
+.details-top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.breadcrumbs {
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.breadcrumbs .current {
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--primary-orange);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Hero Section (Green Box) */
+.details-hero {
+  display: flex;
+  gap: 25px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 40px;
+}
+
+.hero-image-box {
+  width: 180px;
+  height: 180px;
+  background-color: var(--dark-green-bg); /* Dark Green Background */
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero-image-box img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  /* Since many logos are black, invert them to white for the dark bg */
+  filter: brightness(0) invert(1); 
+}
+
+.hero-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-info h1 {
+  font-size: 2.2rem;
+  margin: 0 0 5px 0;
+  line-height: 1.2;
+}
+
+.hero-company {
+  color: var(--primary-orange);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0 0 15px 0;
+}
+
+.hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  flex-wrap: wrap;
+}
+
+.hero-meta span {
+  display: inline-block;
+}
+
+.text-green {
+  color: var(--success-green);
+  font-weight: 700;
+}
+
+/* Content Sections */
+.intro-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+
+.content-section {
+  margin-bottom: 35px;
+}
+
+.content-section h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: var(--text-main);
+}
+
+.content-section p {
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.content-section ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.content-section ul li {
+  margin-bottom: 10px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.contact-text a {
+  color: var(--primary-orange);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Footer Actions */
+.details-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 1px solid var(--border-color);
+}
+
+.report-ad {
+  text-align: center;
+  margin-top: 20px;
+  color: var(--text-light);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+
+/* =========================================
+   6. APPLY VIEW
+   ========================================= */
+.apply-layout {
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+.apply-container {
+  width: 100%;
+  max-width: 650px; /* Narrower for better reading */
+  background: white;
+}
+
+.apply-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.apply-header h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.apply-header p {
+  color: var(--primary-orange);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  background-color: white;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #ffcc80; /* Light orange placeholder as per UI */
+  opacity: 1;
+}
+
+/* File Upload Component */
+.upload-box {
+  border: 2px dashed #d1d5db;
+  border-radius: var(--radius-md);
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #fafafa;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.upload-box:hover {
+  background-color: #f0f0f0;
+  border-color: var(--primary-orange);
+}
+
+.upload-content strong {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 5px;
+  color: var(--text-main);
+}
+
+.upload-content p {
+  color: var(--text-light);
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+}
+
+.btn-upload-fake {
+  background-color: #fff3e0;
+  color: var(--primary-orange);
+  padding: 8px 24px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: lowercase;
+}
+
+.file-name-display {
+  margin-top: 15px !important;
+  color: var(--success-green) !important;
+  font-weight: 600;
+}
+
+/* Action Buttons Row */
+.form-actions-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  gap: 20px;
+}
+
+.form-actions-row button {
+  flex: 1; /* Make buttons equal width */
+}
+
+.btn-submit:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive Tweak for Detail Hero */
+@media (max-width: 600px) {
+  .details-hero {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .hero-meta {
+    justify-content: center;
+  }
+  
+  .job-card {
+    flex-direction: column;
+  }
+  
+  .job-card-right {
+    flex-direction: row;
+    width: 100%;
+    margin-top: 15px;
+    align-items: flex-start;
+  }
+}

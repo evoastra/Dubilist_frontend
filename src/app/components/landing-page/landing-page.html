@@ -1,0 +1,271 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="assets/images/logo.png" alt="Dubilist Logo" class="me-2" style="height: 30px; border-radius: 20%" />
+
+    </a>
+
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNav"
+            aria-controls="mainNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <!-- Center menu items + dropdown -->
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-3">
+        <li class="nav-item">
+          <a class="nav-link txt" href="#why-dubilist">Why Dubilist?</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link txt" href="#security">Security</a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link txt" href="#app-download">Resources</a>
+        </li>
+
+        <!-- Dropdown (visible in mobile/tab inside collapse) -->
+      </ul>
+
+      <!-- Right side buttons -->
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-secondary fw-semibold px-3" routerLink="/auth/signUp">
+          Login/Sign Up
+        </button>
+        <button class="btn btn-warning fw-semibold px-3 text-white" routerLink="/home">
+         Get Started
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+
+
+<section class="hero-section mt-5">
+  <div class="hero-wrapper">
+    <!-- Background image is via CSS now, so this <img> is removed -->
+
+    <div class="hero-text-box text-center">
+      <h1 class="mt-5 mb-3">Welcome to Dubilist</h1>
+      <p class="lead mb-2">Buy, Sell, and Find Anything in your City</p>
+      <p class="small mb-4 opacity-75">
+        The safest, fastest way to trade locally. Join thousands of
+        verified users today and discover great deals around you.
+      </p>
+
+      <p class="fw-semibold mb-3">Which emirate would you like to explore?</p>
+
+      <div class="container">
+        <div class="row g-2 g-md-3 justify-content-center">
+          <div class="col-6 col-md-3" *ngFor="let emirate of emirates">
+            <div class="card city-card border-3 shadow-sm text-center py-3 py-md-4">
+              <span routerLink="/home" class="fw-medium city">{{ emirate }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="why-dubilist" class="dubilist-features-section">
+  <div class="container1 ">
+    
+    <div class="why-dubilist-column p-5 m-5 d-flex flex-column justify-content-center">
+      <h5 class="section-title-highlight mb-2">Why Dubilist?</h5>
+      <h2 class="section-headline mb-3">We make buying and selling simple, safe, and social.</h2>
+      <p class="section-description text-muted">
+        Experience a marketplace designed for trust. From verified profiles to secure chats, 
+        every feature is built with your safety in mind.
+      </p>
+    </div>
+
+    <div class="features-grid text-center">
+      <div class="feature-box card border-0 shadow-sm">
+        <div class="d-flex justify-content-center">
+            <div class="feature-icon icon-1"><i class="fas fa-camera"></i></div>
+        </div>
+       
+        <h3>Easy Posting</h3>
+        <p>Post ads in seconds with our streamlined flow.</p>
+      </div>
+
+      <div class="feature-box card border-0 shadow-sm">
+         <div class="d-flex justify-content-center">
+                     <div class="feature-icon icon-2"><i class="fas fa-search-plus"></i></div>
+         </div>
+
+        <h3>Smart Search</h3>
+        <p>Find exactly what you need with advanced filters.</p>
+      </div>
+
+      <div class="feature-box card border-0 shadow-sm">
+         <div class="d-flex justify-content-center">
+          <div class="feature-icon icon-3"><i class="fas fa-magic"></i></div>
+         </div>
+        
+        <h3>AI Descriptions</h3>
+        <p>Our AI tool generates professional descriptions for you.</p>
+      </div>
+
+      <div class="feature-box card border-0 shadow-sm">
+         <div class="d-flex justify-content-center">
+          <div class="feature-icon icon-4"><i class="fas fa-shield-alt"></i></div>
+         </div>
+        
+        <h3>Verified Users</h3>
+        <p>Trade with confidence with our verification system.</p>
+      </div>
+
+      <div class="feature-box card border-0 shadow-sm">
+        <div class="d-flex justify-content-center">
+        <div class="feature-icon icon-5"><i class="fas fa-comment-alt"></i></div>
+          </div>
+        <h3>Real-Time Chat</h3>
+        <p>Negotiate deals safely without sharing your number.</p>
+      </div>
+
+      <div class="feature-box card border-0 shadow-sm">
+        <div class="d-flex justify-content-center">
+        <div class="feature-icon icon-6"><i class="fas fa-tools"></i></div>
+        </div>
+        <h3>Designers</h3>
+        <p>Connect with top interior designers instantly.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<section class="py-5 bg-white selling-process">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-2">Start selling in Minutes</h2>
+    <p class="text-muted mb-5">Turn your unused items into cash with our simple process</p>
+
+    <div class="steps-container position-relative">
+      <div class="connection-line d-none d-md-block"></div>
+
+      <div class="step-item">
+        <div class="icon-circle shadow-sm"><i class="fas fa-camera"></i></div>
+        <h4 class="fw-bold mt-4">1. Snap a Photo</h4>
+        <p class="text-muted small">Take clear photos of your item.</p>
+      </div>
+
+      <div class="step-item">
+        <div class="icon-circle shadow-sm"><i class="fas fa-file-alt"></i></div>
+        <h4 class="fw-bold mt-4">2. Add Details</h4>
+        <p class="text-muted small">Set a price and pick a category.</p>
+      </div>
+
+      <div class="step-item">
+        <div class="icon-circle shadow-sm"><i class="fas fa-handshake"></i></div>
+        <h4 class="fw-bold mt-4">3. Contact & Sell</h4>
+        <p class="text-muted small">Close the deal securely with buyers.</p>
+      </div>
+    </div>
+
+    <button class="btn btn-warning btn-lg mt-5 px-5 fw-bold text-white rounded-3 shadow-sm">
+      Get Started
+    </button>
+  </div>
+</section>
+
+
+<section id="security" class="py-5 safety-section">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      
+      <div class="col-lg-6 order-2 order-lg-1">
+        <h2 class="fw-bold mb-3">Your Safety is Our Priority</h2>
+        <p class="text-warning-emphasis mb-5">
+          We've built a community based on trust. Here is how we keep Dubilist safe.
+        </p>
+
+        <div class="safety-features">
+          <div class="d-flex mb-4">
+            <div class="safety-icon-wrapper me-3">
+              <i class="fas fa-check-circle text-success"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-1 small">Verified Accounts</h5>
+              <p class="text-muted small mb-0">We verify phone numbers to keep bots away.</p>
+            </div>
+          </div>
+
+          <div class="d-flex mb-4">
+            <div class="safety-icon-wrapper me-3">
+              <i class="fas fa-lock text-success"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-1 small">Safe Messaging</h5>
+              <p class="text-muted small mb-0">Built-in chat protects your contact details.</p>
+            </div>
+          </div>
+
+          <div class="d-flex mb-4">
+            <div class="safety-icon-wrapper me-3">
+              <i class="fas fa-shield-alt text-success"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-1 small">Fraud Protection</h5>
+              <p class="text-muted small mb-0">AI systems monitor listings 24/7 for activity.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 order-1 order-lg-2">
+        <div class="safety-image-container text-center">
+          <img src="/assets/images/safety-illustration.jpg" alt="Safety" class="img-fluid rounded-4 shadow-sm" style="width: 400px;">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<section id="app-download" class="py-5 app-download-section">
+  <div class="container p-4 p-md-5">
+    <div class="row align-items-center g-4">
+      
+      <div class="col-lg-6 text-center text-lg-start">
+        <h2 class="display-6 fw-bold mb-3 text-dark">Get Dubilist on the Go</h2>
+        <p class="app-description mb-5 mx-auto mx-lg-0">
+          To Browse listings, Chat with sellers and get notifications instantly. 
+          Download our App today.
+        </p>
+        
+        <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start align-items-center">
+          <a href="#" class="download-badge">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                 alt="Get it on Google Play" class="badge-img">
+          </a>
+          <a href="#" class="download-badge">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg"
+                 alt="Download on the App Store" class="badge-img">
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-6 text-center">
+        <div class="app-download-img-container">
+          <img src="/assets/images/app-download.png" alt="App Download" class="img-fluid" style="width: 400px;">
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+

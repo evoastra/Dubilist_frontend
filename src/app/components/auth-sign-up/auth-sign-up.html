@@ -1,0 +1,148 @@
+<div class="auth-shell">
+  <!-- Left promo panel -->
+  <section class="promo">
+    <div class="promo-overlay">
+      <div class="badge">MARKETPLACE</div>
+      <h2>Discover unique finds in your neighbourhood.</h2>
+      <p>Join millions of people buying and selling on Dubilist.</p>
+    </div>
+  </section>
+
+  <!-- Right form panel -->
+  <section class="panel">
+    <div class="panel-inner">
+     <div class="brand">
+        <a href="#">
+          <img src="/assets/images/logo.png" alt="Dubilist Logo" class="logo"/>
+        </a>
+      </div>
+
+      <h1 class="title">Create your account</h1>
+      <p class="subtitle">Join the Dubilist community for free.</p>
+
+      <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
+        <div class="grid-2">
+          <div class="field">
+            <label for="firstName">First Name</label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              placeholder="First Name"
+              [(ngModel)]="model.firstName"
+              required
+              autocomplete="given-name"
+            />
+            <div class="error" *ngIf="f.submitted && !model.firstName.trim()">First name is required.</div>
+          </div>
+
+          <div class="field">
+            <label for="lastName">Last Name</label>
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              placeholder="Last Name"
+              [(ngModel)]="model.lastName"
+              required
+              autocomplete="family-name"
+            />
+            <div class="error" *ngIf="f.submitted && !model.lastName.trim()">Last name is required.</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email ID</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="name@example.com"
+            [(ngModel)]="model.email"
+            required
+            email
+            autocomplete="email"
+          />
+          <div class="error" *ngIf="f.submitted && !model.email.trim()">Email is required.</div>
+        </div>
+
+        <div class="field">
+          <label for="phone">Mobile Number</label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder="+971 50 000 0000"
+            [(ngModel)]="model.phone"
+            required
+            autocomplete="tel"
+          />
+          <div class="error" *ngIf="f.submitted && !model.phone.trim()">Mobile number is required.</div>
+          <div class="d-flex flex-row justify-content-end" style="font-size: smaller;">(WhatsApp Prefered)</div>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="password">
+            <input
+              id="password"
+              name="password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Minimum 8 characters"
+              [(ngModel)]="model.password"
+              required
+              minlength="8"
+              autocomplete="new-password"
+            />
+            <button type="button" class="eye" (click)="toggle('password')">
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          <div class="hint">Use at least 8 characters.</div>
+          <div class="error" *ngIf="f.submitted && model.password.length < 8">
+            Password must be at least 8 characters.
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Confirm Password</label>
+          <div class="password">
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              placeholder="Re-enter password"
+              [(ngModel)]="model.confirmPassword"
+              required
+              autocomplete="new-password"
+            />
+            <button type="button" class="eye" (click)="toggle('confirm')">
+              {{ showConfirmPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          <div class="error" *ngIf="(f.submitted || model.confirmPassword) && !passwordsMatch">
+            Passwords do not match.
+          </div>
+        </div>
+
+        <label class="terms">
+          <input type="checkbox" name="termsAccepted" [(ngModel)]="model.termsAccepted" required />
+          <span>
+            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </span>
+        </label>
+        <div class="error" *ngIf="f.submitted && !model.termsAccepted">You must accept terms.</div>
+
+        <button class="cta" type="submit" [disabled]="!canSubmit">
+          <span *ngIf="!isLoading">Sign Up</span>
+          <span *ngIf="isLoading">Creating...</span>
+        </button>
+
+        <div class="bottom">
+          Already have account?
+          <a routerLink="/auth/login">Log in</a>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>

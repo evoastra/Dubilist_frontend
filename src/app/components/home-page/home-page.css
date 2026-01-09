@@ -1,0 +1,221 @@
+/* ===== Hero / search section ===== */
+
+.hero-section {
+  margin: 16px;
+  background: url('/assets/images/homePage_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  border-radius: 20px;
+  position: relative;
+}
+
+.search_section {
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 8, 8, 0.45); /* Darken image for text readability */
+  border-radius: 20px;
+  z-index: 0;
+}
+
+.hero-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Larger margin on md+ */
+@media (min-width: 768px) {
+  .search_section{
+    margin-top: 40px;
+  }
+  .hero-section {
+    margin: 40px;
+  }
+}
+
+/* Remove focus glow on search input */
+.form-control:focus {
+  box-shadow: none;
+}
+
+/* ===== Navbar icons ===== */
+
+.navbar .nav-item i {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+/* ===== Post an ad banner ===== */
+
+.add-post {
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 20px;
+}
+
+@media (min-width: 768px) {
+  .search_section{
+    margin-top: 40px;
+  }
+  .add-post {
+    margin-left: 40px;
+    margin-right: 40px;
+  }
+}
+
+/* ===== Interior designer banner ===== */
+
+.designer-banner {
+  background-color: #fff;
+}
+
+/* ===== Browse by category ===== */
+
+.browse-by-category h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+/* 4 per row on large screens */
+@media (min-width: 992px) {
+  .category-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.category-card {
+  background: #f9f9f9;
+  border-radius: 16px;
+  padding: 0.75rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+.category-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.category-card img {
+  width: 70%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+}
+
+.category-card h3 {
+  font-size: 0.95rem;
+  margin: 0.25rem 0 0;
+}
+
+/* ===== Featured listings (all car/furniture/etc sections) ===== */
+
+.featured-listings h2 {
+  font-size: 1.5rem;
+}
+
+.featured-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+/* 2 cards per row on mobile */
+.listing-card {
+  flex: 0 0 calc(50% - 1.25rem);
+}
+
+/* 4 cards per row on md+ */
+@media (min-width: 768px) {
+  .listing-card {
+    flex: 0 0 calc(25% - 1.25rem);
+  }
+}
+
+/* 5 per row on xl */
+@media (min-width: 1200px) {
+  .listing-card {
+    flex: 0 0 calc(20% - 1.25rem);
+  }
+}
+
+.image-wrapper img {
+  display: block;
+  border-radius: 12px;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.price {
+  color: #f4a51c;
+  font-weight: 600;
+}
+
+.city {
+  color: #aa8a3c;
+}
+
+/* ===== Footer ===== */
+
+.main-footer {
+  background-color: #fff;
+  border-top: 1px solid #eee;
+}
+
+.footer-links a {
+  text-decoration: none;
+  color: #6c757d;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #ffa500;
+  padding-left: 5px;
+}
+
+.social-icons a {
+  width: 35px;
+  height: 35px;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #ffa500;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.social-icons a:hover {
+  background-color: #ffa500;
+  color: #fff;
+}
+
+/* Override Bootstrap warning background + text utilities */
+.bg-warning {
+  background-color: #ffa500 !important;
+}
+
+.text-warning {
+  color: #ffa500 !important;
+}
+
+
+.btn-warning {
+  background-color: #ffa500 !important;
+  border-color: #ffa500 !important;
+}

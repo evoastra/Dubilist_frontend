@@ -1,0 +1,561 @@
+<div class="d-flex admin-wrapper font-family-base">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar bg-white border-end shadow-sm">
+    <div class="p-4 mb-2">
+      <h5 class="fw-bold text-dark">Platform</h5>
+    </div>
+    
+    <nav class="nav flex-column gap-1 px-2">
+      <a class="nav-link d-flex align-items-center gap-3 px-3 py-3 rounded" 
+         [class.active-link]="currentView === 'dashboard'" 
+         (click)="switchView('dashboard')">
+        <i class="bi bi-grid-fill fs-5"></i> 
+        <span class="fw-medium">Dashboard</span>
+      </a>
+      <a class="nav-link d-flex align-items-center gap-3 px-3 py-3 rounded" 
+         [class.active-link]="currentView === 'users'" 
+         (click)="switchView('users')">
+        <i class="bi bi-people fs-5"></i> 
+        <span class="fw-medium">Users</span>
+      </a>
+      <a class="nav-link d-flex align-items-center gap-3 px-3 py-3 rounded" 
+         [class.active-link]="currentView === 'reports'" 
+         (click)="switchView('reports')">
+        <i class="bi bi-flag fs-5"></i> 
+        <span class="fw-medium">Reports</span>
+      </a>
+    </nav>
+
+    <div class="mt-auto p-4 border-top">
+      <a class="nav-link text-warning d-flex align-items-center gap-2 cursor-pointer p-0" (click)="onLogout()">
+        <i class="bi bi-box-arrow-right fs-4"></i>
+        <span class="fw-bold">Log Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-grow-1 p-4 bg-light-gray overflow-auto" style="height: 100vh;">
+    
+    <!-- Stats Cards - Always Visible -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <div class="card p-3 border-light h-100 shadow-sm rounded-4">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="text-warning small fw-bold mb-2">Active Listings</div>
+              <h2 class="fw-bold mb-0">{{activeCount | number}}</h2>
+            </div>
+            <div class="icon-box bg-light-blue text-primary rounded-3">
+              <i class="bi bi-pc-display"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-3 border-light h-100 shadow-sm rounded-4">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="text-warning small fw-bold mb-2">New Users Today</div>
+              <h2 class="fw-bold mb-0">{{userCount | number}}</h2>
+            </div>
+            <div class="icon-box bg-light-purple text-purple rounded-3">
+              <i class="bi bi-person-plus-fill"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-3 border-start-accent h-100 shadow-sm rounded-4">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="text-warning small fw-bold mb-1">Pending Ads</div>
+              <h2 class="fw-bold mb-0">{{pendingCount}}</h2>
+              <p class="text-muted x-small mb-0">Requires Immediate review</p>
+            </div>
+            <div class="text-warning fs-3">
+              <i class="bi bi-hourglass-split"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-3 border-light h-100 shadow-sm rounded-4">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="text-danger small fw-bold mb-2">Reported issues</div>
+              <h2 class="fw-bold mb-0">{{reportCount}}</h2>
+            </div>
+            <div class="icon-box bg-light-red text-danger rounded-3">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div *ngIf="loading" class="spinner-overlay d-flex align-items-center justify-content-center rounded-4 position-fixed w-100 h-100" style="z-index: 999; background: rgba(255,255,255,0.8); top: 0; left: 0;">
+      <div class="spinner-border text-warning" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Dashboard View - Listing Management -->
+    <div *ngIf="currentView === 'dashboard'" class="bg-white rounded-4 shadow-sm p-4 position-relative">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h5 class="fw-bold mb-1">Listing Management</h5>
+          <p class="text-warning small mb-0">Review pending advertisements</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-pill" 
+                  [class.btn-warning-active]="activeDashboardTab === 'PENDING'"
+                  [class.btn-pill-inactive]="activeDashboardTab !== 'PENDING'" 
+                  (click)="switchStatus('PENDING')">
+            Pending ( {{pendingCount}} )
+          </button>
+          <button class="btn btn-pill" 
+                  [class.btn-warning-active]="activeDashboardTab === 'APPROVED'"
+                  [class.btn-pill-inactive]="activeDashboardTab !== 'APPROVED'"
+                  (click)="switchStatus('APPROVED')">
+            Approved
+          </button>
+          <button class="btn btn-pill" 
+                  [class.btn-warning-active]="activeDashboardTab === 'REJECTED'"
+                  [class.btn-pill-inactive]="activeDashboardTab !== 'REJECTED'"
+                  (click)="switchStatus('REJECTED')">
+            Rejected
+          </button>
+        </div>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="d-flex gap-5 border-bottom mb-4 pb-2 px-2 overflow-auto category-nav">
+        <span class="category-link" [class.active]="selectedCategory === 'All'" (click)="filterCategory('All')">All Categories</span>
+        <span class="category-link" [class.active]="selectedCategory === 'Motors'" (click)="filterCategory('Motors')">Motors</span>
+        <span class="category-link" [class.active]="selectedCategory === 'Property'" (click)="filterCategory('Property')">Property</span>
+        <span class="category-link" [class.active]="selectedCategory === 'Jobs'" (click)="filterCategory('Jobs')">Jobs</span>
+        <span class="category-link" [class.active]="selectedCategory === 'Furniture'" (click)="filterCategory('Furniture')">Furniture</span>
+        <span class="category-link" [class.active]="selectedCategory === 'Classifieds'" (click)="filterCategory('Classifieds')">Classifieds</span>
+        <span class="category-link" [class.active]="selectedCategory === 'Electronics'" (click)="filterCategory('Electronics')">Electronics</span>
+      </div>
+
+      <!-- Listings Table -->
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead class="text-warning small fw-bold border-bottom">
+            <tr>
+              <th class="ps-3 py-3">Item Details</th>
+              <th>Category</th>
+              <th>User</th>
+              <th>Date</th>
+              <th class="text-end pe-3">Action</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="listings.length > 0; else noListings">
+            <tr *ngFor="let item of listings">
+              <td class="ps-3 py-4">
+                <div class="d-flex align-items-center gap-3">
+                  <img [src]="item.displayImage" class="rounded-3 border object-fit-cover" width="60" height="60" alt="Item image">
+                  <div>
+                    <div class="text-secondary small fw-medium mb-1">{{ item.title }}</div>
+                    <div class="text-warning fw-bold mb-1">AED {{ item.price | number }}</div>
+                    <button type="button"
+        class="btn btn-link p-0 text-dark fw-bold x-small text-decoration-none border-bottom "
+        (click)="openReview(item.id)">
+  View Details
+</button>
+
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge category-badge">{{ item.categoryName }}</span>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <img src="assets/images/user-avatar.png" class="rounded-circle" width="30" height="30" alt="User avatar">
+                  <span class="text-secondary fw-medium small">{{ item.userName }}</span>
+                </div>
+              </td>
+              <td class="text-secondary small">{{item.createdDate || '24-10-2025' | date:'dd-MM-yyyy'}}</td>
+             <td class="text-end pe-3">
+  <div class="d-flex justify-content-end gap-2">
+
+    <!-- PENDING -->
+    <ng-container *ngIf="activeDashboardTab === 'PENDING'">
+      <button
+        class="btn btn-success btn-sm rounded-pill px-3"
+        (click)="approve(item.id)">
+        Approve
+      </button>
+      <button
+        class="btn btn-danger btn-sm rounded-pill px-3"
+        (click)="openReject(item.id)">
+        Reject
+      </button>
+    </ng-container>
+
+    <!-- APPROVED -->
+    <ng-container *ngIf="activeDashboardTab === 'APPROVED'">
+      <span class="badge bg-success px-3 py-2 rounded-pill">
+        Approved
+      </span>
+    </ng-container>
+
+    <!-- REJECTED -->
+    <ng-container *ngIf="activeDashboardTab === 'REJECTED'">
+      <span class="badge bg-danger px-3 py-2 rounded-pill">
+        Rejected
+      </span>
+    </ng-container>
+
+  </div>
+</td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noListings>
+        <div class="text-center py-5 text-muted">
+          <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
+          <p>No listings found for this category.</p>
+        </div>
+      </ng-template>
+
+      <!-- Listings Pagination -->
+      <div class="d-flex justify-content-center mt-4" *ngIf="listTotalPages > 1">
+        <ul class="pagination pagination-sm">
+          <li class="page-item" [class.disabled]="listPage === 1">
+            <button class="page-link" (click)="loadListings(listPage - 1)">Previous</button>
+          </li>
+          <li class="page-item" *ngFor="let p of getPagesArray(listTotalPages)" [class.active]="p === listPage">
+            <button class="page-link" (click)="loadListings(p)">{{p}}</button>
+          </li>
+          <li class="page-item" [class.disabled]="listPage === listTotalPages">
+            <button class="page-link" (click)="loadListings(listPage + 1)">Next</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Users Management View -->
+    <div *ngIf="currentView === 'users'" class="bg-white rounded-4 shadow-sm p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h5 class="fw-bold mb-0">User Management</h5>
+          <p class="text-muted small mb-0">Search names, emails, and mobile numbers</p>
+        </div>
+        <div class="d-flex gap-2">
+          <input class="form-control form-control-sm" type="text" placeholder="Search name, email, mobile..." 
+                 [(ngModel)]="userSearch" (input)="loadUsers(1)">
+        </div>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead class="text-warning small fw-bold border-bottom">
+            <tr>
+              <th class="ps-3 py-3">User</th>
+              <th>Email</th>
+              <th>Mobile Number</th>
+              <th>Registration Date</th>
+              <th class="text-end pe-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="users.length > 0; else noUsers">
+            <tr *ngFor="let user of users">
+              <td class="ps-3 py-4">
+                <div class="d-flex align-items-center gap-3">
+                  <img [src]="user.avatar || 'assets/images/user-avatar.png'" class="rounded-circle border" width="40" height="40" alt="User avatar">
+                  <div>
+                    <div class="fw-bold text-dark small">{{ user.name }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="text-secondary small">{{ user.email }}</td>
+              <td class="text-secondary small">{{ user.phone }}</td>
+              <td class="text-secondary small">{{ user.createdAt | date:'dd-MM-yyyy' }}</td>
+              <td class="text-end pe-3">
+                <button class="btn btn-outline-primary btn-sm rounded-pill px-4 py-1"
+        (click)="viewProfile(user)">
+  View Profile
+</button>
+
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noUsers>
+        <div class="text-center py-5 text-muted">
+          <i class="bi bi-people fs-1 text-muted mb-3"></i>
+          <p>No users found.</p>
+        </div>
+      </ng-template>
+
+      <!-- Users Pagination -->
+      <div class="d-flex justify-content-center mt-4" *ngIf="userTotalPages > 1">
+        <ul class="pagination pagination-sm">
+          <li class="page-item" [class.disabled]="userPage === 1">
+            <button class="page-link" (click)="loadUsers(userPage - 1)">Previous</button>
+          </li>
+          <li class="page-item" *ngFor="let p of getPagesArray(userTotalPages)" [class.active]="p === userPage">
+            <button class="page-link" (click)="loadUsers(p)">{{p}}</button>
+          </li>
+          <li class="page-item" [class.disabled]="userPage === userTotalPages">
+            <button class="page-link" (click)="loadUsers(userPage + 1)">Next</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Reports View -->
+    <div *ngIf="currentView === 'reports'" class="bg-white rounded-4 shadow-sm p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h5 class="fw-bold mb-0">Reported Issues</h5>
+          <p class="text-muted small mb-0">Review reported content and users</p>
+        </div>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead class="text-warning small fw-bold border-bottom">
+            <tr>
+              <th class="ps-3 py-3">Category</th>
+              <th>Reported Post</th>
+              <th>Reason for Report</th>
+              <th>Reporter</th>
+              <th class="text-end pe-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="reports.length > 0; else noReports">
+            <tr *ngFor="let report of reports">
+              <td class="ps-3 py-4">
+                <span class="badge bg-light text-dark category-badge">{{ report.category }}</span>
+              </td>
+              <td>
+                <div class="text-secondary small fw-medium">{{ report.postTitle }}</div>
+                <div class="text-warning fw-bold x-small">AED {{ report.price | number }}</div>
+              </td>
+              <td class="text-secondary small">{{ report.reason }}</td>
+              <td class="text-secondary small">{{ report.reporterName }}</td>
+              <td class="text-end pe-3">
+                <button class="btn btn-danger btn-sm rounded-pill px-4 py-1 fw-bold" (click)="remove(report.listingId)">
+                  Remove Ad
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noReports>
+        <div class="text-center py-5 text-muted">
+          <i class="bi bi-flag fs-1 text-muted mb-3"></i>
+          <p>No reported issues found.</p>
+        </div>
+      </ng-template>
+
+      <!-- Reports Pagination -->
+      <div class="d-flex justify-content-center mt-4" *ngIf="reportTotalPages > 1">
+        <ul class="pagination pagination-sm">
+          <li class="page-item" [class.disabled]="reportPage === 1">
+            <button class="page-link" (click)="loadReports(reportPage - 1)">Previous</button>
+          </li>
+          <li class="page-item" *ngFor="let p of getPagesArray(reportTotalPages)" [class.active]="p === reportPage">
+            <button class="page-link" (click)="loadReports(p)">{{p}}</button>
+          </li>
+          <li class="page-item" [class.disabled]="reportPage === reportTotalPages">
+            <button class="page-link" (click)="loadReports(reportPage + 1)">Next</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-backdrop-custom d-flex align-items-center justify-content-center" *ngIf="showRejectModal">
+  <div class="bg-white p-4 rounded-4 shadow-lg animate-fade-in" style="width: 420px; z-index: 6000;">
+    <h5 class="fw-bold text-danger mb-3">Reject Advertisement</h5>
+    <p class="small text-muted mb-3">Please specify the reason for rejecting this ad. This will be sent to the seller.</p>
+    <textarea class="form-control mb-3 bg-light border-0" rows="4" [(ngModel)]="rejectReason" placeholder="Reason (e.g., Blurred images, Duplicate listing...)"></textarea>
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-light rounded-pill px-4" (click)="showRejectModal=false">Cancel</button>
+      <button class="btn btn-danger rounded-pill px-4" (click)="submitReject()" [disabled]="!rejectReason.trim()">
+        Confirm Rejection
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div *ngIf="showToast" class="toast show text-white border-0 shadow-lg" [ngClass]="toastType === 'success' ? 'bg-success' : 'bg-danger'">
+    <div class="d-flex p-3 align-items-center">
+      <div class="fw-bold">{{ toastMessage }}</div>
+      <button class="btn-close btn-close-white ms-auto" (click)="showToast=false"></button>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal-backdrop-custom"
+     *ngIf="showUserModal"
+     (click)="showUserModal = false">
+
+  <div class="bg-white rounded-4 shadow-lg p-4"
+       style="width: 420px"
+       (click)="$event.stopPropagation()">
+
+    <div class="text-center">
+      <img [src]="selectedUser.avatar || 'assets/images/user-avatar.png'"
+           class="rounded-circle mb-3"
+           width="90"
+           height="90">
+
+      <h5 class="fw-bold">{{ selectedUser.name }}</h5>
+      <p class="text-warning small">Joined in {{ selectedUser.createdAt | date:'yyyy' }}</p>
+    </div>
+
+    <hr>
+
+    <h6 class="fw-bold">Contact Information</h6>
+
+    <p class="small mb-1">
+      <strong>Email</strong><br>
+      {{ selectedUser.email }}
+    </p>
+
+    <p class="small mb-0">
+      <strong>Mobile Number</strong><br>
+      {{ selectedUser.phone }}
+    </p>
+
+  </div>
+</div>
+
+
+
+
+<!-- ================= ADMIN LISTING REVIEW MODAL ================= -->
+<div class="modal-backdrop-custom"
+     *ngIf="showReviewModal"
+     (click)="showReviewModal = false">
+
+  <div class="bg-white rounded-4 shadow-lg p-4 review-modal"
+       (click)="$event.stopPropagation()">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb mb-2">
+      <span class="crumb">{{ reviewMainCatName }}</span>
+      <span class="crumb-sep">/</span>
+      <span class="crumb current">Review</span>
+    </div>
+
+    <h2 class="page-title mb-3">Review Listing</h2>
+    <h4 class="ad-title mb-4">{{ reviewModel.title }}</h4>
+
+    <!-- IMAGE PREVIEW -->
+    <div class="image-frame mb-4" *ngIf="reviewImages.length; else noImages">
+      <div class="grid-1" *ngIf="reviewImages.length === 1">
+        <img [src]="reviewImages[0]" />
+      </div>
+
+      <div class="grid-3" *ngIf="reviewImages.length > 1">
+        <img *ngFor="let img of reviewImages" [src]="img" />
+      </div>
+    </div>
+
+    <ng-template #noImages>
+      <p class="text-muted">No images uploaded.</p>
+    </ng-template>
+
+    <!-- DETAILS -->
+    <section class="section-block mb-4">
+      <h5 class="section-title">Ad Details</h5>
+
+      <!-- MOTORS -->
+      <ng-container *ngIf="reviewMainCatId === 1">
+        <div class="detail-row"><span>Make & Model</span><span>{{ reviewModel.makeModel }}</span></div>
+        <div class="detail-row"><span>Year</span><span>{{ reviewModel.year }}</span></div>
+        <div class="detail-row"><span>Fuel</span><span>{{ reviewModel.fuelType }}</span></div>
+        <div class="detail-row"><span>Transmission</span><span>{{ reviewModel.transmission }}</span></div>
+        <div class="detail-row"><span>Price</span><span>AED {{ reviewModel.price }}</span></div>
+      </ng-container>
+
+      <!-- ELECTRONICS -->
+      <ng-container *ngIf="reviewMainCatId === 2">
+        <div class="detail-row"><span>Brand</span><span>{{ reviewModel.brand }}</span></div>
+        <div class="detail-row"><span>Model</span><span>{{ reviewModel.electronicsModel }}</span></div>
+        <div class="detail-row"><span>Condition</span><span>{{ reviewModel.electronicsCondition }}</span></div>
+        <div class="detail-row"><span>Price</span><span>AED {{ reviewModel.price }}</span></div>
+      </ng-container>
+
+      <!-- PROPERTY -->
+      <ng-container *ngIf="reviewMainCatId === 3">
+        <div class="detail-row"><span>For</span><span>{{ reviewModel.saleType }}</span></div>
+        <div class="detail-row"><span>Bedrooms</span><span>{{ reviewModel.bedrooms }}</span></div>
+        <div class="detail-row"><span>Bathrooms</span><span>{{ reviewModel.bathrooms }}</span></div>
+        <div class="detail-row"><span>Area</span><span>{{ reviewModel.area }}</span></div>
+      </ng-container>
+
+      <!-- CLASSIFIEDS / FURNITURE -->
+      <ng-container *ngIf="reviewMainCatId === 4 || reviewMainCatId === 5">
+        <div class="detail-row"><span>Condition</span><span>{{ reviewModel.itemCondition }}</span></div>
+        <div class="detail-row"><span>Material</span><span>{{ reviewModel.material }}</span></div>
+      </ng-container>
+
+      <!-- JOBS -->
+      <ng-container *ngIf="reviewMainCatId === 6">
+        <div class="detail-row"><span>Job Title</span><span>{{ reviewModel.jobTitle }}</span></div>
+        <div class="detail-row"><span>Company</span><span>{{ reviewModel.companyName }}</span></div>
+        <div class="detail-row"><span>Industry</span><span>{{ reviewModel.industry }}</span></div>
+        <div class="detail-row"><span>Job Type</span><span>{{ reviewModel.jobType }}</span></div>
+        <div class="detail-row"><span>Experience</span><span>{{ reviewModel.experience }}</span></div>
+        <div class="detail-row"><span>Salary</span>
+          <span>{{ reviewModel.salaryMin }} - {{ reviewModel.salaryMax }}</span>
+        </div>
+      </ng-container>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="section-block mb-4">
+      <h5>Contact</h5>
+
+      <div *ngIf="reviewMainCatId !== 6">
+        <div>{{ reviewModel.name }}</div>
+        <div>{{ reviewModel.phone }}</div>
+      </div>
+
+      <div *ngIf="reviewMainCatId === 6">
+        <div>{{ reviewModel.companyWebsite }}</div>
+      </div>
+    </section>
+
+    <!-- ADMIN ACTIONS -->
+    <div class="buttons-row d-flex justify-content-end gap-2">
+      <button class="btn btn-outline-secondary"
+              (click)="showReviewModal=false">
+        Close
+      </button>
+
+      <button class="btn btn-danger"
+              *ngIf="activeDashboardTab === 'PENDING'"
+              (click)="openReject(reviewListing.id)">
+        Reject
+      </button>
+
+      <button class="btn btn-success"
+              *ngIf="activeDashboardTab === 'PENDING'"
+              (click)="approve(reviewListing.id)">
+        Approve
+      </button>
+    </div>
+
+  </div>
+</div>

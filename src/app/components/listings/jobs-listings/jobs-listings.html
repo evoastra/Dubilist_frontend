@@ -1,0 +1,262 @@
+<div class="jobs-app-container mt-5 pt-5">
+
+  <div *ngIf="currentView() === 'list'" class="layout-grid">
+    
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h3>Filters</h3>
+        <button type="button" class="btn-reset" (click)="resetFilters()">Reset</button>
+      </div>
+
+      <div class="filter-group">
+        <label>Sort by</label>
+        <div class="chip-row">
+          <button class="chip" [class.active]="sortBy === 'newest'" (click)="sortBy = 'newest'">Newest</button>
+          <button class="chip" [class.active]="sortBy === 'relevance'" (click)="sortBy = 'relevance'">Relevance</button>
+        </div>
+        <div class="chip-row mt-2">
+            <button class="chip" [class.active]="sortBy === 'lowToHigh'" (click)="sortBy = 'lowToHigh'">Salary: Low to High</button>
+            <button class="chip" [class.active]="sortBy === 'highToLow'" (click)="sortBy = 'highToLow'">Salary: High to Low</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Experience Level</label>
+        <div class="chip-row">
+          <button class="chip" [class.active]="experienceFilter === 'Entry'" (click)="toggleExperience('Entry')">Entry Level</button>
+          <button class="chip" [class.active]="experienceFilter === 'Mid'" (click)="toggleExperience('Mid')">Mid Level</button>
+          <button class="chip" [class.active]="experienceFilter === 'Senior'" (click)="toggleExperience('Senior')">Senior</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Employment Type</label>
+        <div class="chip-row">
+          <button class="chip" [class.active]="employmentFilter === 'Full Time'" (click)="toggleEmployment('Full Time')">Full Time</button>
+          <button class="chip" [class.active]="employmentFilter === 'Part Time'" (click)="toggleEmployment('Part Time')">Part Time</button>
+          <button class="chip" [class.active]="employmentFilter === 'Contract'" (click)="toggleEmployment('Contract')">Contract</button>
+        </div>
+        <div class="chip-row mt-2">
+            <button class="chip" [class.active]="employmentFilter === 'Internship'" (click)="toggleEmployment('Internship')">Internship</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Location</label>
+        <div class="input-with-icon">
+            <span class="icon">📍</span>
+            <input type="text" [(ngModel)]="locationFilter" placeholder="Dubai">
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Salary Range (AED)</label>
+        <div class="salary-inputs">
+          <input type="number" [(ngModel)]="minSalary" placeholder="Min">
+          <input type="number" [(ngModel)]="maxSalary" placeholder="Max">
+        </div>
+      </div>
+
+      <button class="btn-orange-block" (click)="applyFilters()">Apply Filters</button>
+    </aside>
+
+    <main class="main-content">
+      <div class="main-header">
+        <h1>Job Listings</h1>
+        <p class="subtitle">Explore opportunities that match your skills and experience.</p>
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" [(ngModel)]="searchTerm" placeholder="Search title or keyword...">
+        </div>
+      </div>
+
+      <div class="results-header">
+        <h2>Results</h2>
+      </div>
+
+      <div class="jobs-list">
+        <div *ngFor="let job of paginatedJobs" class="job-card" (click)="viewJobDetails(job.id)">
+          <div class="job-card-left">
+            <span *ngIf="job.isFeatured" class="badge-featured">Featured</span>
+            <h3 class="job-title">{{ job.title }}</h3>
+            <p class="company-name">{{ job.company }}</p>
+            
+            <div class="job-pill">{{ job.type }}</div>
+            
+            <p class="salary-text">{{ job.currency }} {{ job.minSalary | number }} - {{ job.currency }} {{ job.maxSalary | number }}</p>
+            <p class="location-text">📍 {{ job.location }}</p>
+          </div>
+          
+          <div class="job-card-right">
+             <button class="btn-bookmark">
+                <svg width="14" height="18" viewBox="0 0 14 18" fill="none" stroke="#999" stroke-width="1.5">
+                    <path d="M1 1H13V17L7 12L1 17V1Z"/>
+                </svg>
+             </button>
+             <div class="card-image">
+                 <img [src]="job.imageUrl" alt="Office">
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button class="page-arrow" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">‹</button>
+        <button *ngFor="let page of pagesArray" 
+                class="page-number" 
+                [class.active]="currentPage === page"
+                (click)="changePage(page)">
+            {{ page }}
+        </button>
+        <button class="page-arrow" [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">›</button>
+      </div>
+    </main>
+  </div>
+
+
+  <div *ngIf="currentView() === 'details' && selectedJob()" class="details-layout">
+    <div class="details-container">
+      
+      <div class="details-top-nav">
+         <div class="breadcrumbs">
+            Jobs / {{ selectedJob()?.category }} / <span class="current">{{ selectedJob()?.title }}</span>
+         </div>
+         <button class="btn-back" (click)="goBack()">← Back</button>
+      </div>
+
+      <div class="details-hero">
+        <div class="hero-image-box">
+             <img [src]="selectedJob()?.logoUrl" alt="Logo"> 
+        </div>
+        <div class="hero-info">
+            <h1>{{ selectedJob()?.title }}</h1>
+            <p class="hero-company">{{ selectedJob()?.company }}</p>
+            <div class="hero-meta">
+                <span>{{ selectedJob()?.type }}</span>
+                <span class="text-green">{{ selectedJob()?.currency }} {{ selectedJob()?.minSalary | number }} - {{ selectedJob()?.currency }} {{ selectedJob()?.maxSalary | number }}</span>
+                <span>Remote</span>
+                <span>📍 {{ selectedJob()?.location }}</span>
+            </div>
+        </div>
+      </div>
+
+      <p class="intro-text">
+         {{ selectedJob()?.description }}
+      </p>
+
+      <div class="content-section">
+        <h3>Job Description</h3>
+        <p>{{ selectedJob()?.longDescription }}</p>
+      </div>
+
+      <div class="content-section">
+        <h3>Responsibilities</h3>
+        <ul>
+            <li *ngFor="let item of selectedJob()?.responsibilities">{{ item }}</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h3>Requirements</h3>
+        <ul>
+            <li *ngFor="let item of selectedJob()?.requirements">{{ item }}</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h3>Benefits</h3>
+        <ul>
+            <li *ngFor="let item of selectedJob()?.benefits">{{ item }}</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+         <h3>Contact Information</h3>
+         <p class="contact-text">Please send your resume and cover letter to <a href="#">careers@techinnovators.com</a></p>
+      </div>
+
+      <div class="details-actions">
+         <button class="btn-save">Save Job</button>
+         <button class="btn-orange-wide" (click)="goToApply()">Apply Now</button>
+      </div>
+       
+       <div class="report-ad">
+           Report this Ad ⚠
+       </div>
+
+    </div>
+  </div>
+
+
+  <div *ngIf="currentView() === 'apply'" class="apply-layout">
+     <div class="apply-container">
+        <div class="apply-header">
+            <h2>Apply Now</h2>
+            <p>{{ selectedJob()?.title }} at {{ selectedJob()?.company }}</p>
+        </div>
+
+        <form [formGroup]="applyForm" (ngSubmit)="submitApplication()">
+            
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" formControlName="fullName" placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="text" formControlName="dateOfBirth" placeholder="Enter your Date of Birth">
+            </div>
+
+            <div class="form-group">
+                <label>Qualification</label>
+                <select formControlName="qualification">
+                    <option value="" disabled selected>Select your highest qualification</option>
+                    <option value="Bachelor">Bachelor's Degree</option>
+                    <option value="Master">Master's Degree</option>
+                    <option value="PhD">PhD</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" formControlName="email" placeholder="Enter your email address">
+            </div>
+
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="tel" formControlName="mobile" placeholder="Enter your mobile number">
+            </div>
+
+            <div class="form-group">
+                <label>Resume/CV</label>
+                <div class="upload-box" (click)="fileInput.click()">
+                    <input #fileInput type="file" (change)="onFileSelected($event)" hidden accept=".pdf,.docx">
+                    <div class="upload-content">
+                        <strong>Upload your CV or Resume</strong>
+                        <p>Accepted formats: PDF, DOCX (Max 5MB)</p>
+                        <span class="btn-upload-fake">upload file</span>
+                        <p *ngIf="uploadedFileName" class="file-name-display">Selected: {{ uploadedFileName }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Cover Letter (Optional)</label>
+                <textarea formControlName="coverLetter" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Salary Expectation (in AED)</label>
+                <input type="number" formControlName="salaryExpectation">
+            </div>
+
+            <div class="form-actions-row">
+                <button type="button" class="btn-cancel" (click)="goBack()">Cancel</button>
+                <button type="submit" class="btn-orange-wide" [disabled]="applyForm.invalid">Submit Application</button>
+            </div>
+
+        </form>
+     </div>
+  </div>
+
+</div>

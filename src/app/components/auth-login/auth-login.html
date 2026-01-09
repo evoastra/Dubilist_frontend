@@ -1,0 +1,100 @@
+<div class="auth-shell">
+  <!-- LEFT: Promo / Image -->
+  <section class="promo">
+    <div class="promo-inner">
+      <h2>Turn your clutter into cash.</h2>
+      <p>Join millions of people buying and selling locally on Dubilist today.</p>
+
+      <div class="art" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- RIGHT: Login Form -->
+  <section class="panel">
+    <div class="panel-inner">
+      <div class="brand">
+        <img src="assets/images/logo.png" alt="Dubilist Logo" class="logo" />
+      </div>
+
+      <h1 class="title">Welcome Back</h1>
+      <p class="subtitle">Log in to manage your findings and discoveries</p>
+
+      <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
+        <div class="field">
+          <label>Email ID</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="name@example.com"
+            [(ngModel)]="model.email"
+            required
+            email
+          />
+          <div class="error" *ngIf="f.submitted && !model.email.trim()">
+            Email is required.
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="password">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              name="password"
+              placeholder="••••••••"
+              [(ngModel)]="model.password"
+              required
+              minlength="6"
+            />
+            <button type="button" class="eye" (click)="togglePassword()">
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+
+          <div class="row-actions">
+            <a class="forgot" routerLink="/forgot-password">
+              Forgot Password?
+            </a>
+          </div>
+
+          <div class="error" *ngIf="f.submitted && model.password.length < 6">
+            Password must be at least 6 characters.
+          </div>
+        </div>
+
+        <div class="helper">
+          New to Dubilist?
+          <a routerLink="/auth/signUp">Sign Up</a>
+        </div>
+
+        <button class="cta" type="submit" [disabled]="isLoading || !f.valid">
+          <span *ngIf="!isLoading">Log in</span>
+          <span *ngIf="isLoading">Logging in...</span>
+        </button>
+      </form>
+    </div>
+  </section>
+</div>
+
+<!-- SUCCESS / ERROR MODAL -->
+<div class="modal-overlay" *ngIf="showModal">
+  <div class="modal-box">
+    <h4 class="modal-title">
+      <i
+        class="bi"
+        [ngClass]="{
+          'bi-check-circle-fill text-success': modalType === 'success',
+          'bi-exclamation-circle-fill text-danger': modalType === 'error'
+        }"
+      ></i>
+      {{ modalType === 'success' ? 'Success' : 'Error' }}
+    </h4>
+
+    <p class="modal-message">{{ modalMessage }}</p>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="closeModal()">OK</button>
+    </div>
+  </div>
+</div>
+  

@@ -1,0 +1,278 @@
+
+<div class="mt-5 container">
+
+
+
+<section class="search_section d-flex px-3 px-md-5 align-items-center">
+  
+
+  <div class="container hero-section text-center text-white py-4 py-md-5">
+    <div class="overlay w-100 h-100"></div>
+    <h4 class="fw-bold mb-4">
+      Best place to sell and buy anything from cars to homes and everything in between
+    </h4>
+
+    <div class="bg-dark bg-opacity-75 m-2 m-md-3 p-3 rounded-3">
+      <div
+        class="d-none d-md-flex justify-content-center align-items-center gap-2 gap-lg-3 mb-3 flex-wrap"
+      >
+        <span class="fw-bold">Searching in</span>
+
+        <button
+          *ngFor="let cat of categories"
+          class="btn rounded-pill px-4 text-white"
+          [ngClass]="{ 'btn-warning': selectedCategory === cat }"
+          (click)="onCategoryClick(cat)"
+        >
+          {{ cat }}
+        </button>
+      </div>
+
+      <div class="row justify-content-center mx-1">
+        <div
+          class="col-12 col-lg-10 bg-white rounded-3 shadow p-2 d-flex flex-column flex-md-row gap-2"
+        >
+          <div class="input-group flex-grow-1 border-0">
+            <span class="input-group-text bg-white border-0">
+              <i class="bi bi-search text-muted"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control border-0"
+              [placeholder]="searchPlaceholder"
+            />
+          </div>
+
+          <button class="btn btn-warning text-white fw-bold px-5 py-2">
+            Search
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="post_add_section px-3 px-md-5">
+  <section class="bg-warning add-post py-4 px-3 px-lg-5">
+    <div
+      class="container d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start"
+    >
+      <div class="text-white mb-3 mb-md-0">
+        <h4 class="fw-bold m-0">Have Something to sell?</h4>
+        <p class="m-0">Post an Ad for free and start earning today.</p>
+      </div>
+      <button routerLink="/add-post"
+        class="btn btn-white bg-white text-warning fw-bold px-4 py-3 shadow-sm rounded-3 mt-3 mt-md-0"
+      >
+        Post Your Ad Now
+      </button>
+    </div>
+  </section>
+</div>
+
+<section class="interior_design_section container my-4">
+  <div
+    class="designer-banner d-flex flex-column flex-md-row justify-content-between align-items-center border border-warning rounded-4 p-3 p-md-4"
+  >
+    <div class="d-flex flex-column flex-md-row align-items-center">
+      <img
+        src="/assets/images/interior_design.jpg"
+        alt="Interior Designer"
+        class="rounded-4 mb-3 mb-md-0 me-md-3"
+        style="height: 120px"
+      />
+      <div class="text-content text-center text-md-start">
+        <h4 class="fw-bold">Looking for an Interior Designer?</h4>
+        <p class="text-muted mb-0">Find the perfect match for your dream space</p>
+      </div>
+    </div>
+
+    <button
+      class="btn btn-warning text-white px-4 px-lg-5 py-2 py-lg-3 fw-bold rounded-3 mt-3 mt-md-0"
+    >
+      Explore Now
+    </button>
+  </div>
+</section>
+
+<section class="browse-by-category my-5">
+  <div class="container border border-light-subtle rounded-4 p-3 p-md-4">
+    <h2 class="fw-bold">Browse by Category</h2>
+
+    <div class="category-grid">
+      <div class="category-card" routerLink="/listings/property">
+        <img
+          src="https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=800&q=80"
+          alt="Property"
+        />
+        <h3>Property</h3>
+      </div>
+
+      <div class="category-card"  routerLink="/listings/motors">
+        <img
+          src="https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=800&q=80"
+          alt="Motors"
+        />
+        <h3>Motors</h3>
+      </div>
+
+      <div class="category-card"  routerLink="/listings/electronics">
+        <img
+          src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80"
+          alt="Electronics"
+        />
+        <h3>Electronics</h3>
+      </div>
+
+      <div class="category-card"  routerLink="/listings/furniture">
+        <img
+          src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=800&q=80"
+          alt="Furniture"
+        />
+        <h3>Furniture</h3>
+      </div>
+
+      <div class="category-card"  routerLink="/listings/classifieds">
+        <img
+          src="https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?auto=format&fit=crop&w=800&q=80"
+          alt="Classifieds"
+        />
+        <h3>Classifieds</h3>
+      </div>
+
+      <div class="category-card"  routerLink="/listings/jobs">
+        <img
+          src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80"
+          alt="Jobs"
+        />
+        <h3>Jobs</h3>
+      </div>
+
+      <div class="category-card"  routerLink="/listings/property">
+        <img
+          src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80"
+          alt="Rooms for Rent"
+        />
+        <h3>Rooms for Rent</h3>
+      </div>
+
+      <div class="category-card"  routerLink="/listings/interior-designers">
+        <img
+          src="https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=800&q=80"
+          alt="Interior Designers"
+        />
+        <h3>Interior Designers</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="featured-listings container">
+  <h2>Featured Listings</h2>
+
+  <div class="featured-row p-3 p-md-4">
+    <div class="listing-card" *ngFor="let item of listings">
+      <div class="image-wrapper">
+        <img [src]="item.imageUrl" [alt]="item.title" />
+      </div>
+
+      <div>
+        <p class="mb-0">{{ item.title }}</p>
+        <p class="price mb-0">{{ item.price }}</p>
+        <p class="city mb-0">{{ item.city }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="featured-listings container">
+  <h2>Popular in Cars</h2>
+
+  <div class="featured-row p-3 p-md-4">
+    <div class="listing-card" *ngFor="let item of popularCars">
+      <div class="image-wrapper">
+        <img [src]="item.imageUrl" [alt]="item.title" />
+      </div>
+
+      <div>
+        <p class="mb-0">{{ item.title }}</p>
+        <p class="price mb-0">{{ item.price }}</p>
+        <p class="city mb-0">{{ item.city }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="featured-listings container">
+  <h2>Popular in Furniture</h2>
+
+  <div class="featured-row p-3 p-md-4">
+    <div class="listing-card" *ngFor="let item of popularFurniture">
+      <div class="image-wrapper">
+        <img [src]="item.imageUrl" [alt]="item.title" />
+      </div>
+
+      <div>
+        <p class="mb-0">{{ item.title }}</p>
+        <p class="price mb-0">{{ item.price }}</p>
+        <p class="city mb-0">{{ item.city }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="featured-listings container">
+  <h2>Popular in Resdentials</h2>
+
+  <div class="featured-row p-3 p-md-4">
+    <div class="listing-card" *ngFor="let item of residentialListings">
+      <div class="image-wrapper">
+        <img [src]="item.imageUrl" [alt]="item.title" />
+      </div>
+
+      <div>
+        <p class="mb-0">{{ item.title }}</p>
+        <p class="price mb-0">{{ item.price }}</p>
+        <p class="city mb-0">{{ item.city }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="featured-listings container">
+  <h2>Popular in Electronics</h2>
+
+  <div class="featured-row p-3 p-md-4">
+    <div class="listing-card" *ngFor="let item of electronicsListings">
+      <div class="image-wrapper">
+        <img [src]="item.imageUrl" [alt]="item.title" />
+      </div>
+
+      <div>
+        <p class="mb-0">{{ item.title }}</p>
+        <p class="price mb-0">{{ item.price }}</p>
+        <p class="city mb-0">{{ item.city }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="featured-listings container">
+  <h2>Popular in Classifieds</h2>
+
+  <div class="featured-row p-3 p-md-4">
+    <div class="listing-card" *ngFor="let item of classifiedListings">
+      <div class="image-wrapper">
+        <img [src]="item.imageUrl" [alt]="item.title" />
+      </div>
+
+      <div>
+        <p class="mb-0">{{ item.title }}</p>
+        <p class="price mb-0">{{ item.price }}</p>
+        <p class="city mb-0">{{ item.city }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>

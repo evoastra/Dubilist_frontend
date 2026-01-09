@@ -1,0 +1,119 @@
+<div class="review-container mt-5" *ngIf="draft; else noDraft">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb mb-2">
+    <span class="crumb">{{ mainCatName }}</span>
+    <span class="crumb-sep">/</span>
+    <span class="crumb current">Review</span>
+  </div>
+
+  <h2 class="page-title mb-3">Review your ad</h2>
+  <h4 class="ad-title mb-4">{{ model.title }}</h4>
+
+  <!-- IMAGE / LOGO PREVIEW -->
+  <div class="image-frame mb-4" *ngIf="imagePreviews.length; else noImages">
+    <div class="grid-1" *ngIf="imagePreviews.length === 1">
+      <img [src]="imagePreviews[0]" />
+    </div>
+
+    <div class="grid-3" *ngIf="imagePreviews.length > 1">
+      <img *ngFor="let img of imagePreviews" [src]="img" />
+    </div>
+  </div>
+
+  <ng-template #noImages>
+    <p class="text-muted">No images uploaded.</p>
+  </ng-template>
+
+  <!-- JOBS: COMPANY LOGO LABEL -->
+  <div *ngIf="mainCatId === 6 && imagePreviews.length" class="mb-3">
+    <span class="badge bg-info">Company Logo</span>
+  </div>
+
+  <!-- DETAILS -->
+  <section class="section-block mb-4">
+    <h5 class="section-title">Ad Details</h5>
+
+    <!-- MOTORS -->
+    <ng-container *ngIf="mainCatId === 1">
+      <div class="detail-row"><span>Make & Model</span><span>{{ model.makeModel }}</span></div>
+      <div class="detail-row"><span>Year</span><span>{{ model.year }}</span></div>
+      <div class="detail-row"><span>Fuel</span><span>{{ model.fuelType }}</span></div>
+      <div class="detail-row"><span>Transmission</span><span>{{ model.transmission }}</span></div>
+      <div class="detail-row"><span>Price</span><span>AED {{ model.price }}</span></div>
+    </ng-container>
+
+    <!-- ELECTRONICS -->
+    <ng-container *ngIf="mainCatId === 2">
+      <div class="detail-row"><span>Brand</span><span>{{ model.brand }}</span></div>
+      <div class="detail-row"><span>Model</span><span>{{ model.electronicsModel }}</span></div>
+      <div class="detail-row"><span>Condition</span><span>{{ model.electronicsCondition }}</span></div>
+      <div class="detail-row"><span>Price</span><span>AED {{ model.price }}</span></div>
+    </ng-container>
+
+    <!-- PROPERTY -->
+    <ng-container *ngIf="mainCatId === 3">
+      <div class="detail-row"><span>For</span><span>{{ model.saleType }}</span></div>
+      <div class="detail-row"><span>Bedrooms</span><span>{{ model.bedrooms }}</span></div>
+      <div class="detail-row"><span>Bathrooms</span><span>{{ model.bathrooms }}</span></div>
+      <div class="detail-row"><span>Area</span><span>{{ model.area }}</span></div>
+    </ng-container>
+
+    <!-- CLASSIFIEDS / FURNITURE -->
+    <ng-container *ngIf="mainCatId === 4 || mainCatId === 5">
+      <div class="detail-row"><span>Condition</span><span>{{ model.itemCondition }}</span></div>
+      <div class="detail-row"><span>Material</span><span>{{ model.material }}</span></div>
+    </ng-container>
+
+    <!-- JOBS -->
+    <ng-container *ngIf="mainCatId === 6">
+      <div class="detail-row"><span>Job Title</span><span>{{ model.jobTitle }}</span></div>
+      <div class="detail-row"><span>Company</span><span>{{ model.companyName }}</span></div>
+      <div class="detail-row"><span>Industry</span><span>{{ model.industry }}</span></div>
+      <div class="detail-row"><span>Job Type</span><span>{{ model.jobType }}</span></div>
+      <div class="detail-row"><span>Experience</span><span>{{ model.experience }}</span></div>
+      <div class="detail-row"><span>Salary</span><span>{{ model.salaryMin }} - {{ model.salaryMax }}</span></div>
+    </ng-container>
+  </section>
+
+  <!-- JOB EXTRA SECTIONS -->
+  <section *ngIf="mainCatId === 6" class="section-block mb-4">
+    <h5>Job Description</h5>
+    <p>{{ model.jobDescription }}</p>
+
+    <h5>Responsibilities</h5>
+    <p>{{ model.responsibilities }}</p>
+
+    <h5>Requirements</h5>
+    <p>{{ model.requirements }}</p>
+
+    <h5>Benefits</h5>
+    <p>{{ model.benefits }}</p>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section-block mb-4">
+    <h5>Contact</h5>
+
+    <div *ngIf="mainCatId !== 6">
+      <div>{{ model.name }}</div>
+      <div>+971 {{ model.phone }}</div>
+    </div>
+
+    <div *ngIf="mainCatId === 6">
+      <div>{{ model.companyWebsite }}</div>
+    </div>
+  </section>
+
+  <!-- BUTTONS -->
+  <div class="buttons-row">
+    <button class="btn btn-outline-secondary" (click)="editAd()">Edit</button>
+    <button class="btn btn-warning" [disabled]="isSubmitting" (click)="publishAd()">
+      {{ isSubmitting ? 'Publishing...' : 'Publish Ad' }}
+    </button>
+  </div>
+</div>
+
+<ng-template #noDraft>
+  <p>No draft found</p>
+</ng-template>

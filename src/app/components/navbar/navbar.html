@@ -1,0 +1,131 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white py-3 px-lg-5 shadow-sm sticky-top"
+     *ngIf="!hideNavbar">
+
+  <div class="container-fluid px-5">
+
+    <!-- LOGO -->
+    <a class="navbar-brand d-flex align-items-center fw-bold fs-3"
+       routerLink="/home">
+      <img src="assets/images/logo.png"
+           alt="Dubilist Logo"
+           class="me-2"
+           style="height: 30px; border-radius: 20%" />
+
+      <!-- ADMIN LABEL -->
+      <span *ngIf="isAdmin" 
+            class="badge bg-warning text-dark ms-2">
+        Admin Panel
+      </span>
+    </a>
+
+    <!-- TOGGLER -->
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+      <ul class="navbar-nav ms-auto align-items-center gap-3">
+
+        <!-- ================= USER NAVBAR ================= -->
+        <ng-container *ngIf="!isAdmin">
+
+          <li class="nav-item text-center px-2" *ngIf="user"
+              (click)="navigateToFavourites()">
+            <i class="bi bi-heart d-block"></i>
+            <small>Favourites</small>
+          </li>
+
+          <li class="nav-item text-center px-2" *ngIf="user"
+              (click)="navigateToChats()">
+            <i class="bi bi-chat-dots d-block"></i>
+            <small>Chats</small>
+          </li>
+
+          <li class="nav-item text-center px-2" *ngIf="user"
+              (click)="navigateToMyAds()">
+            <i class="bi bi-card-list d-block"></i>
+            <small>My Ads</small>
+          </li>
+
+          <!-- LOGIN / SIGNUP -->
+          <li class="nav-item ms-lg-3" *ngIf="!user">
+            <button class="btn btn-outline-secondary px-4"
+                    (click)="onLoginClick()">
+              Log In / Sign Up
+            </button>
+          </li>
+
+          <!-- USER NAME -->
+          <li class="nav-item ms-lg-3" *ngIf="user">
+            <button class="btn btn-warning text-white fw-bold px-4"
+                    (click)="navigateToProfile()">
+              {{ user.name }}
+            </button>
+          </li>
+
+          <!-- PLACE AD -->
+          <li class="nav-item">
+            <button class="btn btn-warning text-white fw-bold px-4"
+                    (click)="onPlaceAdClick()">
+              Place Ad
+            </button>
+          </li>
+
+        </ng-container>
+
+        <!-- ================= ADMIN NAVBAR ================= -->
+        <ng-container *ngIf="isAdmin">
+
+          <li class="nav-item fw-semibold text-secondary">
+            {{ user?.name }} (Admin)
+          </li>
+
+          <li class="nav-item">
+            <button class="btn btn-outline-secondary btn-sm"
+                    (click)="goToWebsite()">
+              Go to Website
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button class="btn btn-danger btn-sm"
+                    (click)="onLogout()">
+              Logout
+            </button>
+          </li>
+
+        </ng-container>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= LOGIN REQUIRED MODAL ================= -->
+<div class="modal-overlay" *ngIf="showLoginModal">
+  <div class="modal-box">
+
+    <h4 class="modal-title">
+      <i class="bi bi-exclamation-circle-fill me-2 text-warning"></i>
+      Login Required
+    </h4>
+
+    <p>Please log in to place an ad.</p>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary"
+              (click)="closeModal()">
+        Cancel
+      </button>
+
+      <button class="btn btn-warning text-white"
+              (click)="goToLogin()">
+        Login
+      </button>
+    </div>
+  </div>
+</div>

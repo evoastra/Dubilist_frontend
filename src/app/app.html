@@ -1,0 +1,57 @@
+<app-navbar></app-navbar>
+
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
+
+
+
+<footer class="main-footer pt-5 pb-3" *ngIf="!hideFooter">
+  <div class="container">
+    <div class="row g-4">
+      
+      <div class="col-lg-4 text-center text-lg-start">
+        <a class="navbar-brand mb-3 d-block" href="#">
+                <img src="assets/images/logo.png" alt="Dubilist Logo" class="me-2" style="height: 40px; border-radius: 20%" />
+
+        </a>
+        <p class="text-muted footer-desc small">
+          The safest and fastest marketplace to buy and sell locally in your city. 
+          Join our verified community today.
+        </p>
+        <div class="social-icons d-flex gap-3 mt-4 justify-content-center justify-content-lg-start">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-2 offset-lg-1">
+        <h6 class="fw-bold mb-4">Company</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a>About Us</a></li>
+          <li><a>Advertising</a></li>
+          <li><a>Terms of Use</a></li>
+          <li><a>Privacy Policy</a></li>
+        </ul>
+      </div>
+      
+       <div class="col-6 col-lg-2 offset-lg-1">
+        <h6 class="fw-bold mb-4">Contact Us</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a >support@dubilist.com</a></li>
+          <li><a >9999999999</a></li>
+         
+        </ul>
+      </div>
+
+    </div>
+
+    <hr class="mt-5 mb-4 opacity-25">
+    <div class="text-center text-muted small">
+      &copy; 2025 Dubilist. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+

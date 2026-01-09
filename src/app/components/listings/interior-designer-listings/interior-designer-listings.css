@@ -1,0 +1,92 @@
+/* PURE CSS - FIXES SCROLLING & VISIBILITY */
+.main-wrapper {
+ 
+  padding: 20px;
+  font-family: sans-serif;
+  color: #333;
+}
+
+/* LISTINGS VIEW */
+.listings-layout { display: grid; grid-template-columns: 280px 1fr; gap: 40px; }
+.sidebar-filters .section-title { font-size: 22px; margin-bottom: 20px; }
+.filter-group { margin-bottom: 25px; }
+.label { font-weight: bold; font-size: 14px; margin-bottom: 10px; }
+
+.pill-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { padding: 8px 12px; border: 1px solid #ddd; background: #fff; border-radius: 8px; font-size: 13px; cursor: pointer; }
+.pill.active { background: #f9a01b; color: #fff; border-color: #f9a01b; }
+
+.custom-select select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
+.range-box { display: flex; gap: 10px; }
+.range-box input { width: 50%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+
+.btn-apply { width: 100%; background: #f9a01b; color: #fff; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+/* CONTENT AREA */
+.hero-text h1 { font-size: 28px; margin-bottom: 10px; }
+.subtitle-orange { color: #f9a01b; font-size: 14px; margin-bottom: 30px; }
+
+.search-bar { display: flex; gap: 15px; margin-bottom: 30px; }
+.search-bar input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 10px; }
+.btn-prev { background: #f9a01b; color: #fff; border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; }
+
+.listing-card { display: flex; background: #fff; border: 1px solid #eee; border-radius: 15px; overflow: hidden; margin-bottom: 20px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.card-thumb { width: 250px; height: 180px; object-fit: cover; }
+.card-body { padding: 20px; flex: 1; position: relative; }
+.rating-line { color: #f9a01b; font-weight: bold; margin-bottom: 5px; }
+.count { color: #ccc; font-weight: normal; font-size: 12px; }
+.btn-view { position: absolute; bottom: 20px; right: 20px; background: #f9a01b; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+
+/* DETAIL VIEW - SCROLLABLE OVERLAY */
+.detail-view-overlay {
+
+ 
+  background: white;
+ 
+  overflow-y: auto; /* THIS FIXES SCROLLING */
+}
+
+.btn-back { border: none; background: #f5f5f5; padding: 10px 15px; border-radius: 8px; cursor: pointer; margin-bottom: 30px; }
+
+.detail-grid { display: grid; grid-template-columns: 1fr 380px; gap: 60px; }
+
+.title { font-size: 22px; margin: 30px 0 15px; font-weight: bold; }
+.description { line-height: 1.6; color: #555; font-size: 15px; }
+
+.service-box { display: flex; gap: 15px; margin-bottom: 20px; }
+.icon-circle { background: #fff9f0; padding: 10px; border-radius: 10px; font-size: 20px; }
+.service-info strong { display: block; margin-bottom: 4px; }
+.service-info p { margin: 0; font-size: 13px; color: #888; }
+
+.tag-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.tag { background: #fff8eb; color: #a67c00; padding: 8px 15px; border-radius: 8px; font-size: 13px; font-weight: 600; }
+
+.pricing-card { background: #fff; border: 1px solid #eee; padding: 20px; border-radius: 15px; text-align: center; margin-top: 30px; }
+.price-val { font-size: 15px; font-weight: 800; margin: 10px 0; }
+.disclaimer { font-size: 12px; color: #999; }
+
+/* DETAIL SIDEBAR */
+.user-info-card { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+.user-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
+.user-text h4 { margin: 0 0 5px; font-size: 18px; }
+.orange { color: #f9a01b; font-size: 13px; margin: 0; font-weight: bold; }
+
+.rating-summary-card { display: flex; align-items: center; gap: 20px; background: #fafafa; padding: 20px; border-radius: 15px; margin-bottom: 30px; }
+.big-rating { text-align: center; border-right: 1px solid #eee; padding-right: 20px; }
+.big-rating strong { font-size: 32px; }
+.stars-gold { color: #f9a01b; margin: 5px 0; }
+
+.bars-container { flex: 1; font-size: 11px; }
+.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.bg-bar { flex: 1; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
+.fill { height: 100%; background: #f9a01b; }
+
+.action-card { background: #fff; border: 1px solid #eee; border-radius: 15px; padding: 25px; }
+.action-card button { width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; margin-bottom: 12px; }
+
+.btn-call-now { background: #fff8eb; color: #333; }
+.btn-whatsapp { background: #25D366; color: #fff; }
+.btn-book-consult { background: #f9a01b; color: #fff; margin-top: 10px; }
+
+.info-row { display: flex; gap: 12px; margin-bottom: 20px; }
+.info-row p { font-size: 12px; color: #999; margin: 0; }

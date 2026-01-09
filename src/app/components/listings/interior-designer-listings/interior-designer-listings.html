@@ -1,0 +1,148 @@
+<div class="main-wrapper mt-5">
+
+  <!-- 1. LISTINGS VIEW -->
+  <div class="listings-page m-3" *ngIf="!selectedDesigner">
+    <div class="listings-layout">
+      
+      <!-- Filters Sidebar -->
+      <aside class="sidebar-filters">
+        <h2 class="section-title">Filters</h2>
+        
+        <div class="filter-group">
+          <p class="label">Sort by</p>
+          <div class="pill-group">
+            <button class="pill active">Highest Rated</button>
+            <button class="pill">Most experienced</button>
+            <button class="pill">Price : Low to High</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <p class="label">Style</p>
+          <div class="pill-group">
+            <button class="pill active">Modern</button>
+            <button class="pill">Minimalist</button>
+            <button class="pill">Bohemian</button>
+            <button class="pill">Traditional</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <p class="label">Location</p>
+          <div class="custom-select">
+            <select><option>Dubai</option></select>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <p class="label">Price Range (AED)</p>
+          <div class="range-box">
+            <input type="text" placeholder="Min">
+            <input type="text" placeholder="Max">
+          </div>
+        </div>
+
+        <button class="btn-apply">Apply Filters</button>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="content-area">
+        <div class="hero-text">
+          <h1>Find your Interior Designer</h1>
+          <p class="subtitle-orange">Browse top-rated professionals for your renovation or styling project. Filter by style, expertise, and location.</p>
+        </div>
+
+        <div class="search-bar">
+          <input type="text" placeholder="Search by Names, Style">
+          <button class="btn-prev">Previous Bookings</button>
+        </div>
+
+        <div class="card-stack">
+          <div class="listing-card" *ngFor="let d of designers" (click)="goToProfile(d)">
+            <img [src]="d.image" class="card-thumb">
+            <div class="card-body">
+              <h3>{{d.name}}</h3>
+              <p class="role-text">Specialist in Bohemian & Rustic Interiors</p>
+              <div class="rating-line">
+                <span class="star-icon">★</span> {{d.rating}} 
+                <span class="count">| {{d.reviews}} Reviews</span>
+              </div>
+              <p class="loc-text">📍 Business Bay, Dubai</p>
+              <button class="btn-view">View Profile</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- 2. DETAIL VIEW (FULL PAGE SCROLLABLE) -->
+  <div class="detail-view-overlay m-3" *ngIf="selectedDesigner">
+    <div class="detail-container">
+      <button class="btn-back" (click)="closeDetail()">← Back to Listings</button>
+      
+      <div class="detail-grid">
+        <!-- Main Bio -->
+        <section class="bio-content">
+          <h2 class="title">About Me</h2>
+          <p class="description">{{selectedDesigner.about}}</p>
+
+          <h3 class="title">Services Offered</h3>
+          <div class="service-box" *ngFor="let s of selectedDesigner.services">
+            <div class="icon-circle">🏠</div>
+            <div class="service-info">
+              <strong>{{s}}</strong>
+              <p>Comprehensive design from concept to completion</p>
+            </div>
+          </div>
+
+          <h3 class="title">Specializations</h3>
+          <div class="tag-row">
+            <span class="tag" *ngFor="let t of selectedDesigner.styles">{{t}}</span>
+          </div>
+
+          <h3 class="title">Pricing</h3>
+          <div class="pricing-card">
+            <p>Consultation starts at</p>
+            <div class="price-val">{{selectedDesigner.priceRange}}</div>
+            <p class="disclaimer">Project based flat fees available upon request.</p>
+          </div>
+        </section>
+
+        <!-- Sidebar Summary -->
+        <aside class="bio-sidebar">
+          <div class="user-info-card">
+            <img [src]="selectedDesigner.image" class="user-avatar">
+            <div class="user-text">
+              <h4>{{selectedDesigner.name}}</h4>
+              <p class="orange">Interior Designer</p>
+            </div>
+          </div>
+
+          <div class="rating-summary-card">
+            <div class="big-rating">
+              <strong>{{selectedDesigner.rating}}</strong>
+              <div class="stars-gold">★★★★☆</div>
+              <p>{{selectedDesigner.reviews}} reviews</p>
+            </div>
+            <div class="bars-container">
+              <div class="bar-row">5 <div class="bg-bar"><div class="fill" style="width: 60%"></div></div> 60%</div>
+              <div class="bar-row">4 <div class="bg-bar"><div class="fill" style="width: 25%"></div></div> 25%</div>
+            </div>
+          </div>
+
+          <div class="action-card">
+            <div class="info-row">
+              <span class="ico">📞</span>
+              <div><p>Call Designer</p><strong>{{selectedDesigner.phone}}</strong></div>
+            </div>
+            <button class="btn-call-now">Call Now</button>
+            <button class="btn-whatsapp">Chat with Whatsapp</button>
+            <button class="btn-book-consult">Book Consultation</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+</div>
