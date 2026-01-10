@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PropertyListingService } from '../../../services/property-listing-service';
+import { ListingsService } from '../../../services/listing-service';
 
 export interface PropertyListing {
   id: number;
@@ -79,7 +79,7 @@ export class PropertyListingsComponent implements OnInit {
   currentImageIndex = 0;
   isFavorite = false;
 
-  constructor(private service: PropertyListingService) {}
+  constructor(private listingService: ListingsService) {}
 
   ngOnInit(): void {
     this.loadListings();
@@ -89,7 +89,7 @@ export class PropertyListingsComponent implements OnInit {
   loadListings(): void {
     this.isLoading = true;
 
-    this.service.getPropertyListings(1, 100).subscribe({
+    this.listingService.getAllListings(1).subscribe({
       next: res => {
         this.listings = res.data.map((l: any): PropertyListing => ({
           id: l.id,

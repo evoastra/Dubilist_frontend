@@ -1,7 +1,7 @@
 // src/app/services/add-post.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 import { DraftListingData } from './draft-listing.service';
 

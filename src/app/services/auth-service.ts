@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 
 /* =======================
     INTERFACES (RESTORING ALL)

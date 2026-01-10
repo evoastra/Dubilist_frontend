@@ -65,7 +65,7 @@
     </div>
     <div class="loading-state" *ngIf="isLoading"><div class="spinner"></div><p>Loading...</p></div>
     <div class="listings-grid" *ngIf="!isLoading">
-      <div *ngFor="let listing of filteredListings" class="listing-card" (click)="viewListing(listing.id)">
+      <div *ngFor="let listing of paginatedListings" class="listing-card" (click)="viewListing(listing.id)">
         <div class="card-image"><img [src]="listing.image" [alt]="listing.title"></div>
         <div class="card-content">
           <h3 class="listing-title">{{listing.title}}</h3>

@@ -1,75 +1,134 @@
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { DesignerService } from '../../../services/designer-service';
 
-interface Designer {
+interface UIDesigner {
   id: number;
   name: string;
-  location: string;
+  image: string;
   rating: number;
   reviews: number;
+  location: string;
   priceRange: string;
   phone: string;
   about: string;
   services: string[];
   styles: string[];
-  image: string;
 }
 
 @Component({
   selector: 'app-interior-designer-listings',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './interior-designer-listings.html',
-  styleUrls: ['./interior-designer-listings.css'],
-  imports:[CommonModule,FormsModule]
+  styleUrls: ['./interior-designer-listings.css']
 })
-export class InteriorDesignerListingsComponent {
-  searchForm: FormGroup;
-  selectedDesigner: Designer | null = null;
+export class InteriorDesignerListingsComponent implements OnInit {
 
-  // Reliable image URLs from Picsum
-  designers: Designer[] = [
-    {
-      id: 1,
-      name: 'Olivia Carter',
-      location: 'Business Bay, Dubai',
-      rating: 4.7,
-      reviews: 234,
-      priceRange: 'AED 150 / Hour',
-      phone: '056-1234567',
-      about: '8 years in industry specializing in creating interiors that reflect my client\'s lifestyle. Translating over 10 functional and aesthetical spaces with sustainable interior design.',
-      services: ['Full-service Residential Design', 'Color Consultation', 'Virtual client consultation'],
-      styles: ['Modern Residential', 'Commercial Offices', 'Luxury', 'Eco Friendly', 'Remote Design'],
-      image: 'https://picsum.photos/id/1027/400/400'
-    },
-    {
-      id: 2,
-      name: 'Amelia Yusuf',
-      location: 'Business Bay, Dubai',
-      rating: 4.8,
-      reviews: 32,
-      priceRange: 'AED 200 / Hour',
-      phone: '050-9876543',
-      about: 'Specialist in Bohemian & Rustic Interiors. Focused on creating warm, organic living environments for modern professionals.',
-      services: ['Interior Styling', 'Furniture Selection', 'On-site consultation'],
-      styles: ['Bohemian', 'Rustic', 'Modern', 'Coastal'],
-      image: 'https://picsum.photos/id/342/400/400'
-    }
-  ];
+  designers: UIDesigner[] = [];
+  selectedDesigner: UIDesigner | null = null;
+  isLoading = false;
 
-  constructor(private fb: FormBuilder) {
-    this.searchForm = this.fb.group({
-      search: [''],
-      location: ['Dubai'],
-      style: ['Modern']
+  // Filters
+  selectedStyle = '';
+  selectedCity = 'Dubai';
+  minRate?: number;
+  maxRate?: number;
+  sort = 'rating_desc';
+
+  constructor(private designerService: DesignerService) {}
+
+  ngOnInit(): void {
+    this.loadDesigners();
+  }
+
+  /** 🔹 LOAD DESIGNERS */
+  loadDesigners(): void {
+    this.isLoading = true;
+
+    this.designerService.getAllDesigners({
+      city: this.selectedCity,
+      style: this.selectedStyle,
+      minRate: this.minRate,
+      maxRate: this.maxRate,
+      sort: this.sort
+    }).subscribe({
+      next: (res) => {
+        this.designers = res.map(d => this.mapDesigner(d));
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
     });
   }
 
-  goToProfile(designer: Designer) {
-    this.selectedDesigner = designer;
-   // window.scrollTo(0, 0); // Reset scroll to top of modal
+  /** 🔹 VIEW PROFILE */
+  goToProfile(designer: UIDesigner): void {
+    this.designerService.getDesignerById(designer.id).subscribe(d => {
+      this.selectedDesigner = this.mapDesigner(d);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
-  closeDetail() {
+  closeDetail(): void {
     this.selectedDesigner = null;
+  }
+
+  /** 🔹 MAP BACKEND → UI */
+  private mapDesigner(d: any): UIDesigner {
+    return {
+      id: d.id,
+      name: d.user?.name || 'Designer',
+      image: d.profileImage || 'https://via.placeholder.com/400',
+      rating: d.averageRating || 0,
+      reviews: d.reviewsCount || 0,
+      location: d.location,
+      about: d.bio,
+      services: d.services || [],
+      styles: d.specializations || [],
+      phone: d.user?.phone || '',
+      priceRange: `${d.currency} ${d.hourlyRate} / Hour`
+    };
+  }
+
+  /** 🔹 FILTER ACTION */
+  applyFilters(): void {
+    this.loadDesigners();
+  }
+
+  /** 🔹 CONTACT */
+  callDesigner(): void {
+    if (this.selectedDesigner?.phone) {
+      window.location.href = `tel:${this.selectedDesigner.phone}`;
+    }
+  }
+
+  chatWhatsApp(): void {
+    if (this.selectedDesigner?.phone) {
+      const phone = this.selectedDesigner.phone.replace(/\D/g, '');
+      window.open(`https://wa.me/${phone}`, '_blank');
+    }
+  }
+
+  /** 🔹 BOOK CONSULTATION */
+  bookConsultation(): void {
+    if (!this.selectedDesigner) return;
+
+    const payload = {
+      dateTime: new Date().toISOString(),
+      duration: 60,
+      bookingType: 'consultation',
+      userName: 'Guest User',
+      userPhone: '+971500000000',
+      meetingType: 'in-person'
+    };
+
+    this.designerService
+      .createBooking(this.selectedDesigner.id, payload)
+      .subscribe(() => {
+        alert('Consultation booked successfully!');
+      });
   }
 }
