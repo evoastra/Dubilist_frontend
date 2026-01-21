@@ -37,9 +37,13 @@ body {
  /* adjust if navbar taller/shorter */
 }
 
-@media (min-width: 992px) {
+@media (max-width: 1024px) {
+  .custom-cursor {
+    display: none !important;
+  }
+
   body {
-    /* padding-top: 80px; */
+    cursor: auto !important;
   }
 }
 
