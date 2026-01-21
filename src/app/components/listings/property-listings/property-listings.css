@@ -1315,6 +1315,143 @@
   gap: 8px;
 }
 
+/* ================= SEARCH ================= */
+.search-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.search-container i {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 14px 12px 40px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+/* ================= LISTINGS ================= */
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.listing-card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.listing-card:hover {
+  transform: translateY(-4px);
+}
+
+.card-image {
+  position: relative;
+  height: 180px;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* FAVORITE */
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #fff;
+  border-radius: 50%;
+  padding: 6px 8px;
+  border: none;
+}
+
+.favorite-btn i {
+  color: #ff7a00;
+  font-size: 18px;
+}
+
+/* CARD CONTENT */
+.card-content {
+  padding: 14px;
+}
+
+.listing-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.listing-price {
+  color: #ff7a00;
+  font-weight: 700;
+}
+
+.listing-location {
+  font-size: 13px;
+  color: #777;
+}
+
+/* ================= SKELETON ================= */
+.skeleton {
+  pointer-events: none;
+}
+
+.skeleton-image {
+  height: 180px;
+  background: #eee;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-text {
+  height: 14px;
+  background: #eee;
+  margin: 10px;
+  border-radius: 6px;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-text.short {
+  width: 60%;
+}
+
+.skeleton-text.small {
+  width: 40%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -300px 0;
+  }
+  100% {
+    background-position: 300px 0;
+  }
+}
+
+/* ================= EMPTY ================= */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.empty-state i {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+
 .sort-btn-small {
   padding: 6px 10px;
   border: none;

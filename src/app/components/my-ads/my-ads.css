@@ -1,0 +1,54 @@
+.my-ads-page {
+  margin-top: 60px;
+  padding: 30px;
+  
+}
+
+.tabs {
+  display: flex;
+  gap: 20px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  padding-bottom: 6px;
+}
+
+.tab.active {
+  border-bottom: 2px solid #ffa500;
+  color: #ffa500;
+}
+
+.ad-card {
+  display: flex;
+  gap: 16px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  margin-bottom: 15px;
+
+}
+
+.ad-image {
+  width: 180px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.ad-info {
+  flex: 1;
+}
+
+.price {
+  color: #ffa500;
+  font-weight: bold;
+}
+
+.meta {
+  font-size: 13px;
+  color: #777;
+}

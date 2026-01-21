@@ -1,12 +1,12 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../environments/environment';
 
 /* =======================
-    INTERFACES (RESTORING ALL)
+   INTERFACES
    ======================= */
 
 export interface User {
@@ -42,20 +42,20 @@ export interface RegisterRequest {
   password: string;
 }
 
-export type ApiResponse<T> = 
-  | { success: true; data: T; message?: string } 
+export type ApiResponse<T> =
+  | { success: true; data: T; message?: string }
   | { success: false; error: { message: string } };
 
 /* =======================
-    AUTH SERVICE
+   AUTH SERVICE
    ======================= */
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiUrl = environment.apiUrl;
+  private readonly apiUrl = `${environment.apiUrl}/api`;
 
   private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
+  currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -63,41 +63,45 @@ export class AuthService {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     if (isPlatformBrowser(this.platformId)) {
-      this.initializeAuth();
+      this.restoreSession();
     }
   }
 
-  private initializeAuth(): void {
+  /* =======================
+     SESSION RESTORE
+     ======================= */
+
+  private restoreSession(): void {
     const token = this.getAccessToken();
     const savedUser = localStorage.getItem('user_data');
 
-    // Restore user state instantly from localStorage
     if (token && savedUser) {
       try {
         this.currentUserSubject.next(JSON.parse(savedUser));
-      } catch (e) {
+        this.validateSession();
+      } catch {
         this.logoutLocal();
       }
     }
-
-    // Background check to verify if token is still valid
-    if (token) {
-      this.getMe().subscribe({
-        error: () => this.logoutLocal()
-      });
-    }
   }
 
-  /* AUTH ACTIONS */
+  private validateSession(): void {
+    this.getMe().subscribe({
+      error: () => this.logoutLocal()
+    });
+  }
+
+  /* =======================
+     AUTH ACTIONS
+     ======================= */
 
   login(payload: LoginRequest): Observable<ApiResponse<AuthData>> {
     return this.http
       .post<ApiResponse<AuthData>>(`${this.apiUrl}/auth/login`, payload)
       .pipe(
-        tap((res) => {
+        tap(res => {
           if (res.success) {
-            this.setTokens(res.data.tokens);
-            this.saveUserLocally(res.data.user);
+            this.persistAuth(res.data);
           }
         })
       );
@@ -107,10 +111,9 @@ export class AuthService {
     return this.http
       .post<ApiResponse<AuthData>>(`${this.apiUrl}/auth/register`, payload)
       .pipe(
-        tap((res) => {
+        tap(res => {
           if (res.success) {
-            this.setTokens(res.data.tokens);
-            this.saveUserLocally(res.data.user);
+            this.persistAuth(res.data);
           }
         })
       );
@@ -118,30 +121,30 @@ export class AuthService {
 
   getMe(): Observable<ApiResponse<User>> {
     return this.http
-      .get<ApiResponse<User>>(`${this.apiUrl}/auth/me`, {
-        headers: this.getAuthHeaders()
-      })
+      .get<ApiResponse<User>>(`${this.apiUrl}/auth/me`)
       .pipe(
-        tap((res) => {
+        tap(res => {
           if (res.success) {
-            this.saveUserLocally(res.data);
+            this.saveUser(res.data);
           }
         }),
-        catchError((error) => {
-          if (error.status === 401) this.logoutLocal();
-          return throwError(() => error);
+        catchError(err => {
+          if (err.status === 401) this.logoutLocal();
+          return throwError(() => err);
         })
       );
   }
 
-  /* LOGOUT LOGIC */
+  /* =======================
+     LOGOUT
+     ======================= */
 
   logout(): void {
     this.logoutLocal();
-    this.router.navigate(['/login']);
+    this.router.navigate(['auth/login']);
   }
 
-  logoutLocal(): void {
+  private logoutLocal(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
@@ -150,23 +153,30 @@ export class AuthService {
     this.currentUserSubject.next(null);
   }
 
-  /* PERSISTENCE HELPERS */
+  /* =======================
+     STORAGE HELPERS
+     ======================= */
 
-  private saveUserLocally(user: User): void {
+  private persistAuth(data: AuthData): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    localStorage.setItem('accessToken', data.tokens.accessToken);
+    localStorage.setItem('refreshToken', data.tokens.refreshToken);
+    localStorage.setItem('user_data', JSON.stringify(data.user));
+
+    this.currentUserSubject.next(data.user);
+  }
+
+  private saveUser(user: User): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('user_data', JSON.stringify(user));
     }
     this.currentUserSubject.next(user);
   }
 
-  private setTokens(tokens: Tokens): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('accessToken', tokens.accessToken);
-      localStorage.setItem('refreshToken', tokens.refreshToken);
-    }
-  }
-
-  /* GETTERS */
+  /* =======================
+     GETTERS (USED BY GUARD)
+     ======================= */
 
   getAccessToken(): string | null {
     if (!isPlatformBrowser(this.platformId)) return null;
@@ -179,13 +189,5 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!this.getAccessToken();
-  }
-
-  private getAuthHeaders(): HttpHeaders {
-    const token = this.getAccessToken();
-    return new HttpHeaders({
-      Authorization: token ? `Bearer ${token}` : '',
-      'Content-Type': 'application/json'
-    });
   }
 }

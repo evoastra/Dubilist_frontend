@@ -2,11 +2,11 @@
 import { Injectable } from '@angular/core';
 
 export interface DraftListingData {
-  categoryId: number;
+  categoryId: number; // This is the specific sub-category ID (or main if no sub)
   selectedMainCategoryId: number | null;
   selectedSubCategoryId: number | null;
 
-  model: any;
+  model: any; // The raw form data from AddPostComponent
 
   // Images (non-job categories)
   files?: File[];
@@ -26,12 +26,13 @@ export class DraftListingService {
       categoryId: data.categoryId,
       selectedMainCategoryId: data.selectedMainCategoryId,
       selectedSubCategoryId: data.selectedSubCategoryId,
-
-      // deep-ish copy for safety
+      
+      // Create a copy of the model to avoid reference issues
       model: { ...data.model },
-
+      
+      // Store raw files
       files: data.files ? [...data.files] : [],
-
+      
       logoFile: data.logoFile ?? null,
       logoPreview: data.logoPreview ?? null
     };

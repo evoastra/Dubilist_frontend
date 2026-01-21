@@ -1,40 +1,269 @@
-<!-- Detail View (Shows when a listing is selected) -->
+<div class="mt-5">
+
+  <!-- ================= LISTINGS PAGE ================= -->
+  <div class="listings-page" [class.hidden]="selectedListing">
+
+    <!-- ================= DESKTOP FILTERS ================= -->
+    <aside class="filters-sidebar d-none d-md-block">
+      <div class="filters-container">
+        <h2 class="filters-title">Filters</h2>
+
+        <!-- Property Type -->
+        <section class="filter-section">
+          <h3 class="section-label">Property Type</h3>
+          <div class="property-type-grid">
+            <button
+              *ngFor="let type of propertyTypes"
+              class="property-type-btn"
+              [class.active]="selectedPropertyTypes.includes(type)"
+              (click)="togglePropertyType(type)">
+              {{ type }}
+            </button>
+          </div>
+        </section>
+
+        <!-- Furnishing -->
+        <section class="filter-section">
+          <h3 class="section-label">Furnishing</h3>
+          <div class="condition-buttons">
+            <button
+              *ngFor="let option of furnishingOptions"
+              class="condition-btn"
+              [class.active]="selectedFurnishing === option.toLowerCase()"
+              (click)="selectFurnishing(option)">
+              {{ option }}
+            </button>
+          </div>
+        </section>
+
+        <!-- Amenities -->
+        <section class="filter-section">
+          <h3 class="section-label">Amenities</h3>
+          <div class="amenities-list">
+            <label
+              *ngFor="let amenity of amenitiesOptions"
+              class="amenity-checkbox">
+              <input
+                type="checkbox"
+                [checked]="selectedAmenities.includes(amenity)"
+                (change)="toggleAmenity(amenity)">
+              <span>{{ amenity }}</span>
+            </label>
+          </div>
+        </section>
+
+        <button class="apply-filters-btn" (click)="applyFilters()">
+          Apply Filters
+        </button>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="listings-main">
+
+      <!-- HEADER -->
+      <div class="listings-header d-flex justify-content-between align-items-center">
+        <h1 class="page-title">Properties</h1>
+
+        <!-- MOBILE FILTER BUTTON -->
+        <button
+          class="btn btn-outline-secondary d-md-none"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#mobileFilters">
+          <i class="bi bi-funnel"></i>
+        </button>
+      </div>
+
+      <!-- SEARCH -->
+      <div class="search-container">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+          placeholder="Search properties..."
+          class="search-input">
+      </div>
+
+      <!-- ================= SKELETON LOADER ================= -->
+      <div class="listings-grid" *ngIf="isLoading">
+        <div
+          class="listing-card skeleton"
+          *ngFor="let s of skeletonArray">
+          <div class="skeleton-image"></div>
+          <div class="skeleton-text"></div>
+          <div class="skeleton-text short"></div>
+        </div>
+      </div>
+
+      <!-- ================= LISTINGS GRID ================= -->
+      <div
+        class="listings-grid"
+        *ngIf="!isLoading"
+        (window:scroll)="onScroll()">
+
+        <div
+          *ngFor="let listing of visibleListings"
+          class="listing-card"
+          (click)="viewListing(listing.id)">
+
+          <div class="card-image">
+            <img [src]="listing.image" [alt]="listing.title">
+
+            <!-- FAVORITE -->
+            <button
+              *ngIf="isLoggedIn"
+              class="favorite-btn"
+              (click)="toggleFavorite(listing, $event)">
+              <i
+                class="bi"
+                [ngClass]="listing.isFavorite ? 'bi-heart-fill' : 'bi-heart'">
+              </i>
+            </button>
+          </div>
+
+          <div class="card-content">
+            <h3 class="listing-title">{{ listing.title }}</h3>
+            <p class="listing-price">
+              {{ listing.currency }} {{ listing.price | number }}
+            </p>
+            <p class="listing-location">{{ listing.location }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= INFINITE LOADER ================= -->
+      <div class="infinite-loader" *ngIf="isFetchingMore">
+        <div class="spinner-border text-primary"></div>
+      </div>
+
+      <!-- ================= NO MORE ================= -->
+      <div
+        class="no-more-listings"
+        *ngIf="!isFetchingMore && allLoaded && visibleListings.length">
+        No more listings 🏠
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ================= MOBILE FILTERS ================= -->
+<div class="offcanvas offcanvas-start" id="mobileFilters">
+  <div class="offcanvas-header">
+    <h5>Filters</h5>
+    <button class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body">
+
+    <!-- Property Type -->
+    <section class="filter-section">
+      <h3 class="section-label">Property Type</h3>
+      <div class="property-type-grid">
+        <button
+          *ngFor="let type of propertyTypes"
+          class="property-type-btn"
+          [class.active]="selectedPropertyTypes.includes(type)"
+          (click)="togglePropertyType(type)">
+          {{ type }}
+        </button>
+      </div>
+    </section>
+
+    <!-- Furnishing -->
+    <section class="filter-section">
+      <h3 class="section-label">Furnishing</h3>
+      <div class="condition-buttons">
+        <button
+          *ngFor="let option of furnishingOptions"
+          class="condition-btn"
+          [class.active]="selectedFurnishing === option.toLowerCase()"
+          (click)="selectFurnishing(option)">
+          {{ option }}
+        </button>
+      </div>
+    </section>
+
+    <!-- Amenities -->
+    <section class="filter-section">
+      <h3 class="section-label">Amenities</h3>
+      <div class="amenities-list">
+        <label
+          *ngFor="let amenity of amenitiesOptions"
+          class="amenity-checkbox">
+          <input
+            type="checkbox"
+            [checked]="selectedAmenities.includes(amenity)"
+            (change)="toggleAmenity(amenity)">
+          <span>{{ amenity }}</span>
+        </label>
+      </div>
+    </section>
+
+    <button
+      class="apply-filters-btn w-100"
+      data-bs-dismiss="offcanvas"
+      (click)="applyFilters()">
+      Apply Filters
+    </button>
+  </div>
+</div>
+<!-- ===================== -->
+<!-- DETAIL OVERLAY -->
+<!-- ===================== -->
 <div class="detail-overlay" *ngIf="selectedListing" (click)="closeDetail()">
   <div class="detail-container" (click)="$event.stopPropagation()">
-    
-    <!-- Close Button -->
+
+    <!-- CLOSE -->
     <button class="close-btn" (click)="closeDetail()">
       <i class="bi bi-x-lg"></i>
     </button>
 
-    <!-- Breadcrumb -->
+    <!-- BREADCRUMB -->
     <div class="breadcrumb">
-      <span class="crumb" (click)="closeDetail()">Property</span>
+      <span class="crumb" (click)="closeDetail()">Properties</span>
       <span class="crumb-sep">/</span>
-      <span class="crumb current">{{ selectedListing.propertyType || 'Property' }}</span>
+      <span class="crumb current">
+        {{ selectedListing.propertyType || 'Property' }}
+      </span>
     </div>
 
     <div class="detail-content">
-      
-      <!-- LEFT: Scrollable Section -->
+
+      <!-- LEFT -->
       <div class="detail-left">
-        
-        <!-- Image Carousel -->
+
+        <!-- IMAGE CAROUSEL -->
         <div class="image-carousel">
-          <button class="carousel-btn prev" (click)="previousImage()" *ngIf="selectedListing.images && selectedListing.images.length > 1">
+          <button
+            class="carousel-btn prev"
+           *ngIf="selectedListing.images && selectedListing.images.length > 1"
+
+            (click)="previousImage()">
             <i class="bi bi-chevron-left"></i>
           </button>
-          
+
           <div class="main-image">
-            <img [src]="(selectedListing.images && selectedListing.images.length > 0) ? selectedListing.images[currentImageIndex] : selectedListing.image" [alt]="selectedListing.title" />
+            <img
+              [src]="selectedListing.images?.length
+                ? selectedListing.images[currentImageIndex]
+                : selectedListing.image"
+              [alt]="selectedListing.title" />
           </div>
-          
-          <button class="carousel-btn next" (click)="nextImage()" *ngIf="selectedListing.images && selectedListing.images.length > 1">
+
+          <button
+            class="carousel-btn next"
+           *ngIf="selectedListing.images && selectedListing.images.length > 1"
+
+            (click)="nextImage()">
             <i class="bi bi-chevron-right"></i>
           </button>
 
-          <!-- Image indicators -->
-          <div class="image-indicators" *ngIf="selectedListing.images && selectedListing.images.length > 1">
+          <!-- DOTS -->
+          <div
+            class="image-indicators"
+            *ngIf="selectedListing.images && selectedListing.images.length > 1">
             <span
               *ngFor="let img of selectedListing.images; let i = index"
               class="indicator"
@@ -44,364 +273,101 @@
           </div>
         </div>
 
-        <!-- Title & Description -->
+        <!-- TITLE + DESC -->
         <div class="detail-section">
           <h1 class="listing-title">{{ selectedListing.title }}</h1>
-          <p class="listing-description">{{ selectedListing.description }}</p>
+          <p class="listing-description">
+            {{ selectedListing.description }}
+          </p>
         </div>
 
-        <!-- Specifications -->
+        <!-- SPECIFICATIONS -->
         <div class="detail-section specifications">
           <h2 class="section-title">Specifications</h2>
           <div class="specs-grid">
-            <div class="spec-item" *ngIf="selectedListing.bedrooms !== undefined">
-              <div class="spec-value">{{ selectedListing.bedrooms }}</div>
-              <div class="spec-label">Bedrooms</div>
-            </div>
 
-            <div class="spec-item" *ngIf="selectedListing.bathrooms">
-              <div class="spec-value">{{ selectedListing.bathrooms }}</div>
-              <div class="spec-label">Bathrooms</div>
-            </div>
-
-            <div class="spec-item" *ngIf="selectedListing.area">
-              <div class="spec-value">{{ selectedListing.area }} sq ft</div>
-              <div class="spec-label">Area</div>
+            <div class="spec-item" *ngIf="selectedListing.propertyType">
+              <div class="spec-value">{{ selectedListing.propertyType }}</div>
+              <div class="spec-label">Type</div>
             </div>
 
             <div class="spec-item" *ngIf="selectedListing.furnishing">
               <div class="spec-value">{{ selectedListing.furnishing }}</div>
               <div class="spec-label">Furnishing</div>
             </div>
+
           </div>
         </div>
 
-        <!-- Amenities -->
-        <div class="detail-section amenities" *ngIf="selectedListing.amenities && selectedListing.amenities.length > 0">
+        <!-- AMENITIES -->
+        <div
+          class="detail-section amenities"
+          *ngIf="selectedListing.amenities?.length">
           <h2 class="section-title">Amenities</h2>
+
           <div class="amenities-grid">
-            <div class="amenity-item" *ngFor="let amenity of selectedListing.amenities">
-              <div class="amenity-icon">
-                <i class="bi bi-water" *ngIf="amenity === 'Swimming Pool'"></i>
-                <i class="bi bi-dumbbell" *ngIf="amenity === 'Gym'"></i>
-                <i class="bi bi-car-front-fill" *ngIf="amenity === 'Parking'"></i>
-                <i class="bi bi-shield-check" *ngIf="amenity === 'Security'"></i>
-                <i class="bi bi-brightness-high" *ngIf="amenity === 'Balcony'"></i>
-                <i class="bi bi-tree" *ngIf="amenity === 'Garden'"></i>
-              </div>
-              <span class="amenity-label">{{ amenity }}</span>
+            <div
+              class="amenity-item"
+              *ngFor="let amenity of selectedListing.amenities">
+              <i class="bi bi-check-circle"></i>
+              <span>{{ amenity }}</span>
             </div>
           </div>
         </div>
+
       </div>
 
-      <!-- RIGHT: Fixed/Sticky Section -->
+      <!-- RIGHT -->
       <div class="detail-right">
-        
-        <!-- Price Card -->
+
+        <!-- PRICE -->
         <div class="price-card">
           <h3 class="price-label">Price</h3>
-          <p class="price-value">{{ selectedListing.currency }} {{ selectedListing.price | number }}</p>
-          <span class="price-type">{{ selectedListing.type }}</span>
+          <p class="price-value">
+            {{ selectedListing.currency }}
+            {{ selectedListing.price | number }}
+          </p>
         </div>
 
-        <!-- Location Card -->
+        <!-- LOCATION -->
         <div class="info-card">
           <h3 class="card-title">Location</h3>
           <p class="location-text">{{ selectedListing.location }}</p>
         </div>
 
-        <!-- Seller Information -->
+        <!-- SELLER -->
         <div class="seller-card">
           <h3 class="card-title">Seller Information</h3>
-          
+
           <div class="seller-profile">
-            <img [src]="selectedListing.sellerImage" [alt]="selectedListing.sellerName" class="seller-avatar" />
+            <img
+              [src]="selectedListing.sellerImage || 'assets/avatar.png'"
+              class="seller-avatar" />
+
             <div class="seller-info">
               <h4 class="seller-name">{{ selectedListing.sellerName }}</h4>
               <p class="seller-contact">{{ selectedListing.sellerPhone }}</p>
             </div>
           </div>
 
-          <!-- Contact Buttons -->
           <button class="contact-btn call-btn" (click)="callSeller()">
-            <i class="bi bi-telephone"></i>
-            Call Now
+            <i class="bi bi-telephone"></i> Call Now
           </button>
 
           <button class="contact-btn whatsapp-btn" (click)="chatWhatsApp()">
-            <i class="bi bi-whatsapp"></i>
-            Chat on WhatsApp
+            <i class="bi bi-whatsapp"></i> WhatsApp
+          </button>
+
+          <!-- WEBSITE CHAT -->
+          <button
+            class="contact-btn chat-btn"
+            *ngIf="isLoggedIn"
+            (click)="startChatWithSeller(selectedListing)">
+            <i class="bi bi-chat-dots"></i> Chat on Dubilist
           </button>
         </div>
 
-        <!-- Actions -->
-        <button class="action-btn favorite-btn" (click)="toggleFavorite()" [class.favorited]="isFavorite">
-          <i class="bi" [class.bi-heart]="!isFavorite" [class.bi-heart-fill]="isFavorite"></i>
-          {{ isFavorite ? 'Added to Favourites' : 'Add to Favourites' }}
-        </button>
-
-        <button class="action-btn report-btn" (click)="reportAd()">
-          <i class="bi bi-flag"></i>
-          Report this Ad
-        </button>
       </div>
-
     </div>
   </div>
-</div>
-
-
-<div class="mt-5">
-<!-- Listings View (Main Page) -->
-<div class="listings-page" [class.hidden]="selectedListing">
-  
-  <!-- Left Sidebar: Filters -->
-  <aside class="filters-sidebar">
-    <div class="filters-container">
-      <h2 class="filters-title">Filters</h2>
-
-      <!-- Sort By -->
-      <section class="filter-section">
-        <h3 class="section-label">Sort by</h3>
-        <div class="sort-buttons">
-          <button
-            class="sort-btn"
-            [class.active]="selectedSortBy === 'popular'"
-            (click)="selectSortBy('popular')">
-            Most Popular
-          </button>
-          <button
-            class="sort-btn"
-            [class.active]="selectedSortBy === 'newest'"
-            (click)="selectSortBy('newest')">
-            Newest Listings
-          </button>
-        </div>
-        <div class="sort-buttons-row">
-          <button
-            class="sort-btn-small"
-            [class.active]="selectedSortBy === 'price-low'"
-            (click)="selectSortBy('price-low')">
-            Price: Low-High
-          </button>
-          <button
-            class="sort-btn-small"
-            [class.active]="selectedSortBy === 'price-high'"
-            (click)="selectSortBy('price-high')">
-            Price: High-Low
-          </button>
-        </div>
-      </section>
-
-      <!-- Property Type -->
-      <section class="filter-section">
-        <h3 class="section-label">Property Type</h3>
-        <div class="property-type-grid">
-          <button
-            *ngFor="let type of propertyTypes"
-            class="property-type-btn"
-            [class.active]="isPropertyTypeSelected(type)"
-            (click)="togglePropertyType(type)">
-            {{ type }}
-          </button>
-        </div>
-      </section>
-
-      <!-- Location -->
-      <section class="filter-section">
-        <h3 class="section-label">Location</h3>
-        <div class="location-select">
-          <i class="bi bi-geo-alt"></i>
-          <select [(ngModel)]="selectedLocation" class="location-dropdown">
-            <option *ngFor="let loc of locations" [value]="loc">{{ loc }}</option>
-          </select>
-          <i class="bi bi-chevron-down"></i>
-        </div>
-      </section>
-
-      <!-- Price Range -->
-      <section class="filter-section">
-        <h3 class="section-label">Price Range (AED)</h3>
-        <div class="price-inputs">
-          <input
-            type="number"
-            placeholder="Min"
-            [(ngModel)]="minPrice"
-            class="price-input"
-          />
-          <input
-            type="number"
-            placeholder="Max"
-            [(ngModel)]="maxPrice"
-            class="price-input"
-          />
-        </div>
-        <div class="dotted-divider"></div>
-      </section>
-
-      <!-- Bedrooms -->
-      <section class="filter-section">
-        <h3 class="section-label">Bedrooms</h3>
-        <div class="counter-controls">
-          <button class="counter-btn" (click)="decrementBedrooms()">−</button>
-          <span class="counter-value">{{ bedrooms }}</span>
-          <button class="counter-btn" (click)="incrementBedrooms()">+</button>
-        </div>
-      </section>
-
-      <!-- Bathrooms -->
-      <section class="filter-section">
-        <h3 class="section-label">Bathrooms</h3>
-        <div class="counter-controls">
-          <button class="counter-btn" (click)="decrementBathrooms()">−</button>
-          <span class="counter-value">{{ bathrooms }}</span>
-          <button class="counter-btn" (click)="incrementBathrooms()">+</button>
-        </div>
-      </section>
-
-      <!-- Area -->
-      <section class="filter-section">
-        <h3 class="section-label">Area (sqft)</h3>
-        <div class="price-inputs">
-          <input
-            type="number"
-            placeholder="Min"
-            [(ngModel)]="minArea"
-            class="price-input"
-          />
-          <input
-            type="number"
-            placeholder="Max"
-            [(ngModel)]="maxArea"
-            class="price-input"
-          />
-        </div>
-      </section>
-
-      <!-- Furnishing -->
-      <section class="filter-section">
-        <h3 class="section-label">Furnishing</h3>
-        <div class="furnishing-buttons">
-          <button
-            *ngFor="let option of furnishingOptions"
-            class="furnishing-btn"
-            [class.active]="selectedFurnishing === option.toLowerCase()"
-            (click)="selectFurnishing(option)">
-            {{ option }}
-          </button>
-        </div>
-      </section>
-
-      <!-- Amenities -->
-      <section class="filter-section">
-        <h3 class="section-label">Amenities</h3>
-        <div class="amenities-list">
-          <label *ngFor="let amenity of amenitiesOptions" class="amenity-checkbox">
-            <input
-              type="checkbox"
-              [checked]="isAmenitySelected(amenity)"
-              (change)="toggleAmenity(amenity)"
-            />
-            <span>{{ amenity }}</span>
-          </label>
-        </div>
-      </section>
-
-      <!-- Apply Button -->
-      <button class="apply-filters-btn" (click)="applyFilters()">
-        <i class="bi bi-funnel"></i>
-        Apply Filters
-      </button>
-    </div>
-  </aside>
-
-  <!-- Main Content -->
-  <main class="listings-main">
-    
-    <!-- Header -->
-    <div class="listings-header">
-      <h1 class="page-title">Properties</h1>
-      
-      <!-- Search Bar -->
-      <div class="search-container">
-        <i class="bi bi-search search-icon"></i>
-        <input
-          type="text"
-          placeholder="Search properties, locations, amenities..."
-          [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()"
-          class="search-input"
-        />
-      </div>
-    </div>
-
-    <!-- Results Header -->
-   
-    <!-- Loading State -->
-    <div class="loading-state" *ngIf="isLoading">
-      <div class="spinner"></div>
-      <p>Loading properties...</p>
-    </div>
-
-    <!-- Listings Grid -->
-    <div class="listings-grid" *ngIf="!isLoading && filteredListings.length > 0">
-      <div
-        *ngFor="let listing of filteredListings"
-        class="listing-card"
-        (click)="viewListing(listing.id)">
-        
-        <div class="card-image">
-          <img [src]="listing.image" [alt]="listing.title" />
-          <span class="listing-type-badge">{{ listing.type }}</span>
-        </div>
-
-        <div class="card-content">
-          <h3 class="listing-title">{{ listing.title }}</h3>
-          
-          <div class="listing-price">
-            <span class="price-label">{{ listing.type }}</span>
-            <span class="price-value">{{ listing.currency }} {{ listing.price | number }}</span>
-          </div>
-
-          <p class="listing-location">{{ listing.location }}</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="!isLoading && filteredListings.length === 0">
-      <i class="bi bi-house-x"></i>
-      <h3>No properties found</h3>
-      <p>Try adjusting your filters or search criteria</p>
-    </div>
-
-    <!-- Pagination -->
-    <div class="pagination" *ngIf="!isLoading && filteredListings.length > 0">
-      <button
-        class="page-arrow"
-        (click)="previousPage()"
-        [disabled]="currentPage === 1">
-        <i class="bi bi-chevron-left"></i>
-      </button>
-
-      <button
-        *ngFor="let page of [1, 2, 3, 4, 5]"
-        class="page-number"
-        [class.active]="page === currentPage"
-        (click)="onPageChange(page)">
-        {{ page }}
-      </button>
-
-      <button
-        class="page-arrow"
-        (click)="nextPage()"
-        [disabled]="currentPage === totalPages">
-        <i class="bi bi-chevron-right"></i>
-      </button>
-    </div>
-
-  </main>
-
-</div>
 </div>

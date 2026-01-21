@@ -1,14 +1,12 @@
-<!-- src/app/components/add-post/add-post.component.html -->
 <div class="m-3 pt-0 mt-5">
   <div class="add-post-wrapper">
     <h3 class="text-center fw-bold form-title" style="color: #ffa500;">Post Your Ad</h3>
 
     <form #f="ngForm" (ngSubmit)="submit(f)" class="add-post-card mx-5" novalidate>
       <div class="row">
-        <!-- LEFT SIDE: category + category-specific fields -->
         <div class="col-md-6">
 
-          <!-- Main Category -->
+          <!-- MAIN CATEGORY -->
           <div class="form-group mb-3">
             <label class="form-label">Category</label>
             <select class="form-select"
@@ -23,12 +21,12 @@
             </select>
           </div>
 
-          <!-- Sub Category (for categories that have it) -->
+          <!-- SUB CATEGORY -->
           <div class="form-group mb-3" *ngIf="selectedMainCategoryId && filteredSubCategories.length">
             <label class="form-label">Sub Category</label>
             <select class="form-select"
-                    [ngModel]="selectedSubCategoryId"
-                    (ngModelChange)="onSubCategoryChange($event)"
+                    [(ngModel)]="selectedSubCategoryId"
+                      (ngModelChange)="onSubCategoryChange($event)"
                     name="subCategory">
               <option [ngValue]="null" disabled>Select sub category</option>
               <option *ngFor="let sc of filteredSubCategories" [ngValue]="sc.id">
@@ -37,9 +35,9 @@
             </select>
           </div>
 
-          <!-- COMMON: Title -->
+          <!-- TITLE -->
           <div class="form-group mb-3">
-            <label class="form-label">Add Details</label>
+            <label class="form-label">Ad Title</label>
             <input class="form-control"
                    placeholder="Title"
                    (focus)="onFieldAttemptFocus($event)"
@@ -48,205 +46,276 @@
                    required />
           </div>
 
-          <!-- MOTORS SECTION (id = 1) -->
+          <!-- ------------------------ MOTORS ------------------------- -->
           <ng-container *ngIf="selectedMainCategoryId === 1">
-            <label class="form-label small mb-2">Motor Details</label>
+            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">Vehicle Details</label>
 
-            <div class="mb-2">
-              <label class="form-label">Make &amp; Model</label>
-              <input class="form-control"
-                     placeholder="Make & Model"
-                     [(ngModel)]="model.makeModel"
-                     name="makeModel" />
+            <div class="row">
+              <div class="col-6 mb-2">
+                <label class="form-label">Make</label>
+                <input class="form-control" [(ngModel)]="model.make" name="make" placeholder="Tesla" />
+              </div>
+              <div class="col-6 mb-2">
+                <label class="form-label">Model</label>
+                <input class="form-control" [(ngModel)]="model.model" name="model" placeholder="GLX">
+
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-6 mb-2">
+                <label class="form-label">Variant / Trim</label>
+                <input class="form-control" [(ngModel)]="model.variant" name="variant" placeholder="GLX, Sport" />
+              </div>
+              <div class="col-6 mb-2">
+                <label class="form-label">Color</label>
+                <input class="form-control" [(ngModel)]="model.color" name="color" placeholder="White" />
+              </div>
             </div>
 
             <div class="row">
               <div class="col-6 mb-2">
                 <label class="form-label">Year</label>
-                <input class="form-control"
-                       placeholder="Year"
-                       [(ngModel)]="model.year"
-                       name="year" />
+                <input type="number" class="form-control" [(ngModel)]="model.year" name="year" placeholder="2022" />
               </div>
               <div class="col-6 mb-2">
                 <label class="form-label">Kilometres</label>
-                <input class="form-control"
-                       placeholder="Kilometres"
-                       [(ngModel)]="model.kilometres"
-                       name="kilometres" />
+                <input type="number" class="form-control" [(ngModel)]="model.kilometres" name="kilometres" placeholder="35000" />
               </div>
             </div>
 
             <div class="mb-2">
-              <label class="form-label">Hours Used</label>
-              <input class="form-control"
-                     placeholder="Hours Used"
-                     [(ngModel)]="model.hoursUsed"
-                     name="hoursUsed" />
+              <label class="form-label">Body Type</label>
+              <select class="form-select" [(ngModel)]="model.bodyType" name="bodyType">
+                <option value="Sedan">Sedan</option>
+                <option value="SUV">SUV</option>
+                <option value="Coupe">Coupe</option>
+                <option value="Truck">Truck</option>
+                <option value="Van">Van</option>
+              </select>
             </div>
 
-            <div class="mb-3">
-              <label class="form-label">Payload Capacity</label>
-              <input class="form-control"
-                     placeholder="Payload Capacity"
-                     [(ngModel)]="model.payloadCapacity"
-                     name="payloadCapacity" />
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="model.serviceHistory" name="serviceHistory">
+              <label class="form-check-label">Full Service History Available</label>
             </div>
+          
+            <div class="mb-2">
+  <label class="form-label">Condition</label>
+  <select class="form-select"
+          [(ngModel)]="model.condition"
+          name="condition"
+          required>
+    <option [ngValue]="null" disabled>Select condition</option>
+    <option value="New">New</option>
+    <option value="Used">Used</option>
+  </select>
+</div>
 
-            <!-- Fuel type buttons -->
-            <div class="mb-3 form-group price-box ">
+             
+            <!-- FUEL TYPE -->
+            <div class="mb-3 price-box">
               <label class="form-label d-block">Fuel Type</label>
-              <div class="btn-group">
-                <button type="button"
-                        class="btn btn-outline-light"
+              <div class="btn-group w-100">
+                <button type="button" class="btn btn-outline-light"
                         [class.active]="model.fuelType === 'Petrol'"
-                        (click)="model.fuelType = 'Petrol'">
-                  Petrol
-                </button>
-                <button type="button"
-                        class="btn btn-outline-light"
+                        (click)="model.fuelType = 'Petrol'">Petrol</button>
+
+                <button type="button" class="btn btn-outline-light"
                         [class.active]="model.fuelType === 'Diesel'"
-                        (click)="model.fuelType = 'Diesel'">
-                  Diesel
-                </button>
-                <button type="button"
-                        class="btn btn-outline-light"
+                        (click)="model.fuelType = 'Diesel'">Diesel</button>
+
+                <button type="button" class="btn btn-outline-light"
                         [class.active]="model.fuelType === 'Electric'"
-                        (click)="model.fuelType = 'Electric'">
-                  Electric
-                </button>
+                        (click)="model.fuelType = 'Electric'">Electric</button>
+
+                <button type="button" class="btn btn-outline-light"
+                        [class.active]="model.fuelType === 'Hybrid'"
+                        (click)="model.fuelType = 'Hybrid'">Hybrid</button>
               </div>
             </div>
           </ng-container>
 
-          <!-- ELECTRONICS SECTION (id = 2) -->
+
+          <!-- ------------------------ JOBS ------------------------- -->
           <ng-container *ngIf="selectedMainCategoryId === 2">
-            <label class="form-label small mb-2">Electronics Details</label>
+            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">Job Details</label>
 
-            <div class="row">
-              <div class="col-md-6 mb-2 form-group">
-                <label class="form-label">Brand</label>
-                <input class="form-control"
-                       placeholder="Brand"
-                       [(ngModel)]="model.brand"
-                       name="electronicsBrand">
-              </div>
-              <div class="col-md-6 mb-2 form-group">
-                <label class="form-label">Model</label>
-                <input class="form-control"
-                       placeholder="Model"
-                       [(ngModel)]="model.electronicsModel"
-                       name="electronicsModel">
-              </div>
+            <div class="mb-2">
+              <label class="form-label">Job Title</label>
+              <input class="form-control" [(ngModel)]="model.jobTitle" name="jobTitle" placeholder="Sales Manager">
             </div>
 
-            <div class="mb-2 form-group price-box">
-              <label class="form-label">Condition</label>
-              <div class="btn-group">
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.electronicsCondition === 'New'"
-                        (click)="model.electronicsCondition = 'New'">New</button>
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.electronicsCondition === 'Like New'"
-                        (click)="model.electronicsCondition = 'Like New'">Like New</button>
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.electronicsCondition === 'Used'"
-                        (click)="model.electronicsCondition = 'Used'">Used</button>
+            <div class="row">
+              <div class="col-6 mb-2">
+                <label class="form-label">Company Name</label>
+                <input class="form-control" [(ngModel)]="model.companyName" name="companyName">
+              </div>
+              <div class="col-6 mb-2">
+                <label class="form-label">Industry</label>
+                <input class="form-control" [(ngModel)]="model.industry" name="industry">
               </div>
             </div>
 
             <div class="row">
-              <div class="col-md-6 mb-2 form-group">
-                <label class="form-label">Storage</label>
-                <input class="form-control"
-                       placeholder="Storage (e.g. 128GB)"
-                       [(ngModel)]="model.storage"
-                       name="storage">
+              <div class="col-6 mb-2">
+                <label class="form-label">Job Type</label>
+                <select class="form-select" [(ngModel)]="model.jobType" name="jobType">
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Internship">Internship</option>
+                </select>
               </div>
-              <div class="col-md-6 mb-2 form-group">
-                <label class="form-label">Colour</label>
-                <input class="form-control"
-                       placeholder="Colour"
-                       [(ngModel)]="model.colour"
-                       name="colour">
+              <div class="col-6 mb-2">
+                <label class="form-label">Workplace</label>
+                <select class="form-select" [(ngModel)]="model.workplaceType" name="workplaceType">
+                  <option value="On-site">On-site</option>
+                  <option value="Remote">Remote</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
               </div>
             </div>
 
-            <div class="mb-3 form-group price-box">
-              <label class="form-label">Type</label>
-              <input class="form-control"
-                     placeholder="Type (e.g. Side by Side / Front Load)"
-                     [(ngModel)]="model.electronicsType"
-                     name="electronicsType">
+            <label class="form-label">Experience (Years)</label>
+            <div class="row">
+              <div class="col-6">
+                <input class="form-control" type="number"
+                       [(ngModel)]="model.experienceMin" name="experienceMin"
+                       placeholder="Min (e.g. 2)">
+              </div>
+              <div class="col-6">
+                <input class="form-control" type="number"
+                       [(ngModel)]="model.experienceMax" name="experienceMax"
+                       placeholder="Max (e.g. 5)">
+              </div>
             </div>
 
-            <div class="mb-3 form-group price-box">
-              <label class="form-label">Dimensions</label>
-              <input class="form-control"
-                     placeholder="Dimensions, e.g. 6 inch / 5 feet"
-                     [(ngModel)]="model.dimensions"
-                     name="electronicsDimensions">
+            <label class="form-label">Salary Range</label>
+            <div class="row">
+              <div class="col-4">
+                <input class="form-control" type="number"
+                       [(ngModel)]="model.salaryMin" name="salaryMin"
+                       placeholder="Min">
+              </div>
+              <div class="col-4">
+                <input class="form-control" type="number"
+                       [(ngModel)]="model.salaryMax" name="salaryMax"
+                       placeholder="Max">
+              </div>
+              <div class="col-4">
+                <select class="form-select" [(ngModel)]="model.salaryPeriod" name="salaryPeriod">
+                  <option value="Monthly">Monthly</option>
+                  <option value="Yearly">Yearly</option>
+                </select>
+              </div>
             </div>
+
+            <div class="mb-2">
+              <label class="form-label">Application Email</label>
+              <input type="email" class="form-control"
+                     [(ngModel)]="model.applicationEmail" name="applicationEmail">
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Responsibilities</label>
+              <textarea class="form-control" rows="3"
+                        [(ngModel)]="model.responsibilities" name="responsibilities"></textarea>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Skills / Requirements</label>
+              <textarea class="form-control" rows="3"
+                        [(ngModel)]="model.skillsRequired" name="skillsRequired"></textarea>
+            </div>
+
           </ng-container>
 
-          <!-- PROPERTY SECTION (id = 3) -->
+
+          <!-- ------------------------ PROPERTY ------------------------- -->
           <ng-container *ngIf="selectedMainCategoryId === 3">
-            <label class="form-label small mb-2">Property Details</label>
 
-            <div class="form-group price-box mb-3">
-              <label class="form-label d-block">For</label>
+            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">Property Details</label>
+
+            <!-- Listing Type -->
+            <div class="price-box mb-3">
+              <label class="form-label d-block">Listing Type</label>
               <div class="btn-group bg-white w-100">
-                <button type="button"
-                        class="btn btn-light"
-                        [class.active]="model.saleType === 'For Sale'"
-                        (click)="model.saleType = 'For Sale'">For Sale</button>
-                <button type="button"
-                        class="btn btn-light"
-                        [class.active]="model.saleType === 'For Rent'"
-                        (click)="model.saleType = 'For Rent'">For Rent</button>
+                <button type="button" class="btn btn-light"
+                        [class.active]="model.listingType === 'For Sale'"
+                        (click)="model.listingType = 'For Sale'">For Sale</button>
+
+                <button type="button" class="btn btn-light"
+                        [class.active]="model.listingType === 'For Rent'"
+                        (click)="model.listingType = 'For Rent'">For Rent</button>
               </div>
             </div>
 
-             <div class="mb-2 form-group">
-              <label class="form-label">Specifications</label>
-              <div class="row">
-                <div class="col-6 mb-2">
-                  <div class="d-flex align-items-center">
-                    <span class="me-2 text-muted">Bedrooms</span>
-                    <button type="button" class="btn btn-sm btn-outline-light me-1"
-                            (click)="model.bedrooms = math.max(0, model.bedrooms - 1)">-</button>
-                    <span class="small">{{ model.bedrooms }}</span>
-                    <button type="button" class="btn btn-sm btn-outline-light ms-1"
-                            (click)="model.bedrooms = model.bedrooms + 1">+</button>
-                  </div>
-                </div>
-                <div class="col-6 mb-2">
-                  <div class="d-flex align-items-center">
-                    <span class="me-2 text-muted">Bathrooms</span>
-                    <button type="button" class="btn btn-sm btn-outline-light me-1"
-                            (click)="model.bathrooms = math.max(0, model.bathrooms - 1)">-</button>
-                    <span class="small">{{ model.bathrooms }}</span>
-                    <button type="button" class="btn btn-sm btn-outline-light ms-1"
-                            (click)="model.bathrooms = model.bathrooms + 1">+</button>
-                  </div>
-                </div>
+            <div class="row">
+              <div class="col-6 mb-2">
+                <label class="form-label">Property Type</label>
+                <select class="form-select" [(ngModel)]="model.propertyType" name="propertyType">
+                  <option value="Apartment">Apartment</option>
+                  <option value="Villa">Villa</option>
+                  <option value="Office">Office</option>
+                  <option value="Townhouse">Townhouse</option>
+                </select>
               </div>
-            </div> 
-
-            <div class="mb-3 form-group">
-              <label class="form-label">Area</label>
-              <input class="form-control"
-                     placeholder="Area, e.g. 1200 Sqft"
-                     [(ngModel)]="model.area"
-                     name="area">
+              <div class="col-6 mb-2">
+                <label class="form-label">Area (Sqft)</label>
+                <input class="form-control" type="number"
+                       [(ngModel)]="model.areaSqft" name="areaSqft"
+                       placeholder="1200">
+              </div>
             </div>
 
-            <div class="mb-3 bg-white rounded form-group">
+            <div class="row">
+              <div class="col-4 mb-2">
+                <label>Bedrooms</label>
+                <input class="form-control" type="number" [(ngModel)]="model.bedrooms" name="bedrooms">
+              </div>
+              <div class="col-4 mb-2">
+                <label>Bathrooms</label>
+                <input class="form-control" type="number" [(ngModel)]="model.bathrooms" name="bathrooms">
+              </div>
+              <div class="col-4 mb-2">
+                <label>Halls</label>
+                <input class="form-control" type="number" [(ngModel)]="model.halls" name="halls">
+              </div>
+            </div>
+
+            <div class="mb-3" *ngIf="model.listingType === 'For Rent'">
+              <label class="form-label">Rent Frequency</label>
+              <select class="form-select" [(ngModel)]="model.rentFrequency" name="rentFrequency">
+                <option value="Monthly">Monthly</option>
+                <option value="Yearly">Yearly</option>
+                <option value="Weekly">Weekly</option>
+              </select>
+            </div>
+
+            <div class="price-box mb-3">
+               <label class="form-label d-block">Furnishing</label>
+               <div class="btn-group bg-white w-100">
+                 <button type="button" class="btn btn-light"
+                         [class.active]="model.furnishing === 'Furnished'"
+                         (click)="model.furnishing = 'Furnished'">Furnished</button>
+
+                 <button type="button" class="btn btn-light"
+                         [class.active]="model.furnishing === 'Unfurnished'"
+                         (click)="model.furnishing = 'Unfurnished'">Unfurnished</button>
+
+                 <button type="button" class="btn btn-light"
+                         [class.active]="model.furnishing === 'Partly'"
+                         (click)="model.furnishing = 'Partly'">Partly</button>
+               </div>
+            </div>
+
+            <div class="p-2 form-group bg-white rounded">
               <label class="form-label d-block">Amenities</label>
               <div class="amenities-wrapper">
                 <button type="button"
                         *ngFor="let a of amenitiesOptions"
-                        class="btn btn-outline-warning amenity-btn"
+                        class="btn btn-outline-warning amenity-btn btn-sm m-1"
                         [class.active]="model.amenities.includes(a)"
                         (click)="toggleAmenity(a)">
                   {{ a }}
@@ -254,412 +323,285 @@
               </div>
             </div>
 
-            <div class="form-group price-box">
-              <label class="form-label d-block">Furnishing</label>
-              <div class="btn-group bg-white w-100">
-                <button type="button"
-                        class="btn btn-light"
-                        [class.active]="model.furnishing === 'Furnished'"
-                        (click)="model.furnishing = 'Furnished'">Furnished</button>
-                <button type="button"
-                        class="btn btn-light"
-                        [class.active]="model.furnishing === 'Unfurnished'"
-                        (click)="model.furnishing = 'Unfurnished'">Unfurnished</button>
-              </div>
-            </div>
           </ng-container>
 
-          <!-- CLASSIFIEDS & FURNITURE SECTION (ids 4 or 5) -->
-          <ng-container *ngIf="selectedMainCategoryId === 4 || selectedMainCategoryId === 5">
-            <label class="form-label small mb-2">Item Details</label>
 
-            <div class="mb-2 form-group price-box">
-              <label class="form-label">Condition</label>
-              <div class="btn-group">
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.itemCondition === 'New'"
-                        (click)="model.itemCondition = 'New'">New</button>
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.itemCondition === 'Like New'"
-                        (click)="model.itemCondition = 'Like New'">Like New</button>
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.itemCondition === 'Used'"
-                        (click)="model.itemCondition = 'Used'">Used</button>
+          <!-- ------------------------ ELECTRONICS ------------------------- -->
+          <ng-container *ngIf="selectedMainCategoryId === 5">
+
+            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">Device Details</label>
+
+            <div class="row">
+              <div class="col-6 mb-2">
+                <label class="form-label">Brand</label>
+                <input class="form-control" [(ngModel)]="model.brand" name="electronicBrand">
+              </div>
+              <div class="col-6 mb-2">
+                <label class="form-label">Model</label>
+                <input class="form-control" [(ngModel)]="model.model" name="electronicModel">
               </div>
             </div>
 
-            <div class="mb-2 form-group">
-              <label class="form-label">Material</label>
-              <input class="form-control"
-                     placeholder="Material, e.g. Leather / Wood"
-                     [(ngModel)]="model.material"
-                     name="material">
+            <div class="row">
+              <div class="col-6 mb-2">
+                <label class="form-label">Storage</label>
+                <input class="form-control" [(ngModel)]="model.storage" name="storage" placeholder="256GB">
+              </div>
+              <div class="col-6 mb-2">
+                <label class="form-label">Color</label>
+                <input class="form-control" [(ngModel)]="model.color" name="color">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-6 mb-2">
+                <label>Warranty Status</label>
+                <select class="form-select" [(ngModel)]="model.warrantyStatus" name="warrantyStatus">
+                  <option value="Active">Active</option>
+                  <option value="Expired">Expired</option>
+                  <option value="None">None</option>
+                </select>
+              </div>
+              <div class="col-6 mb-2">
+                <label>Condition</label>
+                <select class="form-select" [(ngModel)]="model.condition" name="condition">
+                  <option value="New">New</option>
+                  <option value="Like New">Like New</option>
+                  <option value="Used">Used</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3 mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       [(ngModel)]="model.hasOriginalBox" name="hasOriginalBox">
+                <label class="form-check-label">Has Original Box</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       [(ngModel)]="model.hasCharger" name="hasCharger">
+                <label class="form-check-label">Has Charger</label>
+              </div>
+            </div>
+
+          </ng-container>
+
+
+          <!-- ------------------------ CLASSIFIEDS / FURNITURE ------------------------- -->
+          <ng-container *ngIf="selectedMainCategoryId === 4 || selectedMainCategoryId === 6">
+
+            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">Item Details</label>
+
+            <div class="mb-2">
+              <label>Brand</label>
+              <input class="form-control" [(ngModel)]="model.brand" name="brand">
+            </div>
+
+            <div class="row">
+              <div class="col-6 mb-2">
+                <label>Material</label>
+                <input class="form-control" [(ngModel)]="model.material" name="material">
+              </div>
+              <div class="col-6 mb-2">
+                <label>Condition</label>
+                <select class="form-select" [(ngModel)]="model.condition" name="condition">
+                  <option value="New">New</option>
+                  <option value="Good">Good</option>
+                  <option value="Fair">Fair</option>
+                </select>
+              </div>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Dimensions (in cm)</label>
-              <div class="row">
-                <div class="col-4 mb-2">
-                  <input class="form-control"
-                         placeholder="Length"
-                         [(ngModel)]="model.lengthCm"
-                         name="lengthCm">
-                </div>
-                <div class="col-4 mb-2">
-                  <input class="form-control"
-                         placeholder="Width"
-                         [(ngModel)]="model.widthCm"
-                         name="widthCm">
-                </div>
-                <div class="col-4 mb-2">
-                  <input class="form-control"
-                         placeholder="Height"
-                         [(ngModel)]="model.heightCm"
-                         name="heightCm">
-                </div>
-              </div>
-            </div>
-
-            <!-- weight only for classifieds (id = 4) -->
-            <div class="mb-3" *ngIf="selectedMainCategoryId === 4">
-              <label class="form-label">Weight</label>
+              <label>Dimensions</label>
               <input class="form-control"
-                     placeholder="Weight, e.g. 5kg"
-                     [(ngModel)]="model.weight"
-                     name="weight">
-            </div>
-          </ng-container>
-
-          <!-- JOBS SECTION (id = 6) -->
-          <ng-container *ngIf="selectedMainCategoryId === 6">
-            <label class="form-label small mb-2">Job Details</label>
-
-            <div class="form-group mb-2 price-box">
-              <label class="form-label">Job Title</label>
-              <input class="form-control"
-                     placeholder="Job Title"
-                     [(ngModel)]="model.jobTitle"
-                     name="jobTitle">
+                     [(ngModel)]="model.dimensions" name="dimensions"
+                     placeholder="200x150x90 cm">
             </div>
 
-            <div class="form-group price-box mb-2">
-              <label class="form-label">Company Name</label>
-              <input class="form-control"
-                     placeholder="Company Name"
-                     [(ngModel)]="model.companyName"
-                     name="companyName">
-            </div>
-
-            <div class="form-group mb-3 price-box">
-              <label class="form-label">Industry</label>
-              <input class="form-control"
-                     placeholder="Industry"
-                     [(ngModel)]="model.industry"
-                     name="industry">
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="form-label">Candidate Requirements</label>
-              <input class="form-control mb-2"
-                     placeholder="Skills Required"
-                     [(ngModel)]="model.skillsRequired"
-                     name="skillsRequired">
-              <input class="form-control"
-                     placeholder="Educational Qualification"
-                     [(ngModel)]="model.education"
-                     name="education">
-            </div>
-
-            <!-- Expanded Job fields -->
-            <div class="form-group mb-3">
-              <label class="form-label">Job Description</label>
-              <textarea class="form-control"
-                        rows="3"
-                        [(ngModel)]="model.jobDescription"
-                        name="jobDescription"></textarea>
-            </div>
-
-            <div class="form-group mb-3">
-              <label class="form-label">Responsibilities</label>
-              <textarea class="form-control"
-                        rows="3"
-                        [(ngModel)]="model.responsibilities"
-                        name="responsibilities"></textarea>
-            </div>
-
-            <div class="form-group mb-3">
-              <label class="form-label">Requirements</label>
-              <textarea class="form-control"
-                        rows="3"
-                        [(ngModel)]="model.requirements"
-                        name="requirements"></textarea>
-            </div>
-
-            <div class="form-group mb-3">
-              <label class="form-label">Benefits</label>
-              <textarea class="form-control"
-                        rows="3"
-                        [(ngModel)]="model.benefits"
-                        name="benefits"></textarea>
-            </div>
           </ng-container>
 
         </div>
 
-        <!-- RIGHT SIDE: common blocks (Transmission / Job details / price / location / contact) -->
+
+        <!-- -------------------- RIGHT SIDE --------------------- -->
+
         <div class="col-md-6">
-          <!-- Motors transmission -->
+
+          <!-- Transmission (Motors) -->
           <ng-container *ngIf="selectedMainCategoryId === 1">
             <div class="mb-3 price-box p-3">
               <label class="form-label d-block">Transmission</label>
               <div class="btn-group w-100">
-                <button type="button"
-                        class="btn btn-outline-light"
+                <button type="button" class="btn btn-outline-light"
                         [class.active]="model.transmission === 'Automatic'"
                         (click)="model.transmission = 'Automatic'">Automatic</button>
-                <button type="button"
-                        class="btn btn-outline-light"
+
+                <button type="button" class="btn btn-outline-light"
                         [class.active]="model.transmission === 'Manual'"
                         (click)="model.transmission = 'Manual'">Manual</button>
               </div>
             </div>
           </ng-container>
 
-          <!-- Jobs job details (summary) -->
-          <ng-container *ngIf="selectedMainCategoryId === 6">
-            <div class="mb-3 price-box form-group">
-              <label class="form-label">Job Type</label>
-              <select class="form-select mb-2"
-                      [(ngModel)]="model.jobType"
-                      name="jobType">
-                <option value="" disabled>Job Type</option>
-                <option *ngFor="let sc of filteredSubCategories" [value]="sc.name">
-                  {{ sc.name }}
-                </option>
-              </select>
-
-              <label class="form-label">Experience</label>
-              <input class="form-control mb-2"
-                     placeholder="Experience (if needed)"
-                     [(ngModel)]="model.experience"
-                     name="experience">
-
-              <div class="row">
-                <div class="col-6 mb-2">
-                  <label class="form-label">Salary Min</label>
-                  <input class="form-control"
-                         placeholder="Salary Min"
-                         [(ngModel)]="model.salaryMin"
-                         name="salaryMin">
-                </div>
-                <div class="col-6 mb-2">
-                  <label class="form-label">Salary Max</label>
-                  <input class="form-control"
-                         placeholder="Salary Max"
-                         [(ngModel)]="model.salaryMax"
-                         name="salaryMax">
-                </div>
-              </div>
-
-              <div *ngIf="selectedMainCategoryId === 6" class="mt-2">
-                <label class="form-label">Company Website</label>
-                <input class="form-control"
-                       placeholder="https://company.com"
-                       [(ngModel)]="model.companyWebsite"
-                       name="companyWebsite">
-              </div>
-            </div>
-          </ng-container>
-
-          <!-- Price (common) -->
-          <div class="price-box mb-3 form-group">
+          <!-- PRICE -->
+          <div class="price-box mb-3 form-group" *ngIf="selectedMainCategoryId !== 2">
             <label class="form-label d-block">Price</label>
             <div class="input-group mb-2">
               <span class="input-group-text">AED</span>
-              <input type="number"
-                     class="form-control"
+              <input class="form-control"
+                     type="number"
                      [(ngModel)]="model.price"
-                     (focus)="onFieldAttemptFocus($event)"
-                     name="price">
+                     name="price"
+                     required />
             </div>
             <div class="form-check small">
-              <input class="form-check-input"
-                     type="checkbox"
-                     id="negotiable"
-                     [(ngModel)]="model.negotiable"
-                     name="negotiable">
-              <label class="form-check-label" for="negotiable">
-                Price is negotiable
-              </label>
+              <input type="checkbox" class="form-check-input"
+                     [(ngModel)]="model.isNegotiable" name="isNegotiable">
+              <label class="form-check-label">Price is negotiable</label>
             </div>
           </div>
 
-          <!-- Location -->
-          <div class="mb-3 price-box form-group">
+          <!-- LOCATION -->
+          <div class="price-box mb-3 form-group">
             <label class="form-label">Location</label>
             <input class="form-control mb-2"
                    placeholder="City"
                    [(ngModel)]="model.city"
-                   (focus)="onFieldAttemptFocus($event)"
                    name="city">
+
             <input class="form-control"
-                   placeholder="Neighbourhood"
-                   [(ngModel)]="model.neighbourhood"
-                   (focus)="onFieldAttemptFocus($event)"
-                   name="neighbourhood">
+                   placeholder="Neighbourhood / Address"
+                   [(ngModel)]="model.address"
+                   name="address">
           </div>
 
-          <!-- Contact Information -->
-          <div class="mb-3 price-box form-group">
+          <!-- CONTACT -->
+          <div class="price-box mb-3 form-group">
             <label class="form-label">Contact Information</label>
+            <input class="form-control mb-2" placeholder="Name"
+                   [(ngModel)]="model.contactName" name="contactName">
 
-            <!-- For jobs we prefer website; still allow name -->
-            <input class="form-control mb-2"
-                   placeholder="Contact Name / Company Contact"
-                   [(ngModel)]="model.name"
-                   (focus)="onFieldAttemptFocus($event)"
-                   name="name">
-
-            <!-- For non-job categories show phone -->
-            <div *ngIf="!isJobsCategory" class="input-group mb-1">
+            <div class="input-group mb-1">
               <span class="input-group-text">+971</span>
               <input class="form-control"
                      placeholder="Mobile Number"
-                     (focus)="onFieldAttemptFocus($event)"
-                     [(ngModel)]="model.phone"
-                     name="phone">
+                     [(ngModel)]="model.contactPhone"
+                     name="contactPhone">
             </div>
 
-            <!-- Jobs contact: show company website (already above) so optional phone removed -->
             <div class="form-check small mt-1">
-              <input class="form-check-input"
-                     type="checkbox"
-                     id="showPhone"
-                     [(ngModel)]="model.showPhone"
-                     (focus)="onFieldAttemptFocus($event)"
-                     name="showPhone">
-              <label class="form-check-label" for="showPhone">
-                Show my Mobile Number
-              </label>
+              <input class="form-check-input" type="checkbox"
+                     [(ngModel)]="model.contactWhatsapp"
+                     name="contactWhatsapp"
+                     [value]="model.contactPhone"
+                    >
+              <label>Available on WhatsApp</label>
             </div>
           </div>
+
         </div>
       </div>
 
-      <!-- Upload Images / Logo -->
+      <!-- FILE UPLOAD -->
       <div class="mb-3">
         <label class="form-label">{{ fileUploadLabel }}</label>
 
-        <!-- Jobs Category: Company logo (single image) -->
-        <ng-container *ngIf="isJobsCategory">
+        <!-- JOBS LOGO UPLOAD -->
+        <ng-container *ngIf="selectedMainCategoryId === 2">
           <div class="file-drop-zone"
                (dragover)="onDragOver($event)"
                (dragleave)="onDragLeave($event)"
                (drop)="onDropLogo($event)"
-               [class.disabled]="logoFile !== null">
+               [class.disabled]="logoFile">
             <i class="bi bi-cloud-upload"></i>
-            <p>Upload company logo (JPEG, PNG, WebP). Drag & drop or click to choose</p>
-            <input
-              type="file"
-              class="form-control"
-              [accept]="acceptedFileTypes"
-              (change)="onFileChange($event)"
-              [disabled]="logoFile !== null"
-              />
+            <p>Upload Company Logo</p>
+            <input type="file" class="form-control"
+                   [accept]="acceptedFileTypes"
+                   (change)="onFileChange($event)"
+                   [disabled]="logoFile">
           </div>
 
           <div class="logo-preview mt-3" *ngIf="logoPreview">
-            <div class="logo-item d-flex align-items-center">
-              <img [src]="logoPreview" alt="Company Logo" style="height:64px; width:auto; object-fit:contain;"/>
-              <div class="ms-3">
-                <div>{{ logoFile?.name }}</div>
-                <div class="small text-muted">{{ logoSizeMB | number:'1.2-2' }} MB</div>
-              </div>
-              <button type="button" class="btn btn-sm btn-danger ms-auto" (click)="removeLogo()">Remove</button>
-            </div>
+             <div class="d-flex align-items-center border p-2 rounded">
+                <img [src]="logoPreview" style="height:50px;" />
+                <span class="ms-2 small">{{ logoFile?.name }}</span>
+                <button type="button" class="btn btn-sm text-danger ms-auto"
+                        (click)="removeLogo()">&times;</button>
+             </div>
           </div>
         </ng-container>
 
-        <!-- Other Categories: Image Upload -->
-         <ng-container *ngIf="!isJobsCategory">
+        <!-- NORMAL IMAGES -->
+        <ng-container *ngIf="selectedMainCategoryId !== 2">
           <div class="file-drop-zone"
                (dragover)="onDragOver($event)"
                (dragleave)="onDragLeave($event)"
                (drop)="onDropFiles($event)"
                [class.disabled]="files.length >= maxImages">
             <i class="bi bi-cloud-upload"></i>
-            <p>Drag & drop images here or click to choose (up to {{ maxImages }} images)</p>
-            <input
-              type="file"
-              class="form-control"
-              [accept]="acceptedFileTypes"
-              multiple
-              (change)="onFileChange($event)"
-              [disabled]="files.length >= maxImages"
-              />
+            <p>Upload Images (Max {{ maxImages }})</p>
+            <input type="file"
+                   class="form-control"
+                   [accept]="acceptedFileTypes"
+                   multiple
+                   (change)="onFileChange($event)"
+                   [disabled]="files.length >= maxImages" />
           </div>
+
           <div class="image-preview-container mt-3" *ngIf="imagePreviews.length">
             <div class="preview-grid">
-              <div class="preview-item position-relative" *ngFor="let preview of imagePreviews; let i = index">
-                <img [src]="preview" [alt]="'Preview ' + (i + 1)" />
-                <button type="button"
-                        class="btn-remove"
-                        (click)="removeImage(i)"
-                        title="Remove image">
-                  &times;
-                </button>
-                <div class="order-badge" *ngIf="i === 0">Primary</div>
+              <div class="preview-item position-relative"
+                   *ngFor="let preview of imagePreviews; let i = index">
+                <img [src]="preview" />
+                <button type="button" class="btn-remove" (click)="removeImage(i)">&times;</button>
+                <div class="order-badge" *ngIf="i === 0">Cover</div>
               </div>
             </div>
-            <p class="text-muted mt-2">{{ files.length }} / {{ maxImages }} images selected</p>
           </div>
         </ng-container>
       </div>
+
+      <!-- AI BOX -->
       <div class="ai-box mb-3 d-flex flex-row justify-content-center align-items-center">
         <div class="ai-icon me-2">🧠</div>
         <div class="flex-grow-1">
           <p class="fw-bold mb-1 small">Save time with AI.</p>
           <p class="small mb-0">Generate description from given data.</p>
         </div>
-        <button type="button" class="btn btn-warning rounded-pill px-4 py-2 text-white ms-2" (click)="generateDescription()">
+        <button type="button"
+                class="btn btn-warning rounded-pill px-4 py-2 text-white"
+                (click)="generateDescription()">
           Generate
         </button>
       </div>
 
-      <!-- Description -->
+      <!-- DESCRIPTION -->
       <div class="form-group mb-4">
         <label class="form-label">Description</label>
         <textarea class="form-control"
                   rows="6"
-                  placeholder="Description"
                   [(ngModel)]="model.description"
-                  (focus)="onFieldAttemptFocus($event)"
                   name="description"></textarea>
       </div>
 
-      <!-- Preview selected category summary -->
-      <div class="mb-3">
-        <small class="text-muted">Category: <strong>{{ mainCatName }}</strong></small>
-        <div *ngIf="selectedSubCategoryId" class="text-muted small">Sub: <strong>{{ getSubCategoryName(selectedSubCategoryId) }}</strong></div>
-      </div>
-
-      <!-- Next button -->
-      <div class="text-center pb-3">
-        <button type="submit" class="btn btn-warning px-5">Next</button>
+      <div class="text-center pb-3 mt-4">
+        <button class="btn btn-warning px-5 fw-bold text-white"
+                type="submit"
+                [disabled]="f.invalid">
+          Next Step
+        </button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Select category modal (custom overlay) -->
+<!-- MODAL -->
 <div class="modal-backdrop-custom" *ngIf="showSelectCategoryModal">
   <div class="modal-dialog-custom">
     <h5 class="mb-3">Select a category</h5>
-    <p class="mb-3">Please choose a category before filling the form.</p>
-    <button type="button"
-            class="btn btn-warning me-2"
-            (click)="closeCategoryModal()">
-      OK
-    </button>
+    <p class="mb-3">Please choose a category to see relevant fields.</p>
+    <button class="btn btn-warning" (click)="closeCategoryModal()">OK</button>
   </div>
 </div>

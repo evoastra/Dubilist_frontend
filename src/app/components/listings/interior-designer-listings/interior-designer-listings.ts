@@ -1,134 +1,277 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { DesignerService } from '../../../services/designer-service';
-
-interface UIDesigner {
-  id: number;
-  name: string;
-  image: string;
-  rating: number;
-  reviews: number;
-  location: string;
-  priceRange: string;
-  phone: string;
-  about: string;
-  services: string[];
-  styles: string[];
-}
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../services/auth-service';
 
 @Component({
   selector: 'app-interior-designer-listings',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './interior-designer-listings.html',
   styleUrls: ['./interior-designer-listings.css']
 })
 export class InteriorDesignerListingsComponent implements OnInit {
 
-  designers: UIDesigner[] = [];
-  selectedDesigner: UIDesigner | null = null;
-  isLoading = false;
+  isUserLoggedin: boolean = false;
 
-  // Filters
-  selectedStyle = '';
-  selectedCity = 'Dubai';
-  minRate?: number;
-  maxRate?: number;
-  sort = 'rating_desc';
+  /* =======================
+     UI STATE
+  ======================= */
+  viewMode: 'listings' | 'create' | 'detail' = 'listings';
+  showRequestsModal = false;
+  showClientDetailModal = false;
+  isMobileFiltersOpen = false;
 
-  constructor(private designerService: DesignerService) {}
+  /* =======================
+     DATA
+  ======================= */
+  allDesigners: any[] = [];       // master list
+  designers: any[] = [];          // filtered list (used in UI)
+
+  selectedDesigner: any = null;
+  myRequests: any[] = [];
+  selectedRequest: any = null;
+
+  /* =======================
+     FILTERS (CLIENT SIDE)
+  ======================= */
+  filters = {
+    city: 'Dubai',
+    style: '',
+    minRate: null as number | null,
+    maxRate: null as number | null,
+    sort: 'rating'
+  };
+
+  /* =======================
+     PROFILE FORM
+  ======================= */
+  profilePreview: string | ArrayBuffer | null = null;
+  portfolioPreviews: { url: string; isUploading: boolean }[] = [];
+
+  profileForm = {
+    fullName: '',
+    location: '',
+    bio: '',
+    styles: [] as string[],
+    experience: '',
+    rate: '',
+    profileImage: '',
+    portfolio: [] as any[]
+  };
+
+  /* =======================
+     STATIC UI DATA
+  ======================= */
+  styles = ['Modern', 'Minimalist', 'Bohemian', 'Traditional', 'Industrial', 'Coastal'];
+  cities = ['Dubai', 'Abu Dhabi', 'Sharjah'];
+
+  constructor(
+    private designerService: DesignerService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
+    this.isUserLoggedin = this.authService.isLoggedIn();
     this.loadDesigners();
   }
 
-  /** 🔹 LOAD DESIGNERS */
-  loadDesigners(): void {
-    this.isLoading = true;
+  /* =======================
+     DATA LOADING (ONCE)
+  ======================= */
+  loadDesigners() {
+    this.designerService.getAllDesigners().subscribe((res: any[]) => {
+      this.allDesigners = res.map(d => ({
+        ...d,
+        isFavourite: this.designerService.isFavourite(d.id)
+      }));
 
-    this.designerService.getAllDesigners({
-      city: this.selectedCity,
-      style: this.selectedStyle,
-      minRate: this.minRate,
-      maxRate: this.maxRate,
-      sort: this.sort
-    }).subscribe({
-      next: (res) => {
-        this.designers = res.map(d => this.mapDesigner(d));
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      }
+      this.applyFilters();
+      console.log('Designers Loaded:', this.allDesigners);
     });
   }
 
-  /** 🔹 VIEW PROFILE */
-  goToProfile(designer: UIDesigner): void {
-    this.designerService.getDesignerById(designer.id).subscribe(d => {
-      this.selectedDesigner = this.mapDesigner(d);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+  /* =======================
+     CLIENT-SIDE FILTERING
+  ======================= */
+  applyFilters() {
+    let list = [...this.allDesigners];
+
+    if (this.filters.city) {
+      list = list.filter(d =>
+        d.city?.toLowerCase() === this.filters.city.toLowerCase()
+      );
+    }
+
+    if (this.filters.style) {
+      list = list.filter(d =>
+        d.specializations?.includes(this.filters.style)
+      );
+    }
+
+    if (this.filters.minRate !== null) {
+      list = list.filter(d => d.hourlyRate >= this.filters.minRate!);
+    }
+
+    if (this.filters.maxRate !== null) {
+      list = list.filter(d => d.hourlyRate <= this.filters.maxRate!);
+    }
+
+    switch (this.filters.sort) {
+      case 'rating':
+        list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        break;
+      case 'price_low':
+        list.sort((a, b) => a.hourlyRate - b.hourlyRate);
+        break;
+      case 'price_high':
+        list.sort((a, b) => b.hourlyRate - a.hourlyRate);
+        break;
+    }
+
+    this.designers = list;
   }
 
-  closeDetail(): void {
+  /* =======================
+     MOBILE FILTER
+  ======================= */
+  toggleFilters() {
+    this.isMobileFiltersOpen = !this.isMobileFiltersOpen;
+  }
+
+  /* =======================
+     FAVOURITES
+  ======================= */
+  toggleFavourite(designer: any, event: Event) {
+    event.stopPropagation();
+    designer.isFavourite = !designer.isFavourite;
+    this.designerService.toggleFavourite(designer.id);
+  }
+
+  /* =======================
+     NAVIGATION
+  ======================= */
+  openCreateProfile() {
+    this.viewMode = 'create';
+  }
+
+  openDesignerDetail(designer: any) {
+    this.selectedDesigner = designer;
+    this.viewMode = 'detail';
+  }
+
+  backToListings() {
+    this.viewMode = 'listings';
     this.selectedDesigner = null;
   }
 
-  /** 🔹 MAP BACKEND → UI */
-  private mapDesigner(d: any): UIDesigner {
-    return {
-      id: d.id,
-      name: d.user?.name || 'Designer',
-      image: d.profileImage || 'https://via.placeholder.com/400',
-      rating: d.averageRating || 0,
-      reviews: d.reviewsCount || 0,
-      location: d.location,
-      about: d.bio,
-      services: d.services || [],
-      styles: d.specializations || [],
-      phone: d.user?.phone || '',
-      priceRange: `${d.currency} ${d.hourlyRate} / Hour`
-    };
+  /* =======================
+     REQUESTS / MODALS
+  ======================= */
+  openRequests() {
+    this.designerService.getDesignerBookings().subscribe(data => {
+      this.myRequests = data;
+      this.showRequestsModal = true;
+    });
   }
 
-  /** 🔹 FILTER ACTION */
-  applyFilters(): void {
-    this.loadDesigners();
+  viewRequestDetail(request: any) {
+    this.selectedRequest = request;
+    this.showClientDetailModal = true;
   }
 
-  /** 🔹 CONTACT */
-  callDesigner(): void {
-    if (this.selectedDesigner?.phone) {
-      window.location.href = `tel:${this.selectedDesigner.phone}`;
-    }
+  closeModals() {
+    this.showRequestsModal = false;
+    this.showClientDetailModal = false;
+    this.selectedRequest = null;
   }
 
-  chatWhatsApp(): void {
-    if (this.selectedDesigner?.phone) {
-      const phone = this.selectedDesigner.phone.replace(/\D/g, '');
-      window.open(`https://wa.me/${phone}`, '_blank');
-    }
-  }
-
-  /** 🔹 BOOK CONSULTATION */
-  bookConsultation(): void {
-    if (!this.selectedDesigner) return;
-
-    const payload = {
-      dateTime: new Date().toISOString(),
-      duration: 60,
-      bookingType: 'consultation',
-      userName: 'Guest User',
-      userPhone: '+971500000000',
-      meetingType: 'in-person'
-    };
+  handleBookingAction(action: 'accept' | 'reject') {
+    if (!this.selectedRequest) return;
 
     this.designerService
-      .createBooking(this.selectedDesigner.id, payload)
+      .updateBookingStatus(this.selectedRequest.id, action)
       .subscribe(() => {
-        alert('Consultation booked successfully!');
+        this.selectedRequest.status =
+          action === 'accept' ? 'Accepted' : 'Rejected';
+        this.closeModals();
+        this.openRequests();
       });
+  }
+
+  /* =======================
+     IMAGE UPLOADS
+  ======================= */
+  onProfileImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => (this.profilePreview = reader.result);
+    reader.readAsDataURL(file);
+
+    this.designerService.uploadSingleImage(file, 'profiles').subscribe({
+      next: res => (this.profileForm.profileImage = res.data.url),
+      error: err => console.error('Profile upload failed', err)
+    });
+  }
+
+  onPortfolioSelected(event: any) {
+    const files = Array.from(event.target.files) as File[];
+    if (!files.length) return;
+
+    this.designerService.uploadMultipleImages(files, 'portfolio').subscribe({
+      next: res => {
+        const urls = res.data?.urls || res.data || [];
+        if (Array.isArray(urls)) {
+          this.profileForm.portfolio.push(...urls);
+        }
+      },
+      error: err => console.error('Portfolio upload failed', err)
+    });
+  }
+
+  removePortfolioItem(index: number) {
+    this.profileForm.portfolio.splice(index, 1);
+  }
+
+  toggleStyle(style: string) {
+    const idx = this.profileForm.styles.indexOf(style);
+    idx > -1
+      ? this.profileForm.styles.splice(idx, 1)
+      : this.profileForm.styles.push(style);
+  }
+
+  /* =======================
+     SUBMIT PROFILE
+  ======================= */
+  submitProfile() {
+    if (!this.profileForm.profileImage) {
+      alert('Please wait for image upload');
+      return;
+    }
+
+    const payload = {
+      name: this.profileForm.fullName,
+      city: this.profileForm.location,
+      bio: this.profileForm.bio,
+      specializations: this.profileForm.styles,
+      yearsExperience: Number(this.profileForm.experience),
+      hourlyRate: Number(this.profileForm.rate),
+      profileImage: this.profileForm.profileImage,
+      portfolio: this.profileForm.portfolio
+    };
+
+    this.designerService.createProfile(payload).subscribe({
+      next: () => {
+        alert('Profile created successfully');
+        this.viewMode = 'listings';
+        this.loadDesigners();
+      },
+      error: err => {
+        console.error(err);
+        alert('Profile creation failed');
+      }
+    });
   }
 }

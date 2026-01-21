@@ -1,5 +1,4 @@
-// src/app/components/review-listing/review-listing.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AddPostService } from '../../services/add-post.service';
@@ -12,62 +11,63 @@ import { DraftListingService, DraftListingData } from '../../services/draft-list
   templateUrl: './review-listing.html',
   styleUrls: ['./review-listing.css']
 })
-export class ReviewListingComponent implements OnInit {
-
+export class ReviewListingComponent implements OnInit, OnDestroy {
   draft!: DraftListingData | null;
   model: any = {};
-
   mainCatId!: number;
   mainCatName = '';
-
+  
+  // For display
   imagePreviews: string[] = [];
+  
   isSubmitting = false;
+  showSuccessModal = false;
 
   constructor(
     private draftService: DraftListingService,
     private addPostService: AddPostService,
-    private router: Router
+    public router: Router
   ) {}
-
-  /* ---------------- INIT ---------------- */
 
   ngOnInit(): void {
     this.draft = this.draftService.getDraft();
-
-    if (!this.draft) return;
+    
+    // Security: If no draft exists (direct URL access), go back
+    if (!this.draft) {
+      this.router.navigate(['/add-post']);
+      return;
+    }
 
     this.model = this.draft.model;
     this.mainCatId = this.draft.selectedMainCategoryId!;
     this.mainCatName = this.getMainCategoryName(this.mainCatId);
-
-    // Images OR logo preview
-    if (this.draft.logoPreview) {
-      this.imagePreviews = [this.draft.logoPreview];
-    } else {
-      this.imagePreviews = (this.draft.files || []).map(f =>
-        URL.createObjectURL(f)
-      );
-    }
+    
+    this.generatePreviews();
   }
 
-  /* ---------------- HELPERS ---------------- */
+  generatePreviews() {
+    if (!this.draft) return;
+    
+    // 1. Job Logo
+    if (this.mainCatId === 2 && this.draft.logoPreview) {
+      this.imagePreviews = [this.draft.logoPreview];
+    } 
+    // 2. Gallery Images
+    else if (this.draft.files && this.draft.files.length > 0) {
+      this.imagePreviews = this.draft.files.map(f => URL.createObjectURL(f));
+    }
+  }
 
   getMainCategoryName(id: number): string {
     const map: Record<number, string> = {
       1: 'Motors',
-      2: 'Electronics',
+      2: 'Jobs',
       3: 'Property',
       4: 'Classifieds',
-      5: 'Furniture',
-      6: 'Jobs'
+      5: 'Electronics',
+      6: 'Furniture'
     };
-    return map[id] || '';
-  }
-
-  /* ---------------- ACTIONS ---------------- */
-
-  editAd() {
-    this.router.navigate(['/add-post']);
+    return map[id] || 'Listing';
   }
 
   async publishAd() {
@@ -76,18 +76,38 @@ export class ReviewListingComponent implements OnInit {
     this.isSubmitting = true;
 
     try {
+      // Call the service to Process Data -> Call API -> Upload Images
       await this.addPostService.createListingFromDraft(this.draft);
-
-      // clear draft after success
+      
+      // On success:
       this.draftService.clearDraft();
-
-      // redirect to success / listings
-      this.router.navigate(['/my-listings']);
-    } catch (err) {
-      console.error('Publish failed', err);
-      alert('Failed to publish ad. Please try again.');
+      this.showSuccessModal = true;
+      
+    } catch (err: any) {
+      console.error('Publishing error:', err);
+      const msg = err.error?.message || err.message || 'Something went wrong. Please try again.';
+      alert(`Error: ${msg}`);
     } finally {
       this.isSubmitting = false;
+    }
+  }
+
+  editAd() {
+    // Navigate back. The AddPostComponent ngOnInit will pick up the draft data
+    this.router.navigate(['/add-post']);
+  }
+
+  goToMyAds() {
+    this.showSuccessModal = false;
+    this.router.navigate(['/my-listings']); // Adjust route as needed
+  }
+
+  ngOnDestroy() {
+    // Cleanup Object URLs specifically created in this component
+    // Note: logoPreview comes from service, so we treat it carefully, 
+    // but the gallery previews here are fresh ObjectURLs
+    if (this.mainCatId !== 2) {
+      this.imagePreviews.forEach(url => URL.revokeObjectURL(url));
     }
   }
 }

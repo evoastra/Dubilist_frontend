@@ -7,7 +7,7 @@ import { AuthService } from './auth-service';
 @Injectable({ providedIn: 'root' })
 export class AdminService {
 
-  private baseUrl = environment.apiUrl; // https://api.dubilist.ae/api
+  private baseUrl = environment.apiUrl+"/api"; // https://api.dubilist.ae/api
 
   constructor(
     private http: HttpClient,

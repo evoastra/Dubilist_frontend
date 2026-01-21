@@ -1,0 +1,70 @@
+
+<div class="cont">
+   <div class="container  my-4">
+
+  <!-- HEADER -->
+  <h1 class="fw-bold mb-3">Favourites</h1>
+
+  <!-- SEARCH -->
+  <div class="input-group mb-4">
+    <span class="input-group-text bg-white">
+      <i class="bi bi-search"></i>
+    </span>
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Search for Cars, Properties, Jobs..."
+      [(ngModel)]="searchQuery"
+      (input)="onSearch()"
+    />
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-warning"></div>
+  </div>
+
+  <!-- EMPTY -->
+  <div *ngIf="!isLoading && filtered.length === 0" class="text-center text-muted py-5">
+    No favourites found
+  </div>
+
+  <!-- GRID -->
+  <div class="row g-4" *ngIf="!isLoading && filtered.length">
+
+    <div class="col-lg-3 col-md-4 col-sm-6" *ngFor="let item of filtered">
+
+      <div class="card h-100 border-0 shadow-sm favourite-card">
+
+        <!-- IMAGE -->
+        <div class="position-relative">
+          <img
+            [src]="item.image"
+            class="card-img-top"
+            style="height: 200px; object-fit: cover;"
+          />
+
+          <!-- HEART -->
+          <button
+            class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle"
+            (click)="removeFavorite(item.id, $event)">
+            <i class="bi bi-heart-fill text-warning"></i>
+          </button>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="card-body">
+          <h6 class="fw-semibold mb-1">{{ item.title }}</h6>
+          <p class="text-warning fw-bold mb-0">
+            {{ item.currency }} {{ item.price | number }}
+          </p>
+          <small class="text-muted">{{ item.city }}</small>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>

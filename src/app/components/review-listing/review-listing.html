@@ -1,119 +1,136 @@
-<div class="review-container mt-5" *ngIf="draft; else noDraft">
-
-  <!-- Breadcrumb -->
-  <div class="breadcrumb mb-2">
-    <span class="crumb">{{ mainCatName }}</span>
-    <span class="crumb-sep">/</span>
-    <span class="crumb current">Review</span>
-  </div>
-
-  <h2 class="page-title mb-3">Review your ad</h2>
-  <h4 class="ad-title mb-4">{{ model.title }}</h4>
-
-  <!-- IMAGE / LOGO PREVIEW -->
-  <div class="image-frame mb-4" *ngIf="imagePreviews.length; else noImages">
-    <div class="grid-1" *ngIf="imagePreviews.length === 1">
-      <img [src]="imagePreviews[0]" />
-    </div>
-
-    <div class="grid-3" *ngIf="imagePreviews.length > 1">
-      <img *ngFor="let img of imagePreviews" [src]="img" />
+<div class="review-container container mt-4 mb-5" *ngIf="draft; else noDraft">
+  
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <nav class="breadcrumb mb-1">
+        <span class="text-muted">{{ mainCatName }}</span>
+        <span class="mx-2">/</span>
+        <span class="fw-bold text-primary">Review</span>
+      </nav>
+      <h2 class="fw-bold">Review your advertisement</h2>
     </div>
   </div>
 
-  <ng-template #noImages>
-    <p class="text-muted">No images uploaded.</p>
-  </ng-template>
-
-  <!-- JOBS: COMPANY LOGO LABEL -->
-  <div *ngIf="mainCatId === 6 && imagePreviews.length" class="mb-3">
-    <span class="badge bg-info">Company Logo</span>
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <h4 class="mb-3 text-dark">{{ model.title }}</h4>
+      
+      <h6 class="text-muted mb-3">{{ mainCatId === 2 ? 'Company Logo' : 'Uploaded Photos' }}</h6>
+      
+      <div class="d-flex flex-wrap gap-2" *ngIf="imagePreviews.length; else noMedia">
+        <div *ngFor="let img of imagePreviews" class="preview-wrapper">
+          <img [src]="img" class="rounded border shadow-sm" style="width: 150px; height: 150px; object-fit: cover;">
+          <span *ngIf="mainCatId === 2" class="badge bg-dark d-block mt-1">Official Logo</span>
+        </div>
+      </div>
+      <ng-template #noMedia><p class="text-warning small">No images attached.</p></ng-template>
+    </div>
   </div>
 
-  <!-- DETAILS -->
-  <section class="section-block mb-4">
-    <h5 class="section-title">Ad Details</h5>
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <h5 class="border-bottom pb-2 mb-4"><i class="bi bi-list-stars me-2"></i>Specifications</h5>
+      
+      <div class="row g-4">
+        
+        <ng-container *ngIf="mainCatId === 1">
+          <div class="col-md-4"><strong>Make:</strong><br>{{ model.make }}</div>
+          <div class="col-md-4"><strong>Model:</strong><br>{{ model.model }}</div>
+          <div class="col-md-4"><strong>Year:</strong><br>{{ model.year }}</div>
+          <div class="col-md-4"><strong>KM:</strong><br>{{ model.kilometres }}</div>
+          <div class="col-md-4"><strong>Fuel:</strong><br>{{ model.fuelType }}</div>
+          <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
+        </ng-container>
 
-    <!-- MOTORS -->
-    <ng-container *ngIf="mainCatId === 1">
-      <div class="detail-row"><span>Make & Model</span><span>{{ model.makeModel }}</span></div>
-      <div class="detail-row"><span>Year</span><span>{{ model.year }}</span></div>
-      <div class="detail-row"><span>Fuel</span><span>{{ model.fuelType }}</span></div>
-      <div class="detail-row"><span>Transmission</span><span>{{ model.transmission }}</span></div>
-      <div class="detail-row"><span>Price</span><span>AED {{ model.price }}</span></div>
-    </ng-container>
+        <ng-container *ngIf="mainCatId === 2">
+          <div class="col-md-4"><strong>Company:</strong><br>{{ model.companyName }}</div>
+          <div class="col-md-4"><strong>Role:</strong><br>{{ model.jobTitle }}</div>
+          <div class="col-md-4"><strong>Type:</strong><br>{{ model.jobType }}</div>
+          <div class="col-md-4"><strong>Salary:</strong><br>{{ model.salaryMin }} - {{ model.salaryMax }} AED</div>
+        </ng-container>
 
-    <!-- ELECTRONICS -->
-    <ng-container *ngIf="mainCatId === 2">
-      <div class="detail-row"><span>Brand</span><span>{{ model.brand }}</span></div>
-      <div class="detail-row"><span>Model</span><span>{{ model.electronicsModel }}</span></div>
-      <div class="detail-row"><span>Condition</span><span>{{ model.electronicsCondition }}</span></div>
-      <div class="detail-row"><span>Price</span><span>AED {{ model.price }}</span></div>
-    </ng-container>
+        <ng-container *ngIf="mainCatId === 3">
+          <div class="col-md-4"><strong>Type:</strong><br>{{ model.saleType }}</div>
+          <div class="col-md-4"><strong>Area:</strong><br>{{ model.area }} sq.ft</div>
+          <div class="col-md-4"><strong>Bed/Bath:</strong><br>{{ model.bedrooms }} Bed / {{ model.bathrooms }} Bath</div>
+          <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
+        </ng-container>
 
-    <!-- PROPERTY -->
-    <ng-container *ngIf="mainCatId === 3">
-      <div class="detail-row"><span>For</span><span>{{ model.saleType }}</span></div>
-      <div class="detail-row"><span>Bedrooms</span><span>{{ model.bedrooms }}</span></div>
-      <div class="detail-row"><span>Bathrooms</span><span>{{ model.bathrooms }}</span></div>
-      <div class="detail-row"><span>Area</span><span>{{ model.area }}</span></div>
-    </ng-container>
+        <ng-container *ngIf="mainCatId === 5">
+          <div class="col-md-4"><strong>Brand:</strong><br>{{ model.brand }}</div>
+          <div class="col-md-4"><strong>Model:</strong><br>{{ model.electronicsModel }}</div>
+          <div class="col-md-4"><strong>Condition:</strong><br>{{ model.condition }}</div>
+          <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
+        </ng-container>
 
-    <!-- CLASSIFIEDS / FURNITURE -->
-    <ng-container *ngIf="mainCatId === 4 || mainCatId === 5">
-      <div class="detail-row"><span>Condition</span><span>{{ model.itemCondition }}</span></div>
-      <div class="detail-row"><span>Material</span><span>{{ model.material }}</span></div>
-    </ng-container>
-
-    <!-- JOBS -->
-    <ng-container *ngIf="mainCatId === 6">
-      <div class="detail-row"><span>Job Title</span><span>{{ model.jobTitle }}</span></div>
-      <div class="detail-row"><span>Company</span><span>{{ model.companyName }}</span></div>
-      <div class="detail-row"><span>Industry</span><span>{{ model.industry }}</span></div>
-      <div class="detail-row"><span>Job Type</span><span>{{ model.jobType }}</span></div>
-      <div class="detail-row"><span>Experience</span><span>{{ model.experience }}</span></div>
-      <div class="detail-row"><span>Salary</span><span>{{ model.salaryMin }} - {{ model.salaryMax }}</span></div>
-    </ng-container>
-  </section>
-
-  <!-- JOB EXTRA SECTIONS -->
-  <section *ngIf="mainCatId === 6" class="section-block mb-4">
-    <h5>Job Description</h5>
-    <p>{{ model.jobDescription }}</p>
-
-    <h5>Responsibilities</h5>
-    <p>{{ model.responsibilities }}</p>
-
-    <h5>Requirements</h5>
-    <p>{{ model.requirements }}</p>
-
-    <h5>Benefits</h5>
-    <p>{{ model.benefits }}</p>
-  </section>
-
-  <!-- CONTACT -->
-  <section class="section-block mb-4">
-    <h5>Contact</h5>
-
-    <div *ngIf="mainCatId !== 6">
-      <div>{{ model.name }}</div>
-      <div>+971 {{ model.phone }}</div>
+        <ng-container *ngIf="mainCatId === 6">
+          <div class="col-md-4"><strong>Material:</strong><br>{{ model.material }}</div>
+          <div class="col-md-4"><strong>Condition:</strong><br>{{ model.itemCondition }}</div>
+          <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
+        </ng-container>
+      </div>
     </div>
+  </div>
 
-    <div *ngIf="mainCatId === 6">
-      <div>{{ model.companyWebsite }}</div>
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <h5>Additional Information</h5>
+      
+      <p class="text-secondary" style="white-space: pre-line;" *ngIf="mainCatId !== 2">{{ model.description }}</p>
+
+      <div *ngIf="mainCatId === 2">
+        <strong class="d-block mt-3">Job Description:</strong>
+        <p class="text-secondary small" style="white-space: pre-line;">{{ model.description }}</p>
+        
+        <strong class="d-block mt-3">Requirements:</strong>
+        <p class="text-secondary small" style="white-space: pre-line;">{{ model.responsibilities
+ }}</p>
+      </div>
+      
+      <div class="mt-4 p-3 bg-light rounded border-start border-primary border-4">
+        <h6 class="mb-2">Contact Details</h6>
+        <div><strong>Posted By:</strong> {{ model.contactName }}</div>
+        <div *ngIf="model.contactPhone"><strong>Phone:</strong> +971 {{ model.contactPhone }}</div>
+        <div *ngIf="model.city"><strong>Location:</strong> {{ model.city }}</div>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <!-- BUTTONS -->
-  <div class="buttons-row">
-    <button class="btn btn-outline-secondary" (click)="editAd()">Edit</button>
-    <button class="btn btn-warning" [disabled]="isSubmitting" (click)="publishAd()">
-      {{ isSubmitting ? 'Publishing...' : 'Publish Ad' }}
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-outline-secondary px-5 py-2" (click)="editAd()" [disabled]="isSubmitting">
+      <i class="bi bi-arrow-left me-2"></i> Back to Edit
+    </button>
+    <button class="btn btn-primary flex-grow-1 fw-bold py-2 shadow-sm" (click)="publishAd()" [disabled]="isSubmitting">
+      <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+      {{ isSubmitting ? 'Uploading & Publishing...' : 'Confirm & Publish Ad' }}
     </button>
   </div>
 </div>
 
+<div class="modal-backdrop fade show" *ngIf="showSuccessModal"></div>
+<div class="modal d-block" tabindex="-1" *ngIf="showSuccessModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg text-center p-4">
+      <div class="modal-body">
+        <div class="success-icon mb-4">
+          <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+        </div>
+        <h2 class="fw-bold">Ad Published!</h2>
+        <p class="text-muted mb-4">Your advertisement for <strong>{{ model.title }}</strong> is now live.</p>
+        
+        <div class="d-grid gap-2">
+          <button class="btn btn-primary btn-lg rounded-pill" (click)="goToMyAds()">Manage My Listings</button>
+          <button class="btn btn-link text-decoration-none" (click)="router.navigate(['/home'])">Back to Homepage</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <ng-template #noDraft>
-  <p>No draft found</p>
+  <div class="text-center mt-5 py-5 card shadow-sm mx-auto" style="max-width: 500px;">
+    <h3 class="text-muted">No draft found</h3>
+    <p>Please go back and fill in the details.</p>
+    <button class="btn btn-primary mx-auto px-4" (click)="editAd()">Create New Ad</button>
+  </div>
 </ng-template>

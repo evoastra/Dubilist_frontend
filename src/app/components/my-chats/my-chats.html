@@ -1,0 +1,113 @@
+
+<div class="cont">
+   <div class="container-fluid chat-wrapper">
+  <div class="row h-100">
+
+    <!-- LEFT: CHAT LIST -->
+    <div class="col-md-4 chat-list border-end">
+
+      <h1 class="fw-bold mb-3">Chats</h1>
+
+      <input
+        type="text"
+        class="form-control mb-3"
+        placeholder="Search by name"
+      />
+
+      <div *ngIf="isLoadingRooms" class="text-center py-4">
+        <div class="spinner-border text-warning"></div>
+      </div>
+
+      <div
+        *ngFor="let room of rooms"
+        class="chat-user"
+        (click)="openRoom(room)"
+        [class.active]="room.id === selectedRoom?.id">
+
+        <img
+          [src]="room.otherParty.avatarUrl || 'assets/avatar.png'"
+          class="avatar"
+        />
+
+        <div class="flex-grow-1">
+          <div class="fw-semibold">{{ room.otherParty.name }}</div>
+          <small class="text-muted">
+            {{ room.lastMessage?.content || 'No messages yet' }}
+          </small>
+        </div>
+
+        <div class="text-end">
+          <small class="text-muted">
+            {{ room.lastMessage?.createdAt | date:'shortTime' }}
+          </small>
+
+          <span *ngIf="room.unreadCount > 0" class="badge bg-warning text-dark ms-2">
+            {{ room.unreadCount }}
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: CHAT WINDOW -->
+    <div class="col-md-8 chat-window" *ngIf="selectedRoom">
+
+      <!-- HEADER -->
+      <div class="chat-header border-bottom">
+        <img
+          [src]="selectedRoom.otherParty.avatarUrl || 'assets/avatar.png'"
+          class="avatar me-2"
+        />
+        <div>
+          <div class="fw-semibold">{{ selectedRoom.otherParty.name }}</div>
+          <small class="text-success">Online</small>
+        </div>
+      </div>
+
+      <!-- SAFETY NOTE -->
+      <div class="alert alert-warning small text-center m-2">
+        Tip: Never share personal financial details. Meet in a public place.
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="chat-messages" id="chatMessages">
+        <div
+          *ngFor="let msg of messages"
+          class="message"
+          [class.me]="msg.senderId !== selectedRoom.otherParty.id">
+
+          <div class="bubble">
+            {{ msg.content }}
+            <small class="time">
+              {{ msg.createdAt | date:'shortTime' }}
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- INPUT -->
+      <div class="chat-input border-top">
+        <input
+          [(ngModel)]="messageText"
+          (keyup.enter)="sendMessage()"
+          placeholder="Type a message..."
+          class="form-control"
+        />
+        <button class="btn btn-warning ms-2" (click)="sendMessage()">
+          Send
+        </button>
+      </div>
+
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="col-md-8 d-flex align-items-center justify-content-center" *ngIf="!selectedRoom">
+      <div class="text-muted">
+        Select a chat to start messaging
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>

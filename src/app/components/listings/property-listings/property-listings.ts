@@ -1,8 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ListingsService } from '../../../services/listing-service';
+import { Router } from '@angular/router';
 
+import { ListingsService } from '../../../services/listing-service';
+import { AuthService } from '../../../services/auth-service';
+import { ChatService } from '../../../services/chat-service';
+
+/* =======================
+   INTERFACE
+======================= */
 export interface PropertyListing {
   id: number;
   title: string;
@@ -13,19 +20,17 @@ export interface PropertyListing {
   description?: string;
 
   image: string;
-  images?: string[];
+  images: string[];
 
-  bedrooms?: number;
-  bathrooms?: number;
-  area?: number;
-  furnishing?: string;
   propertyType?: string;
+  furnishing?: string;
   amenities?: string[];
 
   sellerName?: string;
   sellerPhone?: string;
-  sellerEmail?: string;
   sellerImage?: string;
+
+  isFavorite: boolean;
 }
 
 @Component({
@@ -37,32 +42,36 @@ export interface PropertyListing {
 })
 export class PropertyListingsComponent implements OnInit {
 
-  /* ================= DATA ================= */
+  /* =======================
+     DATA
+  ======================= */
   listings: PropertyListing[] = [];
   filteredListings: PropertyListing[] = [];
+  visibleListings: PropertyListing[] = [];
+
   selectedListing: PropertyListing | null = null;
 
   isLoading = false;
+  isFetchingMore = false;
+  allLoaded = false;
 
-  /* ================= SEARCH & SORT ================= */
+  isLoggedIn = false;
+
+  /* =======================
+     SKELETON
+  ======================= */
+  skeletonArray = Array.from({ length: 12 });
+
+  /* =======================
+     SEARCH
+  ======================= */
   searchQuery = '';
-  selectedSortBy: 'popular' | 'newest' | 'price-low' | 'price-high' = 'popular';
 
-  /* ================= FILTERS ================= */
-  propertyTypes = ['Apartment', 'Villa', 'Townhouse', 'Studio'];
+  /* =======================
+     FILTERS (kept to satisfy HTML)
+  ======================= */
+  propertyTypes = ['Apartment', 'Villa', 'Studio'];
   selectedPropertyTypes: string[] = [];
-
-  locations = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK', 'Fujairah'];
-  selectedLocation = 'Dubai';
-
-  minPrice = 0;
-  maxPrice = 0;
-
-  bedrooms = 0;
-  bathrooms = 0;
-
-  minArea = 0;
-  maxArea = 0;
 
   furnishingOptions = ['Any', 'Furnished', 'Unfurnished'];
   selectedFurnishing = 'any';
@@ -70,146 +79,117 @@ export class PropertyListingsComponent implements OnInit {
   amenitiesOptions = ['Parking', 'Gym', 'Pool', 'Balcony', 'Security'];
   selectedAmenities: string[] = [];
 
-  /* ================= PAGINATION ================= */
-  currentPage = 1;
+  /* =======================
+     INFINITE SCROLL
+  ======================= */
   pageSize = 12;
-  totalPages = 1;
+  currentPage = 1;
 
-  /* ================= DETAIL VIEW ================= */
+  /* =======================
+     DETAIL VIEW
+  ======================= */
   currentImageIndex = 0;
-  isFavorite = false;
 
-  constructor(private listingService: ListingsService) {}
+  constructor(
+    private listingsService: ListingsService,
+    private authService: AuthService,
+    private chatService: ChatService,
+    private router: Router
+  ) {}
 
+  /* =======================
+     INIT
+  ======================= */
   ngOnInit(): void {
+    this.isLoggedIn = this.authService.isLoggedIn();
     this.loadListings();
   }
 
-  /* ================= API (ONCE ONLY) ================= */
+  /* =======================
+     LOAD LISTINGS
+  ======================= */
   loadListings(): void {
     this.isLoading = true;
 
-    this.listingService.getAllListings(1).subscribe({
-      next: res => {
-        this.listings = res.data.map((l: any): PropertyListing => ({
-          id: l.id,
-          title: l.title,
-          price: Number(l.price),
-          currency: l.currency || 'AED',
-          type: l.listingType || 'For Sale',
-          location: l.city,
-          description: l.description,
+    this.listingsService.getAllListings(3).subscribe({
+      next: (res: any) => {
+        const mapped = res.data.map((l: any) =>
+          this.mapBackendListing(l)
+        );
 
-          image: l.images?.[0]?.imageUrl || 'assets/images/no-image.png',
-          images: l.images?.map((i: any) => i.imageUrl) || [],
+        if (!this.isLoggedIn) {
+          this.listings = mapped;
+          this.applyFilters();
+          this.isLoading = false;
+          return;
+        }
 
-          bedrooms: l.propertyDetails?.bedrooms,
-          bathrooms: l.propertyDetails?.bathrooms,
-          area: l.propertyDetails?.areaSqft,
-          furnishing: l.propertyDetails?.furnishing,
-          propertyType: l.propertyDetails?.propertyType,
-          amenities: l.propertyDetails?.amenities || [],
-
-          sellerName: l.user?.name,
-          sellerPhone: l.contactPhone,
-          sellerEmail: l.contactEmail,
-          sellerImage: l.user?.avatarUrl
-        }));
-
-        this.applyAllFilters();
-        this.isLoading = false;
+        this.listingsService.getFavoriteListingIds().subscribe({
+          next: (favIds: number[]) => {
+            const favSet = new Set<number>(favIds);
+            this.listings = mapped.map((l: PropertyListing) => ({
+              ...l,
+              isFavorite: favSet.has(l.id)
+            }));
+            this.applyFilters();
+            this.isLoading = false;
+          },
+          error: () => {
+            this.listings = mapped;
+            this.applyFilters();
+            this.isLoading = false;
+          }
+        });
       },
-      error: err => {
-        console.error('Listings error', err);
-        this.isLoading = false;
-      }
+      error: () => (this.isLoading = false)
     });
   }
 
-  /* ================= FILTER / SORT ================= */
-  applyAllFilters(): void {
+  /* =======================
+     FILTERS (SAFE DEFAULTS)
+  ======================= */
+  applyFilters(): void {
     let data = [...this.listings];
 
-    /* Search */
     if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
       data = data.filter(l =>
-        l.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        l.location.toLowerCase().includes(this.searchQuery.toLowerCase())
+        l.title.toLowerCase().includes(q) ||
+        l.location.toLowerCase().includes(q)
       );
     }
 
-    /* Location */
-    if (this.selectedLocation) {
-      data = data.filter(l => l.location.includes(this.selectedLocation));
-    }
-
-    /* Property Type */
     if (this.selectedPropertyTypes.length) {
       data = data.filter(l =>
-        l.propertyType && this.selectedPropertyTypes.includes(l.propertyType)
+        l.propertyType &&
+        this.selectedPropertyTypes.includes(l.propertyType)
       );
     }
 
-    /* Furnishing */
     if (this.selectedFurnishing !== 'any') {
-      data = data.filter(l =>
-        l.furnishing?.toLowerCase() === this.selectedFurnishing
+      data = data.filter(
+        l => l.furnishing?.toLowerCase() === this.selectedFurnishing
       );
     }
 
-    /* Amenities */
     if (this.selectedAmenities.length) {
       data = data.filter(l =>
         this.selectedAmenities.every(a => l.amenities?.includes(a))
       );
     }
 
-    /* Numeric filters */
-    if (this.minPrice) data = data.filter(l => l.price >= this.minPrice);
-    if (this.maxPrice) data = data.filter(l => l.price <= this.maxPrice);
-    if (this.bedrooms) data = data.filter(l => (l.bedrooms || 0) >= this.bedrooms);
-    if (this.bathrooms) data = data.filter(l => (l.bathrooms || 0) >= this.bathrooms);
-    if (this.minArea) data = data.filter(l => (l.area || 0) >= this.minArea);
-    if (this.maxArea) data = data.filter(l => (l.area || 0) <= this.maxArea);
-
-    /* Sorting */
-    switch (this.selectedSortBy) {
-      case 'price-low':
-        data.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        data.sort((a, b) => b.price - a.price);
-        break;
-      case 'newest':
-        data.sort((a, b) => b.id - a.id);
-        break;
-    }
-
-    this.totalPages = Math.ceil(data.length / this.pageSize);
-    this.filteredListings = data.slice(
-      (this.currentPage - 1) * this.pageSize,
-      this.currentPage * this.pageSize
-    );
+    this.filteredListings = data;
+    this.resetInfiniteScroll();
   }
 
-  /* ================= UI HANDLERS ================= */
-  onSearch(): void {
-    this.currentPage = 1;
-    this.applyAllFilters();
-  }
-
-  selectSortBy(sort: any): void {
-    this.selectedSortBy = sort;
-    this.applyAllFilters();
-  }
-
+  /* =======================
+     FILTER HELPERS (HTML-safe)
+  ======================= */
   togglePropertyType(type: string): void {
     const i = this.selectedPropertyTypes.indexOf(type);
-    i >= 0 ? this.selectedPropertyTypes.splice(i, 1) : this.selectedPropertyTypes.push(type);
-  }
-
-  isPropertyTypeSelected(type: string): boolean {
-    return this.selectedPropertyTypes.includes(type);
+    i >= 0
+      ? this.selectedPropertyTypes.splice(i, 1)
+      : this.selectedPropertyTypes.push(type);
   }
 
   selectFurnishing(option: string): void {
@@ -218,35 +198,80 @@ export class PropertyListingsComponent implements OnInit {
 
   toggleAmenity(amenity: string): void {
     const i = this.selectedAmenities.indexOf(amenity);
-    i >= 0 ? this.selectedAmenities.splice(i, 1) : this.selectedAmenities.push(amenity);
+    i >= 0
+      ? this.selectedAmenities.splice(i, 1)
+      : this.selectedAmenities.push(amenity);
   }
 
-  isAmenitySelected(amenity: string): boolean {
-    return this.selectedAmenities.includes(amenity);
+  onSearch(): void {
+    this.applyFilters();
   }
 
-  applyFilters(): void {
+  /* =======================
+     INFINITE SCROLL
+  ======================= */
+  resetInfiniteScroll(): void {
     this.currentPage = 1;
-    this.applyAllFilters();
+    this.allLoaded = false;
+    this.visibleListings = [];
+    this.loadNextPage();
   }
 
-  /* ================= PAGINATION ================= */
-  onPageChange(page: number): void {
-    this.currentPage = page;
-    this.applyAllFilters();
+  loadNextPage(): void {
+    if (this.isFetchingMore || this.allLoaded) return;
+
+    this.isFetchingMore = true;
+
+    setTimeout(() => {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = this.currentPage * this.pageSize;
+
+      const chunk = this.filteredListings.slice(start, end);
+
+      if (!chunk.length) {
+        this.allLoaded = true;
+      } else {
+        this.visibleListings.push(...chunk);
+        this.currentPage++;
+      }
+
+      this.isFetchingMore = false;
+    }, 500);
   }
 
-  previousPage(): void {
-    if (this.currentPage > 1) this.onPageChange(this.currentPage - 1);
+  onScroll(): void {
+    const nearBottom =
+      window.innerHeight + window.scrollY >=
+      document.body.offsetHeight - 200;
+
+    if (nearBottom) this.loadNextPage();
   }
 
-  nextPage(): void {
-    if (this.currentPage < this.totalPages) this.onPageChange(this.currentPage + 1);
+  /* =======================
+     FAVORITES
+  ======================= */
+  toggleFavorite(listing: PropertyListing, event: MouseEvent): void {
+    event.stopPropagation();
+    if (!this.isLoggedIn) return;
+
+    if (listing.isFavorite) {
+      this.listingsService
+        .removeFromFavorites(listing.id)
+        .subscribe(() => (listing.isFavorite = false));
+    } else {
+      this.listingsService
+        .addToFavorites(listing.id)
+        .subscribe(() => (listing.isFavorite = true));
+    }
   }
 
-  /* ================= DETAIL VIEW ================= */
+  /* =======================
+     DETAIL VIEW
+  ======================= */
   viewListing(id: number): void {
-    this.selectedListing = this.listings.find(l => l.id === id) || null;
+   this.listingsService.getSingleListing(id).subscribe(listing=>{
+      this.selectedListing = this.mapBackendListing(listing.data);
+   })
     this.currentImageIndex = 0;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -256,22 +281,26 @@ export class PropertyListingsComponent implements OnInit {
   }
 
   previousImage(): void {
-    if (!this.selectedListing?.images?.length) return;
+    if (!this.selectedListing || this.selectedListing.images.length < 2) return;
     this.currentImageIndex =
       (this.currentImageIndex - 1 + this.selectedListing.images.length) %
       this.selectedListing.images.length;
   }
 
   nextImage(): void {
-    if (!this.selectedListing?.images?.length) return;
+    if (!this.selectedListing || this.selectedListing.images.length < 2) return;
     this.currentImageIndex =
-      (this.currentImageIndex + 1) % this.selectedListing.images.length;
+      (this.currentImageIndex + 1) %
+      this.selectedListing.images.length;
   }
 
-  selectImage(index: number): void {
-    this.currentImageIndex = index;
+  selectImage(i: number): void {
+    this.currentImageIndex = i;
   }
 
+  /* =======================
+     CONTACT
+  ======================= */
   callSeller(): void {
     if (this.selectedListing?.sellerPhone) {
       window.location.href = `tel:${this.selectedListing.sellerPhone}`;
@@ -284,33 +313,46 @@ export class PropertyListingsComponent implements OnInit {
     window.open(`https://wa.me/${phone}`, '_blank');
   }
 
-  toggleFavorite(): void {
-    this.isFavorite = !this.isFavorite;
+  startChatWithSeller(listing: PropertyListing): void {
+    if (!this.isLoggedIn) return;
+
+    this.chatService.createOrGetRoom(listing.id).subscribe({
+      next: (res: any) => {
+        const roomId = res?.data?.id;
+        if (roomId) {
+          this.router.navigate(['/my-chats'], {
+            queryParams: { roomId }
+          });
+        }
+      }
+    });
   }
 
-  reportAd(): void {
-    alert('Reported successfully');
+  /* =======================
+     MAPPER
+  ======================= */
+  mapBackendListing(l: any): PropertyListing {
+    return {
+      id: l.id,
+      title: l.title,
+      price: Number(l.price),
+      currency: l.currency || 'AED',
+      type: l.listingType || 'For Sale',
+      location: l.city,
+      description: l.description,
+
+      image: l.images?.[0]?.imageUrl || 'assets/no-image.jpg',
+      images: l.images?.map((i: any) => i.imageUrl) || [],
+
+      propertyType: l.propertyDetails?.propertyType,
+      furnishing: l.propertyDetails?.furnishing,
+      amenities: l.propertyDetails?.amenities || [],
+
+      sellerName: l.user?.name,
+      sellerPhone: l.contactPhone,
+      sellerImage: l.user?.avatarUrl || 'assets/avatar.png',
+
+      isFavorite: false
+    };
   }
-  /* ================= BEDROOM COUNTERS ================= */
-incrementBedrooms(): void {
-  this.bedrooms++;
-}
-
-decrementBedrooms(): void {
-  if (this.bedrooms > 0) {
-    this.bedrooms--;
-  }
-}
-
-/* ================= BATHROOM COUNTERS ================= */
-incrementBathrooms(): void {
-  this.bathrooms++;
-}
-
-decrementBathrooms(): void {
-  if (this.bathrooms > 0) {
-    this.bathrooms--;
-  }
-}
-
 }

@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ListingsService {
 
-  private baseUrl = `${environment.apiUrl}/listings`;
+  private baseUrl = `${environment.apiUrl}/api/listings`;
+  private usersUrl = `${environment.apiUrl}/api/users`;
+  private favoritesUrl = `${environment.apiUrl}/api/favorites`;
 
   constructor(private http: HttpClient) {}
 
@@ -66,6 +68,27 @@ export class ListingsService {
    */
   deleteListing(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`);
+  }
+   getMyListings(): Observable<any> {
+     return this.http.get(`${this.usersUrl}/me/listings`);
+  }
+
+  getMyFavorites(): Observable<any> {
+    return this.http.get(this.favoritesUrl);
+  }
+
+   getFavoriteListingIds(): Observable<number[]> {
+    return this.http.get<{ success: boolean; data: any[] }>(`${this.favoritesUrl}`).pipe(
+      map((response: any) => response.data.map((fav: any) => fav.listingId))
+    );
+  }
+
+  addToFavorites(listingId: number): Observable<any> {
+    return this.http.post(`${this.favoritesUrl}/${listingId}`, {});
+  }
+
+  removeFromFavorites(listingId: number): Observable<any> {
+    return this.http.delete(`${this.favoritesUrl}/${listingId}`);
   }
 
   /**

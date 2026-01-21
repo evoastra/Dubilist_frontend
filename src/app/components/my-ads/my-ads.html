@@ -1,0 +1,70 @@
+<div class="my-ads-page mx-5">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>My Ads</h1>
+    <button class="btn btn-warning text-white" (click)="postNewAd()">
+      Post New Ad
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs mb-4">
+    <button
+      class="tab"
+      [class.active]="activeTab === 'active'"
+      (click)="activeTab = 'active'">
+      Active
+    </button>
+    <button
+      class="tab"
+      [class.active]="activeTab === 'inactive'"
+      (click)="activeTab = 'inactive'">
+      Inactive
+    </button>
+  </div>
+
+  <!-- Loader -->
+  <p *ngIf="loading">Loading...</p>
+
+  <!-- Empty -->
+  <p *ngIf="!loading && filteredAds.length === 0">
+    No ads found.
+  </p>
+
+  <!-- Ads -->
+  <div *ngFor="let ad of filteredAds" class="ad-card mx-5">
+
+    <img
+      class="ad-image"
+      [src]="ad.images?.[0]?.imageUrl || 'assets/no-image.png'" />
+
+    <div class="ad-info d-flex flex-row justify-content-between">
+      <div>
+          <h5>{{ ad.title }}</h5>
+
+      <p class="price" *ngIf="ad.price">
+        AED {{ ad.price }}
+      </p>
+
+      <p class="meta">
+        {{ ad.category?.name }}
+      </p>
+
+      <p class="meta">
+        Posted recently
+      </p>
+      </div>
+     
+     <div>
+        <button
+        class="btn btn-warning text-white"
+        (click)="removeAd(ad.id)">
+        Remove Ad
+      </button>
+     </div>
+      
+    </div>
+  </div>
+
+</div>

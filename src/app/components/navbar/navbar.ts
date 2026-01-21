@@ -106,13 +106,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   navigateToFavourites(): void {
     if (!this.isAdmin) {
-      this.router.navigate(['/favourites']);
+      this.router.navigate(['/my-favourites']);
     }
   }
 
   navigateToChats(): void {
     if (!this.isAdmin) {
-      this.router.navigate(['/chats']);
+      this.router.navigate(['/my-chats']);
     }
   }
 

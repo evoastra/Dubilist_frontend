@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ListingsService } from '../../../services/listing-service';
+import { AuthService } from '../../../services/auth-service';
+import { ChatService } from '../../../services/chat-service';
+import { Router } from '@angular/router';
 
 export interface MotorsListing {
   id: number;
@@ -22,6 +25,7 @@ export interface MotorsListing {
   sellerName: string;
   sellerPhone: string;
   sellerImage: string;
+  isFavorite: boolean;
 }
 
 @Component({
@@ -29,46 +33,38 @@ export interface MotorsListing {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './motor-listings.html',
-  styleUrls: ['./motor-listings.css']
+  styleUrls: ['./motor-listings.css'],
 })
 export class MotorListingsComponent implements OnInit {
-
-  // =====================
-  // DATA
-  // =====================
-  listings: MotorsListing[] = [];
-  filteredBaseListings: MotorsListing[] = [];
-  paginatedListings: MotorsListing[] = [];
+  /* =====================
+     DATA SOURCES
+  ===================== */
+  allListings: MotorsListing[] = [];
+  filteredListings: MotorsListing[] = [];
+  paginatedListings: MotorsListing[] = []; // 🔥 REQUIRED BY HTML
 
   selectedListing: MotorsListing | null = null;
 
+  /* =====================
+     STATE
+  ===================== */
   isLoading = false;
+  isFetchingMore = false;
+  allLoaded = false;
+  isLoggedIn = false;
+
   currentImageIndex = 0;
-  isFavorite = false;
 
-  // =====================
-  // SEARCH & SORT
-  // =====================
+  /* =====================
+     INFINITE SCROLL
+  ===================== */
+  pageSize = 12;
+  currentPage = 1;
+
+  /* =====================
+     SEARCH & FILTERS
+  ===================== */
   searchQuery = '';
-  selectedSortBy = 'newest';
-
-  // =====================
-  // FILTERS
-  // =====================
-  selectedMakes: string[] = [];
-  makes = ['Toyota', 'Mercedes', 'BMW', 'Honda', 'Yamaha', 'Audi'];
-
-  selectedModels: string[] = [];
-  models = ['Camry', 'V4', 'S1000RR', 'Civic', 'R1', 'A4'];
-
-  minPrice = 0;
-  maxPrice = 0;
-
-  minYear = 2018;
-  maxYear = 2024;
-
-  minMileage = 0;
-  maxMileage = 100000;
 
   selectedFuel = '';
   fuels = ['Petrol', 'Diesel', 'Electric'];
@@ -79,226 +75,248 @@ export class MotorListingsComponent implements OnInit {
   selectedCondition = 'New';
   conditions = ['New', 'Like New', 'Used'];
 
-  // =====================
-  // PAGINATION
-  // =====================
-  currentPage = 1;
-  pageSize = 12;
-  totalPages = 0;
+  constructor(
+    private listingsService: ListingsService,
+    private authService: AuthService,
+    private chatService: ChatService,
+    private router: Router
+  ) {}
 
-  constructor(private listingsService: ListingsService) {}
-
-  ngOnInit() {
-    this.loadListings();
+  /* =====================
+     INIT
+  ===================== */
+  ngOnInit(): void {
+    this.isLoggedIn = this.authService.isLoggedIn();
+    this.fetchListings();
   }
 
-  // =====================
-  // FETCH (ONCE)
-  // =====================
-  loadListings() {
+  /* =====================
+     FETCH FROM API
+  ===================== */
+  fetchListings(): void {
     this.isLoading = true;
 
     this.listingsService.getAllListings(1).subscribe({
       next: (res: any) => {
-        this.listings = res.data.map(this.mapBackendListing);
-        this.applyFilters();
+        const mapped: MotorsListing[] = res.data.map((l: any) =>
+          this.mapBackendListing(l)
+        );
+
+        this.allListings = mapped;
+        this.filteredListings = [...mapped];
+
+        this.resetPagination(); // 🔥 KEY FIX
         this.isLoading = false;
       },
       error: () => {
         this.isLoading = false;
-      }
+      },
     });
   }
 
-  // =====================
-  // FILTER / SEARCH / SORT
-  // =====================
-  applyFilters() {
-    let result = [...this.listings];
+  /* =====================
+     FILTERS
+  ===================== */
+  applyFilters(): void {
+    let result = [...this.allListings];
 
-    if (this.minPrice > 0) result = result.filter(l => l.price >= this.minPrice);
-    if (this.maxPrice > 0) result = result.filter(l => l.price <= this.maxPrice);
-
-    if (this.minYear) result = result.filter(l => l.year >= this.minYear);
-    if (this.maxYear) result = result.filter(l => l.year <= this.maxYear);
-
-    if (this.minMileage > 0)
-      result = result.filter(l => parseInt(l.mileage) >= this.minMileage);
-    if (this.maxMileage > 0)
-      result = result.filter(l => parseInt(l.mileage) <= this.maxMileage);
-
-    if (this.selectedMakes.length)
-      result = result.filter(l => this.selectedMakes.includes(l.make));
-
-    if (this.selectedModels.length)
-      result = result.filter(l => this.selectedModels.includes(l.model));
-
-    if (this.selectedFuel)
+    if (this.selectedFuel) {
       result = result.filter(l => l.fuel === this.selectedFuel);
+    }
 
-    if (this.selectedTransmission)
+    if (this.selectedTransmission) {
       result = result.filter(l => l.transmission === this.selectedTransmission);
+    }
 
-    if (this.selectedCondition)
+    if (this.selectedCondition) {
       result = result.filter(l => l.condition === this.selectedCondition);
+    }
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
-      result = result.filter(l =>
-        l.title.toLowerCase().includes(q) ||
-        l.make.toLowerCase().includes(q) ||
-        l.model.toLowerCase().includes(q)
+      result = result.filter(
+        l =>
+          l.title.toLowerCase().includes(q) ||
+          l.make.toLowerCase().includes(q) ||
+          l.model.toLowerCase().includes(q)
       );
     }
 
-    result = this.sortListings(result);
-
-    this.filteredBaseListings = result;
-    this.currentPage = 1;
-    this.updatePagination();
+    this.filteredListings = result;
+    this.resetPagination();
   }
 
-  sortListings(list: MotorsListing[]) {
-    switch (this.selectedSortBy) {
-      case 'price_low':
-        return list.sort((a, b) => a.price - b.price);
-      case 'price_high':
-        return list.sort((a, b) => b.price - a.price);
-      case 'oldest':
-        return list.sort((a, b) => a.year - b.year);
-      default:
-        return list.sort((a, b) => b.year - a.year);
-    }
-  }
-
-  onSearch() {
-    this.applyFilters();
-  }
-
-  // =====================
-  // PAGINATION
-  // =====================
-  updatePagination() {
-    this.totalPages = Math.ceil(this.filteredBaseListings.length / this.pageSize);
-
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-
-    this.paginatedListings = this.filteredBaseListings.slice(start, end);
-  }
-
-  goToPage(page: number) {
-    if (page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
-    this.updatePagination();
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.updatePagination();
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updatePagination();
-    }
-  }
-
-  // =====================
-  // TEMPLATE HELPERS
-  // =====================
-  selectFuel(fuel: string) {
+  selectFuel(fuel: string): void {
     this.selectedFuel = fuel;
     this.applyFilters();
   }
 
-  selectTransmission(trans: string) {
+  selectTransmission(trans: string): void {
     this.selectedTransmission = trans;
     this.applyFilters();
   }
 
-  selectCondition(cond: string) {
+  selectCondition(cond: string): void {
     this.selectedCondition = cond;
     this.applyFilters();
   }
 
-  toggleMake(make: string) {
-    const i = this.selectedMakes.indexOf(make);
-    i > -1 ? this.selectedMakes.splice(i, 1) : this.selectedMakes.push(make);
-    this.applyFilters();
-  }
-
-  toggleModel(model: string) {
-    const i = this.selectedModels.indexOf(model);
-    i > -1 ? this.selectedModels.splice(i, 1) : this.selectedModels.push(model);
-    this.applyFilters();
-  }
-
-  isMakeSelected(make: string) {
-    return this.selectedMakes.includes(make);
-  }
-
-  isModelSelected(model: string) {
-    return this.selectedModels.includes(model);
-  }
-
-  isConditionSelected(cond: string) {
+  isConditionSelected(cond: string): boolean {
     return this.selectedCondition === cond;
   }
 
-  // =====================
-  // DETAIL VIEW
-  // =====================
-  viewListing(id: number) {
-    this.selectedListing = this.listings.find(l => l.id === id)!;
+  onSearch(): void {
+
+     let result = [...this.allListings];
+
+     const q = this.searchQuery.toLowerCase().trim();
+      result = result.filter(
+        l =>
+          l.title.toLowerCase().includes(q) 
+      );
+      this.filteredListings = result;
+      this.resetPagination();
+  }
+
+  /* =====================
+     INFINITE SCROLL
+  ===================== */
+  onScroll(): void {
+    if (this.isFetchingMore || this.allLoaded) return;
+
+    const threshold = 300;
+    const position = window.innerHeight + window.scrollY;
+    const height = document.body.offsetHeight;
+
+    if (position + threshold >= height) {
+      this.loadMore();
+    }
+  }
+
+  loadMore(): void {
+    this.isFetchingMore = true;
+
+    setTimeout(() => {
+      this.currentPage++;
+      this.appendPage();
+      this.isFetchingMore = false;
+    }, 500);
+  }
+
+  resetPagination(): void {
+    this.currentPage = 1;
+    this.allLoaded = false;
+    this.paginatedListings = [];
+    this.appendPage();
+  }
+
+  appendPage(): void {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    const nextChunk = this.filteredListings.slice(start, end);
+
+    if (nextChunk.length === 0) {
+      this.allLoaded = true;
+      return;
+    }
+
+    this.paginatedListings = [...this.paginatedListings, ...nextChunk];
+  }
+
+  /* =====================
+     FAVORITES
+  ===================== */
+  toggleFavorite(listing: MotorsListing, event: MouseEvent): void {
+    event.stopPropagation();
+    if (!this.isLoggedIn) return;
+
+    listing.isFavorite = !listing.isFavorite;
+
+    if (listing.isFavorite) {
+      this.listingsService.addToFavorites(listing.id).subscribe();
+    } else {
+      this.listingsService.removeFromFavorites(listing.id).subscribe();
+    }
+  }
+
+  /* =====================
+     DETAIL VIEW
+  ===================== */
+  viewListing(id: number): void {
+    this.selectedListing =
+      this.allListings.find(l => l.id === id) || null;
     this.currentImageIndex = 0;
   }
 
-  closeDetail() {
+  closeDetail(): void {
     this.selectedListing = null;
   }
 
-  previousImage() {
+  previousImage(): void {
     if (!this.selectedListing) return;
     this.currentImageIndex =
       (this.currentImageIndex - 1 + this.selectedListing.images.length) %
       this.selectedListing.images.length;
   }
 
-  nextImage() {
+  nextImage(): void {
     if (!this.selectedListing) return;
     this.currentImageIndex =
       (this.currentImageIndex + 1) %
       this.selectedListing.images.length;
   }
 
-  selectImage(i: number) {
+  selectImage(i: number): void {
     this.currentImageIndex = i;
   }
 
-  callSeller() {
-    if (this.selectedListing)
+  /* =====================
+     CONTACT
+  ===================== */
+  callSeller(): void {
+    if (this.selectedListing) {
       window.location.href = `tel:${this.selectedListing.sellerPhone}`;
+    }
   }
 
-  chatWhatsApp() {
-    if (this.selectedListing)
+  chatWhatsApp(): void {
+    if (this.selectedListing) {
       window.open(
         `https://wa.me/${this.selectedListing.sellerPhone.replace(/\D/g, '')}`,
         '_blank'
       );
+    }
   }
 
-  toggleFavorite() {
-    this.isFavorite = !this.isFavorite;
+  startChatWithSeller(listing: MotorsListing): void {
+  if (!this.isLoggedIn) {
+    this.router.navigate(['/auth/login']);
+    return;
   }
 
-  // =====================
-  // BACKEND → UI MAPPER
-  // =====================
+  this.chatService.createOrGetRoom(listing.id).subscribe({
+    next: (res: any) => {
+      const roomId = res?.data?.id;
+
+      if (!roomId) {
+        alert('Unable to open chat room');
+        return;
+      }
+
+      this.router.navigate(['/my-chats'], {
+        queryParams: { roomId }
+      });
+    },
+    error: () => {
+      alert('Unable to start chat. Please try again.');
+    }
+  });
+}
+
+
+  /* =====================
+     BACKEND MAPPER
+  ===================== */
   mapBackendListing(l: any): MotorsListing {
     return {
       id: l.id,
@@ -318,7 +336,8 @@ export class MotorListingsComponent implements OnInit {
       description: l.description,
       sellerName: l.user?.name,
       sellerPhone: l.contactPhone,
-      sellerImage: l.user?.avatarUrl || 'assets/avatar.png'
+      sellerImage: l.user?.avatarUrl || 'assets/avatar.png',
+      isFavorite: false,
     };
   }
 }
