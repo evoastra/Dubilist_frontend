@@ -238,8 +238,8 @@ export class ElectronicsListingsComponent implements OnInit {
     if (position + threshold >= height) {
       this.loadMore();
     }
-  }
-
+  } 
+ 
   loadMore(): void {
     this.isFetchingMore = true;
 
