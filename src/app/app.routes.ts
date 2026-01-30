@@ -51,8 +51,7 @@ export const routes: Routes = [
   { path: 'listings/interior-designers', component: InteriorDesignerListingsComponent },
 
   /* PUBLIC JOB ROUTES */
-  { path: 'jobs/:id', component: JobsListingsComponent },
-  { path: 'jobs/:id/apply', component: JobsListingsComponent },
+ 
 
   /* =======================
      PROTECTED ROUTES
