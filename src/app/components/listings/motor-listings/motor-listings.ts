@@ -93,26 +93,48 @@ export class MotorListingsComponent implements OnInit {
   /* =====================
      FETCH FROM API
   ===================== */
-  fetchListings(): void {
-    this.isLoading = true;
+ fetchListings(): void {
+  this.isLoading = true;
 
-    this.listingsService.getAllListings(1).subscribe({
-      next: (res: any) => {
-        const mapped: MotorsListing[] = res.data.map((l: any) =>
-          this.mapBackendListing(l)
-        );
+  this.listingsService.getAllListings(1).subscribe({
+    next: (res: any) => {
+      const mapped: MotorsListing[] = res.data.map((l: any) =>
+        this.mapBackendListing(l)
+      );
 
-        this.allListings = mapped;
-        this.filteredListings = [...mapped];
+      if (!this.isLoggedIn) {
+        this.setListings(mapped);
+        return;
+      }
 
-        this.resetPagination(); // 🔥 KEY FIX
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      },
-    });
-  }
+      this.listingsService.getFavoriteListingIds().subscribe({
+        next: (favRes: any) => {
+          const favoriteIds: number[] = favRes || [];
+        
+          mapped.forEach(l => {
+            l.isFavorite = favoriteIds.includes(l.id);
+          });
+
+          this.setListings(mapped); // ✅ render AFTER favorites
+        },
+        error: () => {
+          this.setListings(mapped);
+        }
+      });
+    },
+    error: () => (this.isLoading = false)
+  });
+}
+
+
+
+private setListings(listings: MotorsListing[]): void {
+  this.allListings = listings;
+  this.filteredListings = [...listings];
+  this.resetPagination();
+  this.isLoading = false;
+}
+
 
   /* =====================
      FILTERS
@@ -227,25 +249,34 @@ export class MotorListingsComponent implements OnInit {
      FAVORITES
   ===================== */
   toggleFavorite(listing: MotorsListing, event: MouseEvent): void {
-    event.stopPropagation();
-    if (!this.isLoggedIn) return;
+  event.stopPropagation();
+  if (!this.isLoggedIn) return;
 
-    listing.isFavorite = !listing.isFavorite;
+  const prev = listing.isFavorite;
+  listing.isFavorite = !prev;
 
-    if (listing.isFavorite) {
-      this.listingsService.addToFavorites(listing.id).subscribe();
-    } else {
-      this.listingsService.removeFromFavorites(listing.id).subscribe();
+  const req = listing.isFavorite
+    ? this.listingsService.addToFavorites(listing.id)
+    : this.listingsService.removeFromFavorites(listing.id);
+
+  req.subscribe({
+    error: () => {
+      listing.isFavorite = prev; // rollback
+      alert('Unable to update favorite');
     }
-  }
+  });
+}
+
 
   /* =====================
      DETAIL VIEW
   ===================== */
   viewListing(id: number): void {
-    this.selectedListing =
-      this.allListings.find(l => l.id === id) || null;
+    this.listingsService.getSingleListing(id).subscribe(listing=>{
+      this.selectedListing = this.mapBackendListing(listing.data);
+   })
     this.currentImageIndex = 0;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   closeDetail(): void {
@@ -318,26 +349,38 @@ export class MotorListingsComponent implements OnInit {
      BACKEND MAPPER
   ===================== */
   mapBackendListing(l: any): MotorsListing {
-    return {
-      id: l.id,
-      title: l.title,
-      price: +l.price,
-      currency: l.currency,
-      location: l.city,
-      image: l.images?.[0]?.imageUrl || 'assets/no-image.jpg',
-      images: l.images?.map((i: any) => i.imageUrl) || [],
-      year: l.motorDetails?.year,
-      make: l.motorDetails?.make,
-      model: l.motorDetails?.model,
-      mileage: `${l.motorDetails?.kilometres || 0} km`,
-      fuel: l.motorDetails?.fuelType,
-      transmission: l.motorDetails?.transmission,
-      condition: l.motorDetails?.condition,
-      description: l.description,
-      sellerName: l.user?.name,
-      sellerPhone: l.contactPhone,
-      sellerImage: l.user?.avatarUrl || 'assets/avatar.png',
-      isFavorite: false,
-    };
-  }
+  // 1. Target the motorDetails object where the data actually lives
+  const details = l.motorDetails;
+  
+  // 2. Extract the images array from motorDetails (it's a string array in your JSON)
+  const motorImages = details?.images || [];
+
+  return {
+    id: l.id,
+    title: l.title,
+    price: +l.price,
+    currency: l.currency || 'AED',
+    location: l.city || 'Abu Dhabi',
+    
+    // FIX: Map the first string in the array to 'image'
+    image: motorImages.length > 0 ? motorImages[0] : 'assets/no-image.jpg',
+    
+    // FIX: Map the full string array to 'images'
+    images: motorImages,
+
+    year: details?.year,
+    make: details?.make,
+    model: details?.model,
+    mileage: details?.kilometres ? `${details.kilometres.toLocaleString()} km` : '0 km',
+    fuel: details?.fuelType,
+    transmission: details?.transmission,
+    condition: details?.condition,
+    description: l.description,
+    
+    sellerName: l.user?.name || 'Private Seller',
+    sellerPhone: l.contactPhone,
+    sellerImage: l.user?.avatarUrl || 'assets/avatar.png',
+    isFavorite: !!l.isFavorite 
+  };
+}
 }

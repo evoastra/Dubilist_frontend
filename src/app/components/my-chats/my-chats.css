@@ -49,32 +49,45 @@
   padding: 16px;
 }
 
+/* The container for each message row */
 .message {
   display: flex;
+  width: 100%;
   margin-bottom: 10px;
+  justify-content: flex-start; /* Default: Messages on the left (Other Party) */
 }
 
+/* When the 'me' class is applied */
 .message.me {
-  justify-content: flex-end;
+  justify-content: flex-end; /* Pushes your messages to the right */
 }
 
+/* Style the bubbles */
 .bubble {
-  background: #f1f1f1;
-  padding: 10px 14px;
-  border-radius: 10px;
-  max-width: 65%;
+  max-width: 70%;
+  padding: 10px 15px;
+  border-radius: 18px;
+  background-color: #f1f0f0; /* Gray for the other person */
+  position: relative;
 }
 
+/* Distinct color for your bubbles */
 .message.me .bubble {
-  background: #ffecd1;
+  background-color: #fff3cd; /* Match your warning/yellow theme */
+  border: 1px solid #ffeeba;
+  color: #856404;
 }
 
 .time {
   display: block;
-  font-size: 11px;
-  color: #777;
+  font-size: 0.7rem;
   margin-top: 4px;
+  opacity: 0.7;
 }
+
+
+
+
 
 .chat-input {
   display: flex;

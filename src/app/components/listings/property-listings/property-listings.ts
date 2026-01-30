@@ -7,9 +7,10 @@ import { ListingsService } from '../../../services/listing-service';
 import { AuthService } from '../../../services/auth-service';
 import { ChatService } from '../../../services/chat-service';
 
-/* =======================
-   INTERFACE
-======================= */
+export interface PropertyImage {
+  imageUrl: string;
+}
+
 export interface PropertyListing {
   id: number;
   title: string;
@@ -20,10 +21,14 @@ export interface PropertyListing {
   description?: string;
 
   image: string;
-  images: string[];
+  images: PropertyImage[];
 
   propertyType?: string;
   furnishing?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  areaSize?: number;
+  halls?: number;
   amenities?: string[];
 
   sellerName?: string;
@@ -42,34 +47,25 @@ export interface PropertyListing {
 })
 export class PropertyListingsComponent implements OnInit {
 
-  /* =======================
-     DATA
-  ======================= */
-  listings: PropertyListing[] = [];
+  /* ===================== DATA ===================== */
+  allListings: PropertyListing[] = [];
   filteredListings: PropertyListing[] = [];
-  visibleListings: PropertyListing[] = [];
+  paginatedListings: PropertyListing[] = [];
 
   selectedListing: PropertyListing | null = null;
 
   isLoading = false;
   isFetchingMore = false;
   allLoaded = false;
-
   isLoggedIn = false;
 
-  /* =======================
-     SKELETON
-  ======================= */
-  skeletonArray = Array.from({ length: 12 });
+  /* ===================== SKELETON ===================== */
+skeletonArray = Array.from({ length: 12 });
 
-  /* =======================
-     SEARCH
-  ======================= */
+
+  /* ===================== SEARCH & FILTERS ===================== */
   searchQuery = '';
 
-  /* =======================
-     FILTERS (kept to satisfy HTML)
-  ======================= */
   propertyTypes = ['Apartment', 'Villa', 'Studio'];
   selectedPropertyTypes: string[] = [];
 
@@ -79,15 +75,11 @@ export class PropertyListingsComponent implements OnInit {
   amenitiesOptions = ['Parking', 'Gym', 'Pool', 'Balcony', 'Security'];
   selectedAmenities: string[] = [];
 
-  /* =======================
-     INFINITE SCROLL
-  ======================= */
+  /* ===================== PAGINATION ===================== */
   pageSize = 12;
   currentPage = 1;
 
-  /* =======================
-     DETAIL VIEW
-  ======================= */
+  /* ===================== DETAIL VIEW ===================== */
   currentImageIndex = 0;
 
   constructor(
@@ -97,59 +89,55 @@ export class PropertyListingsComponent implements OnInit {
     private router: Router
   ) {}
 
-  /* =======================
-     INIT
-  ======================= */
   ngOnInit(): void {
     this.isLoggedIn = this.authService.isLoggedIn();
-    this.loadListings();
+    this.fetchListings();
   }
 
-  /* =======================
-     LOAD LISTINGS
-  ======================= */
-  loadListings(): void {
+  /* ===================== FETCH ===================== */
+  fetchListings(): void {
     this.isLoading = true;
 
     this.listingsService.getAllListings(3).subscribe({
       next: (res: any) => {
-        const mapped = res.data.map((l: any) =>
+        const mapped:PropertyListing[] = res.data.map((l: any) =>
           this.mapBackendListing(l)
         );
 
         if (!this.isLoggedIn) {
-          this.listings = mapped;
-          this.applyFilters();
-          this.isLoading = false;
+          this.setListings(mapped);
           return;
         }
 
-        this.listingsService.getFavoriteListingIds().subscribe({
-          next: (favIds: number[]) => {
-            const favSet = new Set<number>(favIds);
-            this.listings = mapped.map((l: PropertyListing) => ({
-              ...l,
-              isFavorite: favSet.has(l.id)
-            }));
-            this.applyFilters();
-            this.isLoading = false;
-          },
-          error: () => {
-            this.listings = mapped;
-            this.applyFilters();
-            this.isLoading = false;
-          }
-        });
+       this.listingsService.getFavoriteListingIds().subscribe({
+        next: (favRes: any) => {
+          const favoriteIds: number[] = favRes || [];
+        
+          mapped.forEach(l => {
+            l.isFavorite = favoriteIds.includes(l.id);
+          });
+
+          this.setListings(mapped); // ✅ render AFTER favorites
+        },
+        error: () => {
+          this.setListings(mapped);
+        }
+      });
       },
       error: () => (this.isLoading = false)
     });
   }
 
-  /* =======================
-     FILTERS (SAFE DEFAULTS)
-  ======================= */
+  private setListings(listings: PropertyListing[]): void {
+    this.allListings = listings;
+    this.filteredListings = [...listings];
+    this.resetPagination();
+    this.isLoading = false;
+  }
+
+  /* ===================== FILTERS ===================== */
   applyFilters(): void {
-    let data = [...this.listings];
+    let data = [...this.allListings];
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
@@ -160,9 +148,8 @@ export class PropertyListingsComponent implements OnInit {
     }
 
     if (this.selectedPropertyTypes.length) {
-      data = data.filter(l =>
-        l.propertyType &&
-        this.selectedPropertyTypes.includes(l.propertyType)
+      data = data.filter(
+        l => l.propertyType && this.selectedPropertyTypes.includes(l.propertyType)
       );
     }
 
@@ -179,12 +166,9 @@ export class PropertyListingsComponent implements OnInit {
     }
 
     this.filteredListings = data;
-    this.resetInfiniteScroll();
+    this.resetPagination();
   }
 
-  /* =======================
-     FILTER HELPERS (HTML-safe)
-  ======================= */
   togglePropertyType(type: string): void {
     const i = this.selectedPropertyTypes.indexOf(type);
     i >= 0
@@ -207,71 +191,69 @@ export class PropertyListingsComponent implements OnInit {
     this.applyFilters();
   }
 
-  /* =======================
-     INFINITE SCROLL
-  ======================= */
-  resetInfiniteScroll(): void {
-    this.currentPage = 1;
-    this.allLoaded = false;
-    this.visibleListings = [];
-    this.loadNextPage();
-  }
-
-  loadNextPage(): void {
+  /* ===================== PAGINATION ===================== */
+  onScroll(): void {
     if (this.isFetchingMore || this.allLoaded) return;
 
-    this.isFetchingMore = true;
-
-    setTimeout(() => {
-      const start = (this.currentPage - 1) * this.pageSize;
-      const end = this.currentPage * this.pageSize;
-
-      const chunk = this.filteredListings.slice(start, end);
-
-      if (!chunk.length) {
-        this.allLoaded = true;
-      } else {
-        this.visibleListings.push(...chunk);
-        this.currentPage++;
-      }
-
-      this.isFetchingMore = false;
-    }, 500);
-  }
-
-  onScroll(): void {
     const nearBottom =
       window.innerHeight + window.scrollY >=
-      document.body.offsetHeight - 200;
+      document.body.offsetHeight - 300;
 
-    if (nearBottom) this.loadNextPage();
+    if (nearBottom) {
+      this.isFetchingMore = true;
+      setTimeout(() => {
+        this.currentPage++;
+        this.appendPage();
+        this.isFetchingMore = false;
+      }, 500);
+    }
   }
 
-  /* =======================
-     FAVORITES
-  ======================= */
+  resetPagination(): void {
+    this.currentPage = 1;
+    this.allLoaded = false;
+    this.paginatedListings = [];
+    this.appendPage();
+  }
+
+  appendPage(): void {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    const chunk = this.filteredListings.slice(start, end);
+
+    if (!chunk.length) {
+      this.allLoaded = true;
+      return;
+    }
+
+    this.paginatedListings.push(...chunk);
+  }
+
+  /* ===================== FAVORITES ===================== */
   toggleFavorite(listing: PropertyListing, event: MouseEvent): void {
     event.stopPropagation();
     if (!this.isLoggedIn) return;
 
-    if (listing.isFavorite) {
-      this.listingsService
-        .removeFromFavorites(listing.id)
-        .subscribe(() => (listing.isFavorite = false));
-    } else {
-      this.listingsService
-        .addToFavorites(listing.id)
-        .subscribe(() => (listing.isFavorite = true));
-    }
+    const prev = listing.isFavorite;
+    listing.isFavorite = !prev;
+
+    const req = listing.isFavorite
+      ? this.listingsService.addToFavorites(listing.id)
+      : this.listingsService.removeFromFavorites(listing.id);
+
+    req.subscribe({
+      error: () => {
+        listing.isFavorite = prev;
+        alert('Unable to update favorite');
+      }
+    });
   }
 
-  /* =======================
-     DETAIL VIEW
-  ======================= */
+  /* ===================== DETAIL VIEW ===================== */
   viewListing(id: number): void {
-   this.listingsService.getSingleListing(id).subscribe(listing=>{
-      this.selectedListing = this.mapBackendListing(listing.data);
-   })
+    this.listingsService.getSingleListing(id).subscribe(res => {
+      this.selectedListing = this.mapBackendListing(res.data);
+    });
     this.currentImageIndex = 0;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -281,14 +263,14 @@ export class PropertyListingsComponent implements OnInit {
   }
 
   previousImage(): void {
-    if (!this.selectedListing || this.selectedListing.images.length < 2) return;
+    if (!this.selectedListing) return;
     this.currentImageIndex =
       (this.currentImageIndex - 1 + this.selectedListing.images.length) %
       this.selectedListing.images.length;
   }
 
   nextImage(): void {
-    if (!this.selectedListing || this.selectedListing.images.length < 2) return;
+    if (!this.selectedListing) return;
     this.currentImageIndex =
       (this.currentImageIndex + 1) %
       this.selectedListing.images.length;
@@ -298,9 +280,7 @@ export class PropertyListingsComponent implements OnInit {
     this.currentImageIndex = i;
   }
 
-  /* =======================
-     CONTACT
-  ======================= */
+  /* ===================== CONTACT ===================== */
   callSeller(): void {
     if (this.selectedListing?.sellerPhone) {
       window.location.href = `tel:${this.selectedListing.sellerPhone}`;
@@ -314,7 +294,10 @@ export class PropertyListingsComponent implements OnInit {
   }
 
   startChatWithSeller(listing: PropertyListing): void {
-    if (!this.isLoggedIn) return;
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
 
     this.chatService.createOrGetRoom(listing.id).subscribe({
       next: (res: any) => {
@@ -328,31 +311,41 @@ export class PropertyListingsComponent implements OnInit {
     });
   }
 
-  /* =======================
-     MAPPER
-  ======================= */
+  /* ===================== MAPPER ===================== */
   mapBackendListing(l: any): PropertyListing {
+    const details = l.propertyDetails;
+    
+    const images = (l?.images || []).map((img: any) => ({
+    imageUrl: img.imageUrl
+  }));
+   
+  
+const allImages = [...images];
     return {
       id: l.id,
       title: l.title,
       price: Number(l.price),
       currency: l.currency || 'AED',
-      type: l.listingType || 'For Sale',
-      location: l.city,
+      type: details?.listingType || 'For Rent',
+      location: l.city || 'Dubai',
       description: l.description,
 
-      image: l.images?.[0]?.imageUrl || 'assets/no-image.jpg',
-      images: l.images?.map((i: any) => i.imageUrl) || [],
+      image: allImages[0]?.imageUrl ?? 'assets/placeholder.png',
+      images: allImages,
 
-      propertyType: l.propertyDetails?.propertyType,
-      furnishing: l.propertyDetails?.furnishing,
-      amenities: l.propertyDetails?.amenities || [],
+      propertyType: details?.propertyType,
+      furnishing: details?.furnishing,
+      bedrooms: details?.bedrooms,
+      bathrooms: details?.bathrooms,
+      areaSize: details?.areaSqft,
+      halls: details?.halls,
+      amenities: details?.amenities || [],
 
       sellerName: l.user?.name,
       sellerPhone: l.contactPhone,
       sellerImage: l.user?.avatarUrl || 'assets/avatar.png',
 
-      isFavorite: false
+      isFavorite: !!l.isFavorite
     };
   }
 }

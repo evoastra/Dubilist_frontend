@@ -1,0 +1,133 @@
+.legal-page {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+  color: #4a4a4a;
+  line-height: 1.6;
+  margin-top: 60px;
+}
+
+.page-title {
+  color: #ff9800; /* Main Dubilist Orange */
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+.section-block {
+  margin-bottom: 40px;
+}
+
+/* Introduction/Section header with orange bar from image_7caa80 */
+.section-heading {
+  border-left: 5px solid #ff9800;
+  padding-left: 15px;
+  font-size: 22px;
+  color: #222;
+  margin-bottom: 15px;
+}
+
+.section-paragraph {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.list-title {
+  font-weight: 600;
+  margin-top: 15px;
+}
+
+/* Ensuring dots are line-by-line */
+.bullet-list {
+  list-style-type: disc;
+  padding-left: 40px;
+  margin-top: 10px;
+}
+
+.bullet-list li {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.contact-email a {
+  color: #ff9800;
+  text-decoration: none;
+}
+
+/* About Us Header Banner Styling */
+.about-header-banner {
+  margin-top: 20px;
+  background: #f0f0f0;
+ text-align: center;
+  margin: 10px;
+  border-radius: 12px;
+
+}
+
+.banner-box {
+  background: black;
+  color: white;
+  padding: 10px 40px;
+  border-radius: 50px;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.value-item {
+  display: flex;
+  align-items: start;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.value-icon-box {
+  width: 40px;
+  height: 40px;
+  background: #fff8e1;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.imgg{
+  width: 600px;
+  height: 240px;
+ margin: 40px;
+}.values-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.value-item {
+  display: flex;
+  align-items: start;
+  gap: 15px;
+}
+
+.icon-box {
+  width: 50px;
+  height: 50px;
+  background-color: #fef9e7; /* Light cream background */
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fa-icon-orange {
+  color: #ff9800; /* Dubilist Orange */
+  font-size: 1.4rem;
+}
+
+.value-content strong {
+  display: block;
+  font-size: 1.1rem;
+  color: #222;
+  margin-bottom: 2px;
+}
+
+.value-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #555;
+}

@@ -56,3 +56,321 @@
   justify-content: center;
   gap: 6px;
 }
+/* Container positioning: Centered Card */
+.profile-card-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 850px;
+  height: 550px;
+  background: white;
+  border-radius: 20px;
+  display: flex;
+  z-index: 2100;
+  overflow: hidden;
+  animation: cardPop 0.3s ease-out;
+}
+
+.profile-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 2050;
+}
+
+/* Sidebar Styling */
+.card-sidebar {
+  width: 260px;
+  background: #fff;
+  border-right: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
+
+.sidebar-item {
+  padding: 15px 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #666;
+  transition: 0.2s;
+}
+
+.sidebar-item.active {
+  background: #fff9ed; /* Light orange tint */
+  color: #ffa500;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 20px;
+}
+
+.btn-logout-card {
+  width: 100%;
+  background: #fff9ed;
+  color: #ffa500;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Right Content Area */
+.card-content {
+  flex: 1;
+  padding: 35px;
+  background: #fff;
+  overflow-y: auto;
+}
+
+/* Settings Items Styling (Matching the Image rows) */
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #fff9ed;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.settings-item:hover {
+  background: #fff3d6;
+}
+
+.settings-item i.bi-chevron-down {
+  font-size: 0.8rem;
+  color: #333;
+}
+
+@keyframes cardPop {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.95); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+.input-group-custom {
+  position: relative;
+}
+
+.input-group-custom input {
+  background: #fcfcfc;
+  border: 1px solid #eee;
+  padding-right: 40px;
+  border-radius: 10px;
+}
+
+.input-group-custom i {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+}
+
+@keyframes cardPop {
+  from { opacity: 0; transform: translate(-50%, -45%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* Toast Styling */
+.custom-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #333;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 30px;
+  transition: 0.3s;
+  z-index: 3000;
+}
+.custom-toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+/* ==========================================================================
+   TOAST NOTIFICATION STYLES
+   ========================================================================== */
+.custom-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px); /* Starts off-screen */
+  background: #333;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 50px;
+  z-index: 9999; /* Above everything */
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+  min-width: 250px;
+  text-align: center;
+}
+
+.custom-toast.show {
+  transform: translateX(-50%) translateY(0); /* Slides up into view */
+}
+
+/* ==========================================================================
+   IMAGE UPLOAD & SPINNER STYLES
+   ========================================================================== */
+.avatar-wrapper img {
+  transition: opacity 0.3s ease;
+}
+
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+  border-width: 0.2em;
+}
+
+/* Ensure the camera icon and spinner center perfectly */
+.avatar-wrapper .translate-middle {
+  pointer-events: none;
+}
+
+/* Hover effect on avatar during edit mode */
+.avatar-wrapper:hover .bg-opacity-25 {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ==========================================================================
+   INPUT POLISH
+   ========================================================================== */
+.input-group .form-control {
+  border-right: none;
+}
+
+.input-group .input-group-text {
+  background-color: #fff;
+  border-left: none;
+  color: #adb5bd;
+}
+
+.input-group:focus-within .input-group-text,
+.input-group:focus-within .form-control {
+  border-color: #ffc107; /* Highlight on focus */
+}
+
+/* Fix for disabled email field style */
+.form-control:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+/* List group item hover for Settings tab */
+.list-group-item-action:hover {
+  background-color: #fcfcfc;
+  color: #ffa500;
+}
+
+/* Custom Toggle Styling */
+.settings-item .form-check-input.custom-toggle {
+  width: 2.5em;
+  height: 1.25em;
+  cursor: pointer;
+  background-color: #dee2e6; /* Off color */
+  border-color: #dee2e6;
+}
+
+.settings-item .form-check-input.custom-toggle:checked {
+  background-color: #ffa500; /* Brand Orange */
+  border-color: #ffa500;
+}
+
+.settings-item .form-check-input.custom-toggle:focus {
+  box-shadow: 0 0 0 0.25rem rgba(255, 165, 0, 0.25);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+/* Ensure the row doesn't trigger a click if we just want the toggle */
+.settings-item {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+
+
+/* Input with Icon on Right */
+.input-group-custom {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-group-custom .form-control {
+  padding-right: 40px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  background-color: #fdfdfd;
+}
+
+.input-group-custom i {
+  position: absolute;
+  right: 15px;
+  color: #ccc;
+  pointer-events: none;
+}
+
+/* Camera Overlay for Image Upload */
+.avatar-edit-wrapper {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.camera-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  transition: background 0.2s;
+}
+
+.avatar-edit-wrapper:hover .camera-overlay {
+  background: rgba(0,0,0,0.4);
+}
+
+/* Toggle Switch Styling (To match the images) */
+.custom-toggle {
+  width: 2.5rem !important;
+  height: 1.25rem !important;
+  cursor: pointer;
+}
+
+.custom-toggle:checked {
+  background-color: #ffa500;
+  border-color: #ffa500;
+}

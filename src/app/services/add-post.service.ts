@@ -126,7 +126,7 @@ export class AddPostService {
     if (mainCatId === 2 && draft.logoFile) {
       const logo = await this.uploadSingleImage(draft.logoFile, 'jobs');
       await firstValueFrom(
-        this.http.patch(`${this.baseUrl}/listings/${listingId}`, {
+        this.http.put(`${this.baseUrl}/listings/${listingId}`, {
           companyLogo: logo.url
         })
       );

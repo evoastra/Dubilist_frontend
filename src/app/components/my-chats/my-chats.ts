@@ -19,10 +19,15 @@ export class ChatComponent implements OnInit {
   messageText = '';
   isLoadingRooms = false;
   isLoadingMessages = false;
+  currentUserId:any=null;
 
   constructor(private chatService: ChatService) {}
 
   ngOnInit(): void {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  this.currentUserId = user.id; 
+
+
     this.loadChatRooms();
   }
 

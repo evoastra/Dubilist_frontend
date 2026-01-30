@@ -1,7 +1,7 @@
 import { Component, HostListener, signal } from '@angular/core';
 import { LandingPage } from './components/landing-page/landing-page';
 import { HomePage } from './components/home-page/home-page';
-import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
+import { NavigationEnd, Router, RouterOutlet, RouterLinkWithHref } from "@angular/router";
 import { AddPostComponent } from './components/add-post/add-post';
 import { NavbarComponent } from './components/navbar/navbar';
 import { CommonModule } from '@angular/common';
@@ -10,7 +10,7 @@ import { filter } from 'rxjs/internal/operators/filter';
 
 @Component({
   selector: 'app-root',  
-  imports: [ RouterOutlet, NavbarComponent,CommonModule,FormsModule  ],
+  imports: [RouterOutlet, NavbarComponent, CommonModule, FormsModule, RouterLinkWithHref],
   templateUrl: './app.html',
   styleUrl: './app.css',
   

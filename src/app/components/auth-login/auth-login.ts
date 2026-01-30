@@ -101,20 +101,18 @@ export class AuthLoginComponent {
       this.isLoading = false;
       if (res?.success) {
         const role = res.data.user.role;
-        console.log('Raw role:', JSON.stringify(role));  // Debug
-        console.log('Trimmed role:', role.trim());       // Debug
+    
         
         this.showPopup('success', 'Login successful! Redirecting...', 1500);
 
         setTimeout(() => {
           const cleanRole = role.trim().toLowerCase();
-          console.log('Clean role for comparison:', cleanRole);  // Debug
           
           if (cleanRole === 'admin') {
-            console.log('Redirecting to /admin');
+          
             this.router.navigate(['/admin']);
           } else {
-            console.log('Redirecting to /home');
+    
             this.router.navigate(['/home']);
           }
         }, 1600);  // Slightly longer than modal (1500ms)

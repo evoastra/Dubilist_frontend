@@ -128,7 +128,7 @@
         <label class="terms">
           <input type="checkbox" name="termsAccepted" [(ngModel)]="model.termsAccepted" required />
           <span>
-            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            I agree to the <a href="#">Terms of Service</a> and <a  routerLink="/privacy-policy" href="#">Privacy Policy</a>
           </span>
         </label>
         <div class="error" *ngIf="f.submitted && !model.termsAccepted">You must accept terms.</div>

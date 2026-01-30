@@ -1,291 +1,463 @@
-<!-- <div class="main-wrapper">
+<div class="page-container pt-4">
+  <div class="container">
 
-  <div class="content-layout" *ngIf="viewMode === 'listings'">
+    <div *ngIf="viewMode === 'listings'" class="fade-in">
+      
+      <div class="row">
+        <div class="col-md-3 d-none d-md-block">
+          <aside class="filters-sidebar">
+            <h5 class="filter-title">Filters</h5>
+            <div class="mb-4">
+              <label class="text-muted small mb-2">Sort By</label><br>
+              <button class="pill active">Highest Rated</button>
+            </div>
+            <button class="btn btn-dark w-100" (click)="applyFilters()">Apply Filters</button>
+          </aside>
+        </div>
+
+        <div class="col-md-9">
+          
+          <div class="welcome-section d-flex justify-content-between align-items-center mb-4" *ngIf="isUserLoggedin">
+            <div>
+              <h2>👋 Welcome Back!</h2>
+              <p class="text-muted">Manage your bookings and profile</p>
+            </div>
+            <div>
+              <button *ngIf="isDesigner" class="btn btn-outline-dark" (click)="openDashboard()">
+                My Dashboard
+              </button>
+              <button *ngIf="!isDesigner" class="btn btn-outline-dark" (click)="openRequests()">
+                My Bookings
+              </button>
+            </div>
+          </div>
+
+        <div class="promo-box d-flex justify-content-between align-items-center" *ngIf="!isDesigner">
+  <div>
+    <h3 class="mb-2">Are You an Interior Designer?</h3>
+    <p class="mb-3 opacity-75">Share your profile and connect with clients.</p>
     
-    <aside class="filters-sidebar">
-      <h3>Filters</h3>
-      
-      <div class="filter-group">
-        <label>Sort by</label>
-        <div class="pill-group two-col">
-          <button [class.active]="filters.sort === 'rating'" (click)="filters.sort = 'rating'">Highest Rated</button>
-          <button [class.active]="filters.sort === 'exp'" (click)="filters.sort = 'exp'">Most experienced</button>
-          <button [class.active]="filters.sort === 'price_asc'" (click)="filters.sort = 'price_asc'">Price: Low to High</button>
-          <button [class.active]="filters.sort === 'price_desc'" (click)="filters.sort = 'price_desc'">Price: High to Low</button>
-        </div>
-      </div>
-
-      <div class="filter-group">
-        <label>Style</label>
-        <div class="pill-group wrap">
-          <button *ngFor="let s of styles" 
-                  [class.active]="filters.style === s" 
-                  (click)="filters.style = s">{{s}}</button>
-        </div>
-      </div>
-
-      <div class="filter-group">
-        <label>Location</label>
-        <select [(ngModel)]="filters.city">
-          <option *ngFor="let c of cities" [value]="c">{{c}}</option>
-        </select>
-      </div>
-
-      <button class="btn-orange full-width" (click)="loadDesigners()">Apply Filters</button>
-    </aside>
-
-    <main class="listings-area" >
-      <header class="main-header">
-        <div class="welcome-section" *ngIf="isUserLoggedin">
-          <div class="wave-icon">👋</div> <div>
-            <h1>Welcome Back!</h1>
-            <p class="text-muted">Manage your bookings and profile</p>
-          </div>
-        </div>
-        <div class="header-btns">
-          <button class="btn-white" (click)="openRequests()">📅 Previous Bookings</button>
-          <button class="btn-orange" (click)="openCreateProfile()">👤 View My Profile</button>
-        </div>
-      </header>
-
-      <div class="promo-card">
-        <img src="assets/promo-bg.jpg" class="promo-img" alt="Interior">
-        <div class="promo-content">
-          <h3>Are You an Interior Designer?</h3>
-          <p>Share your profile and connect with clients seeking design expertise.</p>
-          <button class="btn-orange" (click)="openCreateProfile()">Add your profile</button>
-        </div>
-      </div>
-
-      <div class="search-bar">
-        <input type="text" placeholder="Search by Names, Style">
-      </div>
-
-      <div class="designers-list">
-        <div class="designer-card" *ngFor="let d of designers">
-          <img [src]="d.profileImage || 'assets/placeholder.jpg'" class="card-thumb">
-          <div class="card-info">
-            <div class="card-header">
-              <h3>{{d.fullName}}</h3>
-              <p class="specialist">Specialist in {{d.styles.join(' & ')}}</p>
-            </div>
-            <div class="rating-row">
-              <span class="star">★</span> <b>{{d.rating}}</b> <span class="text-muted">| {{d.reviewsCount}} Reviews</span>
-            </div>
-            <div class="loc-row">📍 {{d.location}}</div>
-            <button class="btn-orange mt-auto" (click)="openDesignerDetail(d)">View Profile</button>
-          </div>
-        </div>
-      </div>
-    </main>
+    <button class="btn btn-light text-primary-custom fw-bold" (click)="openCreateProfile()">
+      Add your profile
+    </button>
   </div>
-
-  <div class="view-form" *ngIf="viewMode === 'create'">
-  <h2 class="form-title">Personal Information</h2>
-  
-  <div class="form-grid">
-    <div class="upload-section">
-      <div class="circle-upload" (click)="profileInput.click()">
-        <img *ngIf="profilePreview" [src]="profilePreview" class="preview-img">
-        
-        <div *ngIf="!profilePreview" class="placeholder">
-          <span class="cam-icon">📷</span>
-          <p>Tap to Upload</p>
-        </div>
-        
-        <input #profileInput type="file" (change)="onProfileImageSelected($event)" hidden accept="image/*">
-      </div>
-    </div>
-
-    <div class="inputs-section">
-      <label>Full Name</label>
-      <input type="text" [(ngModel)]="profileForm.fullName" placeholder="Amelia Yusuf">
-      
-      <label>Location / City</label>
-      <input type="text" [(ngModel)]="profileForm.location" placeholder="Dubai">
-    </div>
-  </div>
-
-  <label>Bio</label>
-  <textarea [(ngModel)]="profileForm.bio" placeholder="Tell client about your designs..."></textarea>
-
-  <div class="form-section">
-    <h3>Professional Details</h3>
-    <label>Specialization style</label>
-    <div class="pill-group wrap">
-      <button *ngFor="let s of styles" 
-              [class.active]="profileForm.styles.includes(s)"
-              (click)="toggleStyle(s)">{{s}}</button>
-    </div>
-
-    <div class="row-inputs">
-      <div>
-        <label>Years of Experience</label>
-        <input type="number" [(ngModel)]="profileForm.experience" placeholder="5">
-      </div>
-      <div>
-        <label>Price (AED / Hour)</label>
-        <input type="number" [(ngModel)]="profileForm.rate" placeholder="150">
-      </div>
-    </div>
-  </div>
-
-  <div class="form-section">
-    <h3>Portfolio Works</h3>
-    <div class="portfolio-grid">
-      
-      <div class="add-dashed" (click)="portfolioInput.click()">
-        <span class="plus">+</span>
-        <p>Add Project</p>
-      </div>
-      <input #portfolioInput type="file" multiple (change)="onPortfolioSelected($event)" hidden accept="image/*">
-      
-      <div class="port-item" *ngFor="let item of portfolioPreviews; let i = index">
-        <img [src]="item.url">
-        
-        <div *ngIf="item.isUploading" class="uploading-overlay">⌛</div>
-        
-        <div class="del-btn" (click)="removePortfolioItem(i)">🗑</div>
-      </div>
-
-    </div>
-  </div>
-
-  <button class="btn-orange full-width" (click)="submitProfile()">Upload Profile</button>
-  <button class="btn btn-secondary m-3" (click)="viewMode = 'listings'">Cancel</button>
+  <i class="bi bi-palette" style="font-size: 4rem; opacity: 0.3;"></i>
 </div>
 
-  <div class="detail-view" *ngIf="viewMode === 'detail' && selectedDesigner">
-    <button class="btn-back" (click)="backToListings()">← Back</button>
+          <div class="mb-4">
+            <input type="text" class="search-input" placeholder="Search by name or specialization..." 
+                   [(ngModel)]="filters.search" (input)="applyFilters()">
+          </div>
+
+          <div class="row g-4">
+            <div class="col-md-6 col-lg-4" *ngFor="let d of designers">
+              <div class="card designer-card h-100" (click)="openDesignerDetail(d)">
+                <img [src]="d.profileImage" class="card-img-top" alt="Profile">
+                <div class="card-body">
+                  <h5 class="card-title">{{ d.name }}</h5>
+                  <span class="specialization-text">{{ d.specializations.join(', ') }}</span>
+                  
+                  <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                    <small class="location-text"><i class="bi bi-geo-alt-fill text-primary-custom"></i> {{ d.city }}</small>
+                    <button class="btn btn-sm btn-primary-custom">View Profile</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="viewMode === 'dashboard'" class="fade-in">
+      <button class="btn-back" (click)="backToListings()">
+        <i class="bi bi-arrow-left"></i> Back to Listings
+      </button>
+
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <div class="dashboard-profile-card">
+            <img [src]="myProfile?.user?.avatarUrl || 'assets/placeholder.jpg'" class="dash-avatar">
+            <h3>{{ myProfile?.user?.name }}</h3>
+            <p class="text-muted">{{ myProfile?.city }}</p>
+            
+            <div class="bg-light p-3 rounded mt-3">
+              <small class="text-muted">Consultation Rate</small>
+              <h4 class="text-primary-custom m-0">AED {{ myProfile?.hourlyRate }} / Hr</h4>
+            </div>
+
+            <button class="btn btn-outline-dark w-100 mt-3" (click)="showRequestsModal = true">
+              View Consultation Requests
+            </button>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+          <div class="card border-0 shadow-sm p-4">
+            <h4 class="mb-3">Professional Details</h4>
+            
+            <p><strong>Specializations:</strong> {{ myProfile?.specializations?.join(', ') }}</p>
+            <p><strong>Experience:</strong> {{ myProfile?.yearsExperience }} Years</p>
+            
+            <h5 class="mt-4">Bio</h5>
+            <p class="text-muted">{{ myProfile?.bio }}</p>
+
+            <h5 class="mt-4">Portfolio</h5>
+            <div class="portfolio-grid">
+               <img *ngFor="let p of myProfile?.portfolio" [src]="p.url" class="portfolio-img">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="viewMode === 'create'" class="fade-in bg-light py-5">
+  <div class="container">
+    <button class="btn-back mb-4" (click)="backToListings()">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+
+    <div class="card border-0 shadow-sm p-0 mx-auto" style="max-width: 850px; border-radius: 15px;">
+      <div class="p-4 border-bottom">
+        <h4 class="fw-bold m-0">Personal Information</h4>
+      </div>
+
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center gap-4 mb-5">
+          <div class="position-relative">
+            <div class="profile-upload-circle" (click)="profileFile.click()">
+              <img *ngIf="profilePreview" [src]="profilePreview" class="profile-img-preview">
+              <div *ngIf="!profilePreview" class="upload-placeholder">
+                <i class="bi bi-camera-fill fs-2 text-white"></i>
+              </div>
+            </div>
+            <input type="file" #profileFile hidden (change)="onProfileImageSelected($event)" accept="image/*">
+            <p class="text-center text-primary-custom small fw-bold mt-2" style="cursor: pointer;" (click)="profileFile.click()">Tap to Upload</p>
+          </div>
+
+          <div class="flex-grow-1">
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label class="form-label small fw-bold">Full Name</label>
+                <input class="form-control bg-light border-0 py-2" placeholder="Amelia Yusuf" [(ngModel)]="profileForm.name">
+              </div>
+              <div class="col-md-12">
+                <label class="form-label small fw-bold">Location / City</label>
+                <div class="input-group">
+                  <input class="form-control bg-light border-0 py-2" placeholder="Dubai, UAE" [(ngModel)]="profileForm.city">
+                  <span class="input-group-text bg-light border-0"><i class="bi bi-geo-alt"></i></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-bold">Bio</label>
+          <textarea class="form-control bg-light border-0" rows="3" 
+            placeholder="Tell Client about your designs, Philosophy and Background" [(ngModel)]="profileForm.bio"></textarea>
+        </div>
+
+        <hr class="my-4 text-muted opacity-25">
+
+        <h5 class="fw-bold mb-3">Professional Details</h5>
+        
+        <div class="mb-4">
+          <label class="form-label small fw-bold text-muted">Specialization style</label>
+          <div class="d-flex flex-wrap gap-2">
+            <button *ngFor="let s of styles" 
+              class="btn btn-outline-dark rounded-pill px-4 py-1" 
+              [class.active-pill]="profileForm.specializations.includes(s)"
+              (click)="toggleStyle(s)">{{ s }}</button>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label small fw-bold">Years of Experience</label>
+            <input type="text" class="form-control bg-light border-0" placeholder="5 Years" [(ngModel)]="profileForm.yearsExperience">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-bold">Price (AED)</label>
+            <input type="text" class="form-control bg-light border-0" placeholder="AED 150 / Hour" [(ngModel)]="profileForm.hourlyRate">
+          </div>
+        </div>
+
+        <h5 class="fw-bold mb-1">Portfolio Works</h5>
+        <p class="text-muted small mb-3">Showcase your best interior design projects</p>
+        
+        <div class="portfolio-upload-grid">
+          <div class="portfolio-add-card" (click)="portfolioFile.click()">
+            <div class="add-icon">+</div>
+            <span class="small fw-bold mt-2">Add Project</span>
+          </div>
+          <input type="file" #portfolioFile hidden multiple (change)="onPortfolioSelected($event)" accept="image/*">
+
+          <div *ngFor="let img of portfolioPreviews; let i = index" class="portfolio-preview-card position-relative">
+            <img [src]="img" class="portfolio-img">
+            <button class="btn-delete-img" (click)="removePortfolioImage(i)">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="d-grid mt-5">
+          <button class="btn btn-primary-custom btn-lg fw-bold py-3" (click)="submitProfile()">Upload Profile</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div *ngIf="viewMode === 'detail' && selectedDesigner" class="fade-in">
+      <button class="btn-back" (click)="backToListings()">
+        <i class="bi bi-arrow-left"></i> Back to Listings
+      </button>
+
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm p-4 mb-4">
+            <div class="detail-header">
+              <img [src]="selectedDesigner.profileImage" class="detail-avatar">
+              <div>
+                <span class="badge bg-warning text-dark mb-2">Interior Designer</span>
+                <h2 class="m-0">{{ selectedDesigner.name }}</h2>
+                <p class="text-muted m-0">{{ selectedDesigner.tagline }}</p>
+                <small><i class="bi bi-geo-alt"></i> {{ selectedDesigner.city }}</small>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <h4>About Me</h4>
+              <p class="bio-text">{{ selectedDesigner.bio }}</p>
+            </div>
+
+            <div class="mb-4">
+              <h4>Specializations</h4>
+              <div>
+                <span class="chip" *ngFor="let s of selectedDesigner.specializations">{{ s }}</span>
+              </div>
+            </div>
+
+            <div>
+              <h4>Portfolio</h4>
+              <div class="portfolio-grid" *ngIf="selectedDesigner.portfolio?.length; else noPortfolio">
+                <img *ngFor="let p of selectedDesigner.portfolio" 
+                     [src]="p.images?.[0] || p.url" 
+                     class="portfolio-img">
+              </div>
+              <ng-template #noPortfolio>
+                <div class="alert alert-light">No portfolio items uploaded yet.</div>
+              </ng-template>
+            </div>
+            
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+  <div class="booking-sidebar">
     
-    <div class="detail-grid">
-      <div class="bio-content-card">
-        <div class="profile-header">
-          <img [src]="selectedDesigner.profileImage" class="profile-avatar">
-          <div>
-            <h2>{{selectedDesigner.fullName}}</h2>
-            <p class="subtitle">{{selectedDesigner.title || 'Interior Designer'}}</p>
-          </div>
-        </div>
-
-        <h3>About Me</h3>
-        <p class="bio-text">{{selectedDesigner.bio}}</p>
-
-        <h3>Services Offered</h3>
-        <ul class="service-list">
-          <li>🏠 <b>Full-Service Residential Design</b><br><span>Comprehensive design from concept to completion</span></li>
-          <li>✏️ <b>E-Design Consultation</b><br><span>Virtual design services for remote clients</span></li>
-        </ul>
-
-        <h3>Portfolio</h3>
-        <div class="portfolio-gallery">
-          <img *ngFor="let p of selectedDesigner.portfolio" [src]="p.url" class="gallery-img">
-        </div>
-      </div>
-
-      <aside class="action-sidebar">
-        <div class="stats-box">
-          <div class="rating-big">4.7 ⭐</div>
-          <p class="text-muted">235 reviews</p>
-          </div>
-
-        <div class="pricing-box">
-          <p>Consultation starts at</p>
-          <h2>AED {{selectedDesigner.rate}} / Hour</h2>
-          <button class="btn-orange full-width">Book Consultation</button>
-          <button class="btn-whatsapp full-width">💬 Chat with Whatsapp</button>
-        </div>
-      </aside>
-    </div>
-  </div>
-
-  <div class="modal-overlay" *ngIf="showRequestsModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Consultation requests</h3>
-        <span class="close-btn" (click)="closeModals()">✕</span>
-      </div>
-      <div class="search-bar-sm">
-        <input type="text" placeholder="Search requests">
-      </div>
-      <div class="request-list">
-        <div class="request-item" *ngFor="let req of myRequests" (click)="viewRequestDetail(req)">
-          <img [src]="req.clientImage || 'assets/user.png'">
-          <div>
-            <h4>{{req.clientName}}</h4>
-            <p class="sub-text">{{req.projectType}}</p>
-          </div>
-          <span class="status-pill" [class.pending]="req.status === 'Pending'">{{req.status}}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" *ngIf="showClientDetailModal && selectedRequest">
-    <div class="modal-card client-detail">
-      <div class="modal-header">
-        <h3>Client Details</h3>
-        <span class="close-btn" (click)="closeModals()">✕</span>
-      </div>
+    <div class="card border-0 shadow-sm mb-4 p-3 bg-white rounded">
+      <h6 class="fw-bold mb-3">Contact Designer</h6>
       
-      <div class="client-summary">
-        <img [src]="selectedRequest.clientImage || 'assets/user.png'" class="client-avatar-lg">
+      <div class="chat-option d-flex align-items-center p-3 border rounded mb-3" 
+           (click)="openChat()" 
+           style="cursor: pointer;">
+        <i class="bi bi-chat-dots text-primary-custom fs-4 me-3"></i>
         <div>
-          <h3>{{selectedRequest.clientName}}</h3>
-          <p class="orange-text">{{selectedRequest.clientPhone}}</p>
+          <p class="mb-0 fw-bold small">Chat with Designer</p>
+          <p class="mb-0 x-small text-muted">Start a conversation in the app</p>
         </div>
       </div>
 
-      <div class="detail-rows">
+      <p class="text-center x-small text-muted">Available 9:00 AM - 6:00 PM</p>
+    </div>
+
+    <div class="pricing-card p-3 border rounded mb-3">
+       <p class="text-muted mb-1 small">Consultation starts at</p>
+       <div class="price-tag mb-1">AED {{ selectedDesigner.hourlyRate }} <span class="fs-6 fw-normal text-muted">/ Hour</span></div>
+       <p class="x-small text-muted">Project based flat fees are available upon request.</p>
+    </div>
+    
+    <button class="btn w-100 btn-lg fw-bold mb-3" 
+            [class.btn-primary-custom]="isUserLoggedin"
+            [class.btn-secondary]="!isUserLoggedin"
+            (click)="openBooking()">
+      {{ isUserLoggedin ? 'Book Consultation' : 'Log in to Book' }}
+    </button>
+    
+    <div class="small text-muted text-center">
+      <i class="bi bi-shield-check text-success"></i> Verified Professional
+    </div>
+  </div>
+</div> 
+
+      </div>
+    </div>
+
+    <div *ngIf="viewMode === 'booking'" class="fade-in">
+      <button class="btn-back" (click)="viewMode='detail'">
+        <i class="bi bi-arrow-left"></i> Back to Profile
+      </button>
+
+      <div class="card border-0 shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <h3 class="mb-4">Book Consultation with {{ selectedDesigner?.name }}</h3>
+        
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          <input class="form-control" [(ngModel)]="bookingForm.fullName">
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Phone Number</label>
+          <input class="form-control" [(ngModel)]="bookingForm.phone">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Project Type</label>
+          <input class="form-control" placeholder="e.g. Residential, Office" [(ngModel)]="bookingForm.projectType">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Project Description</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="bookingForm.description"></textarea>
+        </div>
+
+        <div class="row g-2 mb-4">
+          <div class="col-6">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" [(ngModel)]="bookingForm.date">
+          </div>
+          <div class="col-6">
+            <label class="form-label">Time</label>
+            <input type="time" class="form-control" [(ngModel)]="bookingForm.time">
+          </div>
+        </div>
+
+        <button class="btn btn-primary-custom w-100" (click)="confirmBooking()">Confirm Booking Request</button>
+      </div>
+    </div>
+
+    <div *ngIf="showRequestsModal" class="modal d-block" style="background: rgba(0,0,0,0.5)">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Consultation Requests</h5>
+            <button type="button" class="btn-close" (click)="showRequestsModal = false"></button>
+          </div>
+          <div class="modal-body">
+            <div *ngIf="myRequests.length === 0" class="text-center py-3">No requests found.</div>
+            <ul class="list-group">
+              <li *ngFor="let r of myRequests" class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>{{ r.userName }}</strong><br>
+                  <small>{{ r.projectType }} - {{ r.status }}</small>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" (click)="selectedRequest=r; showClientDetailModal=true">View</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+   
+
+    <div *ngIf="showClientDetailModal" class="modal d-block" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pt-4 px-4">
+        <h2 class="fw-bold m-0">Client Details</h2>
+        <button class="btn-close" (click)="showClientDetailModal = false"></button>
+      </div>
+
+      <div class="modal-body p-4">
         <div class="row">
-          <div><label>Preferred Date</label><p>2024-03-15, 10:00 AM</p></div>
-          <div><label>Budget</label><p>AED 5,000 - 10,000</p></div>
-        </div>
-        <div class="row full">
-          <label>Project Description</label>
-          <p>Modern living room design with eco-friendly materials.</p>
-        </div>
-        <div class="row full">
-          <label>Location</label>
-          <div class="loc-box">📍 Downtown, Dubai, UAE</div>
-        </div>
-      </div>
+          <div class="col-md-4 text-center border-end">
+            <div class="position-relative d-inline-block mb-3">
+              <img [src]="selectedRequest?.user?.avatarUrl || 'assets/images/default-avatar.png'" 
+                   class="rounded-circle border border-warning border-4 p-1" 
+                   style="width: 130px; height: 130px; object-object: cover;">
+            </div>
+            <h4 class="fw-bold mb-1">{{ selectedRequest?.userName }}</h4>
+            <p class="text-primary-custom fw-bold">{{ selectedRequest?.userPhone }}</p>
+          </div>
 
-      <div class="modal-actions">
-        <button class="btn-pale" (click)="closeModals()">Message Client</button>
-        <button class="btn-grey" (click)="handleBookingAction('reject')">Reject</button>
-        <button class="btn-orange" (click)="handleBookingAction('accept')">Accept</button>
+          <div class="col-md-8 ps-md-5">
+            <h5 class="fw-bold mb-4">Request Details</h5>
+            
+            <div class="row mb-4">
+              <div class="col-6">
+                <p class="text-primary-custom mb-0 small fw-bold">Preferred Date & Time</p>
+                <p class="fw-semibold">{{ selectedRequest?.dateTime | date:'MMM d, y, h:mm a' }}</p>
+              </div>
+              <div class="col-6">
+                <p class="text-primary-custom mb-0 small fw-bold">Budget Range</p>
+                <p class="fw-semibold">AED {{ selectedRequest?.budget || '5,000 - 10,000' }}</p>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <p class="text-primary-custom mb-0 small fw-bold">Project Description</p>
+              <p class="text-muted">{{ selectedRequest?.projectDescription || 'No description provided.' }}</p>
+            </div>
+
+            <div class="mb-4">
+              <p class="text-primary-custom mb-0 small fw-bold">Location / City</p>
+              <div class="d-flex align-items-center gap-2 border rounded p-2 bg-light">
+                <i class="bi bi-geo-alt-fill text-muted"></i>
+                <span class="small">{{ selectedRequest?.location || 'Downtown, Dubai, UAE' }}</span>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-5">
+              <button class="btn btn-light-orange fw-bold flex-grow-1" (click)="openChat()">Message Client</button>
+              <button class="btn btn-light fw-bold border flex-grow-1" (click)="updateRequestStatus(selectedRequest, 'rejected')">Reject</button>
+              <button class="btn btn-primary-custom fw-bold flex-grow-1" (click)="updateRequestStatus(selectedRequest, 'accepted')">Accept Consultation</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
-</div> -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="mt-5 p-5">
-<h1 class="mt-5">Coming Soon</h1>
-
 </div>
 
 
+
+  </div>
+</div>
+
+
+
+<div class="modal d-block" *ngIf="showLoginModal" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary-custom text-white border-0">
+        <h5 class="modal-title fw-bold">Sign In Required</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="showLoginModal = false"></button>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <div class="mb-4">
+          <i class="bi bi-person-lock text-primary-custom" style="font-size: 3.5rem;"></i>
+        </div>
+        <p class="text-muted">You need to be logged in to access this feature and connect with our interior designers.</p>
+        
+        <div class="d-grid gap-2 mt-4">
+          <button class="btn btn-primary-custom btn-lg" (click)="navigateToLogin()">Go to Login</button>
+          <button class="btn btn-link text-muted" (click)="showLoginModal = false">Maybe Later</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+  <div *ngFor="let alert of activeAlerts" 
+       class="alert alert-dismissible fade show shadow-sm border-0 mb-2" 
+       [ngClass]="alert.type === 'success' ? 'bg-success text-white' : 'bg-dark text-white'"
+       role="alert">
+    <i class="bi" [ngClass]="alert.type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'"></i>
+    <span class="ms-2">{{ alert.message }}</span>
+    <button type="button" class="btn-close btn-close-white" (click)="removeAlert(alert)"></button>
+  </div>
+</div>

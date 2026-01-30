@@ -1,0 +1,38 @@
+<div class="legal-page">
+  <div class="about-header-banner">
+      <img src="../../../assets/images/About Us.jpg.jpeg" alt="About Us"  class="imgg">
+  </div>
+
+  <section class="section-block">
+    <h2 class="section-heading">Our Mission</h2>
+    <p class="section-paragraph">
+      To be the #1 classifieds platform people turn to for anything they need in their community, 
+      creating opportunities and enriching lives across the MENA region.
+    </p>
+  </section>
+
+  <section class="section-block">
+    <h2 class="section-heading">Our Story</h2>
+    <p class="section-paragraph">
+      Founded with the vision of creating a simple yet powerful online marketplace, Dubilist has 
+      grown to become the leading destination for buying, selling, and finding anything in your community. 
+      We empower millions of users every month to connect, trade, and build a more sustainable future.
+    </p>
+  </section>
+
+  <section class="section-block">
+  <h2 class="section-heading">Our Values</h2>
+  <div class="values-container">
+    <div *ngFor="let v of values" class="value-item">
+      <div class="icon-box">
+        <fa-icon [icon]="v.icon" class="fa-icon-orange"></fa-icon>
+      </div>
+      
+      <div class="value-content">
+        <strong>{{ v.title }}</strong>
+        <p>{{ v.desc }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+</div>

@@ -1,27 +1,47 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ListingsService } from '../../../services/listing-service';
+import { AuthService } from '../../../services/auth-service';
+import { ChatService } from '../../../services/chat-service';
 
-interface ElectronicsListing {
+export interface ElectronicsListing {
   id: number;
   title: string;
   price: number;
   currency: string;
   location: string;
+
   image: string;
-  images?: string[];
-  condition?: string;
+  images: string[];
+
+  // Electronics details
+  subCategory?: string;
   brand?: string;
-  ram?: string;
+  model?: string;
+  modelNumber?: string;
+  condition?: string;
   storage?: string;
-  battery?: string;
+  ram?: string;
   processor?: string;
+  operatingSystem?: string;
   screenSize?: string;
+  resolution?: string;
+  color?: string;
+  warrantyStatus?: string;
+  hasOriginalBox?: boolean;
+  hasCharger?: boolean;
+  accessories?: string | null;
   description?: string;
+
+  // Seller
   sellerName?: string;
   sellerPhone?: string;
   sellerImage?: string;
+
+  // New features
+  isFavorite: boolean;
 }
 
 @Component({
@@ -33,94 +53,232 @@ interface ElectronicsListing {
 })
 export class ElectronicsListingsComponent implements OnInit {
 
-  // =====================
-  // DATA
-  // =====================
-  listings: ElectronicsListing[] = [];
+  /* =====================
+     DATA SOURCES
+  ===================== */
+  allListings: ElectronicsListing[] = [];
   filteredListings: ElectronicsListing[] = [];
+  paginatedListings: ElectronicsListing[] = [];
+
   selectedListing: ElectronicsListing | null = null;
 
+  /* =====================
+     STATE
+  ===================== */
   isLoading = false;
+  isFetchingMore = false;
+  allLoaded = false;
+  isLoggedIn = false;
 
-  // =====================
-  // PAGINATION
-  // =====================
-  currentPage = 1;
-  pageSize = 12;
-  totalPages = 0;
-
-  // =====================
-  // DETAIL VIEW
-  // =====================
   currentImageIndex = 0;
-  isFavorite = false;
 
-  // =====================
-  // SEARCH & SORT
-  // =====================
+  /* =====================
+     INFINITE SCROLL
+  ===================== */
+  pageSize = 12;
+  currentPage = 1;
+
+  /* =====================
+     SEARCH & SORT
+  ===================== */
   searchQuery = '';
   selectedSortBy = 'newest';
 
-  // =====================
-  // FILTERS
-  // =====================
+  /* =====================
+     FILTERS
+  ===================== */
   selectedCategories: string[] = [];
-  categories = ['Mobile Phone', 'Laptop', 'TV', 'Washing Machine', 'Appliances', 'Refrigerator'];
-
-  selectedBrands: string[] = [];
-  brands = ['Samsung', 'Apple', 'LG', 'Dell', 'Sony', 'Whirlpool'];
-
-  selectedRam: string[] = [];
-  rams = ['4GB', '6GB', '8GB', '12GB', '16GB', '32GB'];
-
-  selectedStorage: string[] = [];
-  storages = ['64GB', '128GB', '256GB', '512GB', '1TB'];
-
-  minPrice = 0;
-  maxPrice = 0;
+  categories = [
+    'Mobile Phone',
+    'Laptop',
+    'TV',
+    'Washing Machine',
+    'Appliances',
+    'Refrigerator'
+  ];
 
   selectedCondition = 'New';
   conditions = ['New', 'Like New', 'Used'];
 
-  selectedLocation = '';
-  locations = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK', 'Fujairah', 'Al Ain'];
+  constructor(
+    private listingsService: ListingsService,
+    private authService: AuthService,
+    private chatService: ChatService,
+    private router: Router
+  ) {}
 
-  constructor(private listingsService: ListingsService) {}
-
+  /* =====================
+     INIT
+  ===================== */
   ngOnInit(): void {
-    this.loadListings();
+    this.isLoggedIn = this.authService.isLoggedIn();
+    this.fetchListings();
   }
 
-  // =====================
-  // FETCH FROM BACKEND
-  // =====================
-  loadListings(): void {
+  /* =====================
+     FETCH FROM BACKEND
+  ===================== */
+  fetchListings(): void {
     this.isLoading = true;
 
-    // categoryId = 4 → Electronics
-    this.listingsService.getAllListings(4).subscribe({
+    // categoryId = 5 → Electronics
+    this.listingsService.getAllListings(5).subscribe({
       next: (res: any) => {
-        this.listings = res.data.map(this.mapBackendElectronics);
-        this.applyFilters();
-        this.isLoading = false;
+        const mapped: ElectronicsListing[] =
+          res.data.map((l: any) => this.mapBackendElectronics(l));
+
+        if (!this.isLoggedIn) {
+          this.setListings(mapped);
+          return;
+        }
+
+        // Fetch favorites if logged in
+        this.listingsService.getFavoriteListingIds().subscribe({
+          next: (favRes: any) => {
+            const favoriteIds: number[] = favRes || [];
+            mapped.forEach(l => {
+              l.isFavorite = favoriteIds.includes(l.id);
+            });
+            this.setListings(mapped);
+          },
+          error: () => this.setListings(mapped)
+        });
       },
-      error: () => {
-        this.isLoading = false;
-      }
+      error: () => (this.isLoading = false)
     });
   }
 
-  // =====================
-  // VIEW DETAIL
-  // =====================
+  private setListings(listings: ElectronicsListing[]): void {
+    this.allListings = listings;
+    this.filteredListings = [...listings];
+    this.resetPagination();
+    this.isLoading = false;
+  }
+
+  /* =====================
+     FILTERS & SEARCH
+  ===================== */
+  toggleCategory(category: string): void {
+    const idx = this.selectedCategories.indexOf(category);
+    idx > -1
+      ? this.selectedCategories.splice(idx, 1)
+      : this.selectedCategories.push(category);
+    this.applyFilters();
+  }
+
+  isCategorySelected(category: string): boolean {
+    return this.selectedCategories.includes(category);
+  }
+
+  selectCondition(condition: string): void {
+    this.selectedCondition = condition;
+    this.applyFilters();
+  }
+
+  selectSortBy(sort: string): void {
+    this.selectedSortBy = sort;
+    this.applyFilters();
+  }
+
+  isSortSelected(sort: string): boolean {
+    return this.selectedSortBy === sort;
+  }
+
+  onSearch(): void {
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    let result = [...this.allListings];
+
+    if (this.selectedCategories.length) {
+      result = result.filter(
+        l => l.subCategory && this.selectedCategories.includes(l.subCategory)
+      );
+    }
+
+    if (this.selectedCondition) {
+      result = result.filter(l => l.condition === this.selectedCondition);
+    }
+
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      result = result.filter(
+        l =>
+          l.title.toLowerCase().includes(q) ||
+          l.brand?.toLowerCase().includes(q)
+      );
+    }
+
+    this.filteredListings = this.sortListings(result);
+    this.resetPagination();
+  }
+
+  private sortListings(list: ElectronicsListing[]): ElectronicsListing[] {
+    switch (this.selectedSortBy) {
+      case 'price-low':
+        return list.sort((a, b) => a.price - b.price);
+      case 'price-high':
+        return list.sort((a, b) => b.price - a.price);
+      default:
+        return list;
+    }
+  }
+
+  /* =====================
+     INFINITE SCROLL
+  ===================== */
+  onScroll(): void {
+    if (this.isFetchingMore || this.allLoaded) return;
+
+    const threshold = 300;
+    const position = window.innerHeight + window.scrollY;
+    const height = document.body.offsetHeight;
+
+    if (position + threshold >= height) {
+      this.loadMore();
+    }
+  }
+
+  loadMore(): void {
+    this.isFetchingMore = true;
+
+    setTimeout(() => {
+      this.currentPage++;
+      this.appendPage();
+      this.isFetchingMore = false;
+    }, 400);
+  }
+
+  resetPagination(): void {
+    this.currentPage = 1;
+    this.allLoaded = false;
+    this.paginatedListings = [];
+    this.appendPage();
+  }
+
+  appendPage(): void {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    const chunk = this.filteredListings.slice(start, end);
+
+    if (chunk.length === 0) {
+      this.allLoaded = true;
+      return;
+    }
+
+    this.paginatedListings = [...this.paginatedListings, ...chunk];
+  }
+
+  /* =====================
+     DETAIL VIEW
+  ===================== */
   viewListing(id: number): void {
-    const found = this.listings.find(l => l.id === id);
-    if (!found) return;
+    this.listingsService.getSingleListing(id).subscribe(listing => {
+      this.selectedListing = this.mapBackendElectronics(listing.data);
+    });
 
-    this.selectedListing = found;
     this.currentImageIndex = 0;
-    this.isFavorite = false;
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -128,18 +286,15 @@ export class ElectronicsListingsComponent implements OnInit {
     this.selectedListing = null;
   }
 
-  // =====================
-  // IMAGE CAROUSEL
-  // =====================
   previousImage(): void {
-    if (!this.selectedListing?.images?.length) return;
+    if (!this.selectedListing) return;
     this.currentImageIndex =
       (this.currentImageIndex - 1 + this.selectedListing.images.length) %
       this.selectedListing.images.length;
   }
 
   nextImage(): void {
-    if (!this.selectedListing?.images?.length) return;
+    if (!this.selectedListing) return;
     this.currentImageIndex =
       (this.currentImageIndex + 1) %
       this.selectedListing.images.length;
@@ -149,9 +304,31 @@ export class ElectronicsListingsComponent implements OnInit {
     this.currentImageIndex = i;
   }
 
-  // =====================
-  // CONTACT
-  // =====================
+  /* =====================
+     FAVORITES
+  ===================== */
+  toggleFavorite(listing: ElectronicsListing, event?: MouseEvent): void {
+    event?.stopPropagation();
+    if (!this.isLoggedIn) return;
+
+    const prev = listing.isFavorite;
+    listing.isFavorite = !prev;
+
+    const req = listing.isFavorite
+      ? this.listingsService.addToFavorites(listing.id)
+      : this.listingsService.removeFromFavorites(listing.id);
+
+    req.subscribe({
+      error: () => {
+        listing.isFavorite = prev;
+        alert('Unable to update favorite');
+      }
+    });
+  }
+
+  /* =====================
+     CONTACT
+  ===================== */
   callSeller(): void {
     if (this.selectedListing?.sellerPhone) {
       window.location.href = `tel:${this.selectedListing.sellerPhone}`;
@@ -164,8 +341,23 @@ export class ElectronicsListingsComponent implements OnInit {
     window.open(`https://wa.me/${phone}`, '_blank');
   }
 
-  toggleFavorite(): void {
-    this.isFavorite = !this.isFavorite;
+  startChatWithSeller(listing: ElectronicsListing): void {
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
+    this.chatService.createOrGetRoom(listing.id).subscribe({
+      next: (res: any) => {
+        const roomId = res?.data?.id;
+        if (!roomId) {
+          alert('Unable to open chat room');
+          return;
+        }
+        this.router.navigate(['/my-chats'], { queryParams: { roomId } });
+      },
+      error: () => alert('Unable to start chat')
+    });
   }
 
   reportAd(): void {
@@ -174,155 +366,46 @@ export class ElectronicsListingsComponent implements OnInit {
     }
   }
 
-  // =====================
-  // FILTER HELPERS
-  // =====================
-  toggleCategory(category: string) {
-    const i = this.selectedCategories.indexOf(category);
-    i > -1 ? this.selectedCategories.splice(i, 1) : this.selectedCategories.push(category);
-    this.applyFilters();
-  }
-
-  isCategorySelected(category: string): boolean {
-    return this.selectedCategories.includes(category);
-  }
-
-  toggleBrand(brand: string) {
-    const i = this.selectedBrands.indexOf(brand);
-    i > -1 ? this.selectedBrands.splice(i, 1) : this.selectedBrands.push(brand);
-    this.applyFilters();
-  }
-
-  isBrandSelected(brand: string): boolean {
-    return this.selectedBrands.includes(brand);
-  }
-
-  toggleRam(ram: string) {
-    const i = this.selectedRam.indexOf(ram);
-    i > -1 ? this.selectedRam.splice(i, 1) : this.selectedRam.push(ram);
-    this.applyFilters();
-  }
-
-  isRamSelected(ram: string): boolean {
-    return this.selectedRam.includes(ram);
-  }
-
-  toggleStorage(storage: string) {
-    const i = this.selectedStorage.indexOf(storage);
-    i > -1 ? this.selectedStorage.splice(i, 1) : this.selectedStorage.push(storage);
-    this.applyFilters();
-  }
-
-  isStorageSelected(storage: string): boolean {
-    return this.selectedStorage.includes(storage);
-  }
-
-  selectCondition(condition: string) {
-    this.selectedCondition = condition;
-    this.applyFilters();
-  }
-
-  isConditionSelected(condition: string): boolean {
-    return this.selectedCondition === condition;
-  }
-
-  // =====================
-  // FILTER + SORT
-  // =====================
-  selectSortBy(sort: string): void {
-    this.selectedSortBy = sort;
-    this.applyFilters();
-  }
-
-  isSortSelected(sort: string): boolean {
-    return this.selectedSortBy === sort;
-  }
-
-  applyFilters(): void {
-    let result = [...this.listings];
-
-    if (this.minPrice > 0) result = result.filter(l => l.price >= this.minPrice);
-    if (this.maxPrice > 0) result = result.filter(l => l.price <= this.maxPrice);
-
-    if (this.selectedBrands.length)
-      result = result.filter(l => l.brand && this.selectedBrands.includes(l.brand));
-
-    if (this.selectedRam.length)
-      result = result.filter(l => l.ram && this.selectedRam.includes(l.ram));
-
-    if (this.selectedStorage.length)
-      result = result.filter(l => l.storage && this.selectedStorage.includes(l.storage));
-
-    if (this.selectedCondition)
-      result = result.filter(l => l.condition === this.selectedCondition);
-
-    if (this.searchQuery.trim()) {
-      const q = this.searchQuery.toLowerCase();
-      result = result.filter(l =>
-        l.title.toLowerCase().includes(q) ||
-        l.location.toLowerCase().includes(q)
-      );
-    }
-
-    this.filteredListings = this.sortListings(result);
-    this.totalPages = Math.ceil(this.filteredListings.length / this.pageSize);
-  }
-
-  sortListings(list: ElectronicsListing[]) {
-    switch (this.selectedSortBy) {
-      case 'price-low':
-        return list.sort((a, b) => a.price - b.price);
-      case 'price-high':
-        return list.sort((a, b) => b.price - a.price);
-      default:
-        return list;
-    }
-  }
-
-  onSearch(): void {
-    this.applyFilters();
-  }
-
-  // =====================
-  // PAGINATION
-  // =====================
-  onPageChange(page: number): void {
-    if (page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  previousPage(): void {
-    this.onPageChange(this.currentPage - 1);
-  }
-
-  nextPage(): void {
-    this.onPageChange(this.currentPage + 1);
-  }
-
-  // =====================
-  // BACKEND → UI MAPPER
-  // =====================
+  /* =====================
+     BACKEND → UI MAPPER
+  ===================== */
   mapBackendElectronics(l: any): ElectronicsListing {
+    const details = l.electronicDetails;
+    const images = details?.images || [];
+
     return {
       id: l.id,
       title: l.title,
-      price: +l.price,
-      currency: l.currency,
-      location: l.city,
-      image: l.images?.[0]?.imageUrl || 'assets/no-image.jpg',
-      images: l.images?.map((i: any) => i.imageUrl) || [],
-      condition: l.condition,
-      brand: l.electronicsDetails?.brand,
-      ram: l.electronicsDetails?.ram,
-      storage: l.electronicsDetails?.storage,
-      battery: l.electronicsDetails?.battery,
-      processor: l.electronicsDetails?.processor,
-      screenSize: l.electronicsDetails?.screenSize,
+      price: Number(l.price),
+      currency: l.currency || 'AED',
+      location: l.city || 'Dubai',
+
+      image: images[0] || 'assets/no-image.jpg',
+      images,
+
+      subCategory: details?.subCategory,
+      brand: details?.brand,
+      model: details?.model,
+      modelNumber: details?.modelNumber,
+      condition: details?.condition,
+      storage: details?.storage,
+      ram: details?.ram,
+      processor: details?.processor,
+      operatingSystem: details?.operatingSystem,
+      screenSize: details?.screenSize,
+      resolution: details?.resolution,
+      color: details?.color,
+      warrantyStatus: details?.warrantyStatus,
+      hasOriginalBox: details?.hasOriginalBox,
+      hasCharger: details?.hasCharger,
+      accessories: details?.accessories,
       description: l.description,
-      sellerName: l.user?.name,
+
+      sellerName: l.user?.name || 'Private Seller',
       sellerPhone: l.contactPhone,
-      sellerImage: l.user?.avatarUrl || 'assets/avatar.png'
+      sellerImage: l.user?.avatarUrl || 'assets/avatar.png',
+
+      isFavorite: !!l.isFavorite
     };
   }
 }

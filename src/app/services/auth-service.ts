@@ -6,7 +6,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../environments/environment';
 
 /* =======================
-   INTERFACES
+    INTERFACES
    ======================= */
 
 export interface User {
@@ -14,6 +14,7 @@ export interface User {
   name: string;
   email: string;
   phone?: string;
+  bio?: string;      // Added bio field
   role: string;
   isVerified?: boolean;
   avatarUrl?: string;
@@ -47,7 +48,7 @@ export type ApiResponse<T> =
   | { success: false; error: { message: string } };
 
 /* =======================
-   AUTH SERVICE
+    AUTH SERVICE
    ======================= */
 
 @Injectable({ providedIn: 'root' })
@@ -68,7 +69,7 @@ export class AuthService {
   }
 
   /* =======================
-     SESSION RESTORE
+      SESSION RESTORE
      ======================= */
 
   private restoreSession(): void {
@@ -92,7 +93,7 @@ export class AuthService {
   }
 
   /* =======================
-     AUTH ACTIONS
+      AUTH ACTIONS
      ======================= */
 
   login(payload: LoginRequest): Observable<ApiResponse<AuthData>> {
@@ -136,7 +137,37 @@ export class AuthService {
   }
 
   /* =======================
-     LOGOUT
+      NEW: USER PROFILE UPDATES (API #8)
+     ======================= */
+  updateProfile(payload: Partial<User>): Observable<ApiResponse<User>> {
+    // API #8 uses PUT on /users/me
+    return this.http
+      .put<ApiResponse<User>>(`${this.apiUrl}/users/me`, payload)
+      .pipe(
+        tap(res => {
+          if (res.success) {
+            this.saveUser(res.data); // Update local storage and BehaviorSubject
+          }
+        })
+      );
+  }
+
+  /* =======================
+      NEW: UPLOAD IMAGE (API #12)
+     ======================= */
+  uploadImage(file: File, folder: string = 'profiles'): Observable<ApiResponse<{ url: string }>> {
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('folder', folder);
+
+    return this.http.post<ApiResponse<{ url: string }>>(
+      `${this.apiUrl}/upload/image`,
+      formData
+    );
+  }
+
+  /* =======================
+      LOGOUT
      ======================= */
 
   logout(): void {
@@ -154,7 +185,7 @@ export class AuthService {
   }
 
   /* =======================
-     STORAGE HELPERS
+      STORAGE HELPERS
      ======================= */
 
   private persistAuth(data: AuthData): void {
@@ -175,7 +206,7 @@ export class AuthService {
   }
 
   /* =======================
-     GETTERS (USED BY GUARD)
+      GETTERS (USED BY GUARD)
      ======================= */
 
   getAccessToken(): string | null {
@@ -190,4 +221,22 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.getAccessToken();
   }
+
+
+
+  /* =======================
+    DELETE ACCOUNT (API #11)
+   ======================= */
+deleteProfile(): Observable<ApiResponse<void>> {
+  // API #11 uses DELETE on /users/me
+  return this.http
+    .delete<ApiResponse<void>>(`${this.apiUrl}/users/me`)
+    .pipe(
+      tap(res => {
+        if (res.success) {
+          this.logoutLocal(); // Clean up local storage and state
+        }
+      })
+    );
+}
 }

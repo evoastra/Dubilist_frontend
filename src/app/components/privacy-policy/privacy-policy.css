@@ -1,0 +1,155 @@
+.policy-container {
+  margin-top: 60px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  margin-top: 60ox;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+.brand-color {
+  color: #f39c12; /* Matching the orange from your doc */
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+.mm{
+  margin-top: 60px;
+}.dot-list {
+  list-style-type: disc; /* Ensures the dots are visible */
+  margin-left: 20px;     /* Indents the list */
+  padding-left: 10px;
+}
+
+.dot-list li {
+  margin-bottom: 8px;    /* Adds spacing between each line */
+  color: #333;           /* Adjust color to match your text */
+}
+
+/* Matching the orange vertical bar from your image */
+.section-header {
+  border-left: 5px solid #f39c12; 
+  padding-left: 15px;
+  margin-bottom: 20px;
+}
+
+.meta-text {
+  color: #888;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.toc-box {
+  background: #fdf7f0;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 30px 0;
+}
+
+.toc-link {
+  color: #2c3e50;
+  text-decoration: none;
+  cursor: pointer;
+  display: block;
+  margin-bottom: 8px;
+  transition: color 0.2s;
+}
+
+.toc-link:hover {
+  color: #f39c12;
+  text-decoration: underline;
+}
+
+.bullet {
+  color: #f39c12;
+  margin-right: 8px;
+}
+
+.policy-section {
+  margin-bottom: 50px;
+}
+
+.section-title {
+  border-left: 4px solid #f39c12;
+  padding-left: 15px;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  color: #222;
+}
+
+.content-list {
+  padding-left: 20px;
+  list-style-type: square;
+}
+
+.contact-card {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+.email-link {
+  color: #f39c12;
+  font-weight: bold;
+  text-decoration: none;
+}
+.policy-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 50px 20px;
+  color: #333;
+  line-height: 1.6;
+  font-family: sans-serif;
+}
+
+.main-title {
+  color: #f39c12; /* Orange */
+  font-size: 2.2rem;
+  margin-bottom: 40px;
+}
+
+.section-container {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  border-left: 5px solid #f39c12; /* Vertical orange bar */
+  padding-left: 15px;
+  font-size: 1.6rem;
+  margin-bottom: 15px;
+  color: #222;
+}
+
+.section-text {
+  margin-bottom: 10px;
+  white-space: pre-line; /* Respects line breaks */
+}
+
+/* Dots Line by Line Styling */
+.dot-list {
+  list-style-type: disc;
+  margin-left: 25px;
+  padding-left: 10px;
+}
+
+.dot-list li {
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.contact-box {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.contact-box a {
+  color: #f39c12;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.mt-2 { margin-top: 10px; }

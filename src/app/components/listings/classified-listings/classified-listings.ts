@@ -74,9 +74,10 @@ export class ClassifiedListingsComponent implements OnInit {
     this.isLoading = true;
 
     // categoryId = 5 → Classifieds
-    this.listingsService.getAllListings(5).subscribe({
+    this.listingsService.getAllListings(4).subscribe({
       next: (res: any) => {
         this.listings = res.data.map(this.mapBackendClassified);
+        this.filteredListings = [...this.listings];
         this.applyFilters();
         this.isLoading = false;
       },
@@ -197,7 +198,7 @@ export class ClassifiedListingsComponent implements OnInit {
       );
     }
 
-    this.filteredListings = this.sortListings(result);
+   // this.filteredListings = this.sortListings(result);
   }
 
   sortListings(list: ClassifiedsListing[]) {

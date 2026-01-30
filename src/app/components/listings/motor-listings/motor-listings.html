@@ -134,7 +134,7 @@
 
       <!-- NO MORE DATA -->
       <div
-        class="no-more-listings"
+        class="no-more-listings text-center"
         *ngIf="allLoaded && paginatedListings.length">
         No more listings 🚗
       </div>
@@ -208,26 +208,31 @@
 
           <div class="specs-grid">
             <div class="spec-item">
+               <div class="spec-label">Year</div>
               <div class="spec-value">{{ listing.year }}</div>
-              <div class="spec-label">Year</div>
+             
             </div>
             <div class="spec-item">
-              <div class="spec-value">{{ listing.make }}</div>
+          
               <div class="spec-label">Make</div>
+                  <div class="spec-value">{{ listing.make }}</div>
             </div>
           
            
             <div class="spec-item">
-              <div class="spec-value">{{ listing.fuel }}</div>
+           
               <div class="spec-label">Fuel</div>
+                 <div class="spec-value">{{ listing.fuel }}</div>
             </div>
             <div class="spec-item">
-              <div class="spec-value">{{ listing.transmission }}</div>
+             
               <div class="spec-label">Transmission</div>
+               <div class="spec-value">{{ listing.transmission }}</div>
             </div>
             <div class="spec-item">
-              <div class="spec-value">{{ listing.condition }}</div>
+             
               <div class="spec-label">Condition</div>
+               <div class="spec-value">{{ listing.condition }}</div>
             </div>
           </div>
         </div>

@@ -97,40 +97,36 @@
       </div>
 
       <!-- ================= LISTINGS GRID ================= -->
-      <div
-        class="listings-grid"
-        *ngIf="!isLoading"
-        (window:scroll)="onScroll()">
+    <div class="listings-grid" *ngIf="!isLoading" (window:scroll)="onScroll()">
+  <div
+    *ngFor="let listing of filteredListings"
+    class="listing-card"
+    (click)="viewListing(listing.id)">
 
-        <div
-          *ngFor="let listing of visibleListings"
-          class="listing-card"
-          (click)="viewListing(listing.id)">
+    <div class="card-image">
+      <img [src]="listing.image" [alt]="listing.title" loading="lazy">
 
-          <div class="card-image">
-            <img [src]="listing.image" [alt]="listing.title">
+      <button
+        *ngIf="isLoggedIn"
+        class="favorite-btn"
+        (click)="toggleFavorite(listing, $event)">
+        <i
+          class="bi"
+          [ngClass]="listing.isFavorite ? 'bi-heart-fill' : 'bi-heart'">
+        </i>
+      </button>
+    </div>
 
-            <!-- FAVORITE -->
-            <button
-              *ngIf="isLoggedIn"
-              class="favorite-btn"
-              (click)="toggleFavorite(listing, $event)">
-              <i
-                class="bi"
-                [ngClass]="listing.isFavorite ? 'bi-heart-fill' : 'bi-heart'">
-              </i>
-            </button>
-          </div>
+    <div class="card-content">
+      <h3 class="listing-title">{{ listing.title }}</h3>
+      <p class="listing-price">
+        {{ listing.currency }} {{ listing.price | number }}
+      </p>
+      <p class="listing-location">{{ listing.location }}</p>
+    </div>
+  </div>
+</div>
 
-          <div class="card-content">
-            <h3 class="listing-title">{{ listing.title }}</h3>
-            <p class="listing-price">
-              {{ listing.currency }} {{ listing.price | number }}
-            </p>
-            <p class="listing-location">{{ listing.location }}</p>
-          </div>
-        </div>
-      </div>
 
       <!-- ================= INFINITE LOADER ================= -->
       <div class="infinite-loader" *ngIf="isFetchingMore">
@@ -140,7 +136,8 @@
       <!-- ================= NO MORE ================= -->
       <div
         class="no-more-listings"
-        *ngIf="!isFetchingMore && allLoaded && visibleListings.length">
+       *ngIf="!isFetchingMore && allLoaded && paginatedListings.length"
+>
         No more listings 🏠
       </div>
 
@@ -236,42 +233,46 @@
 
         <!-- IMAGE CAROUSEL -->
         <div class="image-carousel">
-          <button
-            class="carousel-btn prev"
-           *ngIf="selectedListing.images && selectedListing.images.length > 1"
+  
+  <!-- Prev Button -->
+  <button
+    class="carousel-btn prev"
+    *ngIf="selectedListing.images.length > 1"
+    (click)="previousImage()">
+    <i class="bi bi-chevron-left"></i>
+  </button>
 
-            (click)="previousImage()">
-            <i class="bi bi-chevron-left"></i>
-          </button>
+  <!-- Main Image -->
+  <div class="main-image">
+    <img
+      [src]="selectedListing.images.length
+              ? selectedListing.images[currentImageIndex].imageUrl
+              : selectedListing.image"
+      [alt]="selectedListing.title" />
+  </div>
 
-          <div class="main-image">
-            <img
-              [src]="selectedListing.images?.length
-                ? selectedListing.images[currentImageIndex]
-                : selectedListing.image"
-              [alt]="selectedListing.title" />
-          </div>
+  <!-- Next Button -->
+  <button
+    class="carousel-btn next"
+    *ngIf="selectedListing.images.length > 1"
+    (click)="nextImage()">
+    <i class="bi bi-chevron-right"></i>
+  </button>
 
-          <button
-            class="carousel-btn next"
-           *ngIf="selectedListing.images && selectedListing.images.length > 1"
+  <!-- DOT Indicators -->
+  <div
+    class="image-indicators"
+    *ngIf="selectedListing.images.length > 1">
+    <span
+      *ngFor="let img of selectedListing.images; let i = index"
+      class="indicator"
+      [class.active]="i === currentImageIndex"
+      (click)="selectImage(i)">
+    </span>
+  </div>
 
-            (click)="nextImage()">
-            <i class="bi bi-chevron-right"></i>
-          </button>
+</div>
 
-          <!-- DOTS -->
-          <div
-            class="image-indicators"
-            *ngIf="selectedListing.images && selectedListing.images.length > 1">
-            <span
-              *ngFor="let img of selectedListing.images; let i = index"
-              class="indicator"
-              [class.active]="i === currentImageIndex"
-              (click)="selectImage(i)">
-            </span>
-          </div>
-        </div>
 
         <!-- TITLE + DESC -->
         <div class="detail-section">
@@ -296,6 +297,27 @@
               <div class="spec-label">Furnishing</div>
             </div>
 
+            <div class="spec-item" *ngIf="selectedListing.bedrooms">
+              <div class="spec-value">{{ selectedListing.bedrooms }}</div>
+              <div class="spec-label">Bedrooms</div>
+            </div>
+          
+             <div class="spec-item" *ngIf="selectedListing.bathrooms">
+              <div class="spec-value">{{ selectedListing.bathrooms }}</div>
+              <div class="spec-label">Bathrooms</div>
+            </div>
+
+             <div class="spec-item" *ngIf="selectedListing.halls">
+              <div class="spec-value">{{ selectedListing.halls }}</div>
+              <div class="spec-label">Halls</div>
+            </div>
+
+             <div class="spec-item" *ngIf="selectedListing.areaSize">
+              <div class="spec-value">{{ selectedListing.areaSize }}</div>
+              <div class="spec-label">Area (Sqft)</div>
+            </div>
+
+  
           </div>
         </div>
 
@@ -365,6 +387,9 @@
             (click)="startChatWithSeller(selectedListing)">
             <i class="bi bi-chat-dots"></i> Chat on Dubilist
           </button>
+          <p *ngIf="!isLoggedIn" class="login-hint">
+  Login to chat with seller
+</p>
         </div>
 
       </div>

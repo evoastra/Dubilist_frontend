@@ -1,6 +1,9 @@
 <div class="m-3 pt-0 mt-5">
   <div class="add-post-wrapper">
     <h3 class="text-center fw-bold form-title" style="color: #ffa500;">Post Your Ad</h3>
+   
+
+      
 
     <form #f="ngForm" (ngSubmit)="submit(f)" class="add-post-card mx-5" novalidate>
       <div class="row">
@@ -587,7 +590,7 @@
       </div>
 
       <div class="text-center pb-3 mt-4">
-        <button class="btn btn-warning px-5 fw-bold text-white"
+        <button class="btn btn-outline-white  px-5 fw-bold text-dark"
                 type="submit"
                 [disabled]="f.invalid">
           Next Step

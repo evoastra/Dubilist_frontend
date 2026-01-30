@@ -1074,7 +1074,8 @@
   }
 
   .detail-overlay {
-    padding: 5px;
+    margin-top: 40px;
+    padding: 25px;
   }
 
   .sort-buttons {

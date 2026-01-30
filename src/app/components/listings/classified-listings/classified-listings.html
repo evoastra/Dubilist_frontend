@@ -20,19 +20,8 @@
           <button *ngFor="let cat of categories" class="furniture-type-btn" [class.active]="isCategorySelected(cat)" (click)="toggleCategory(cat)">{{cat}}</button>
         </div>
       </section>
-      <section class="filter-section">
-        <h3 class="section-label">Price Range (AED)</h3>
-        <div class="price-inputs">
-          <input type="number" placeholder="Min" [(ngModel)]="minPrice" class="price-input">
-          <input type="number" placeholder="Max" [(ngModel)]="maxPrice" class="price-input">
-        </div>
-      </section>
-      <section class="filter-section">
-        <h3 class="section-label">Condition</h3>
-        <div class="condition-buttons">
-          <button *ngFor="let cond of conditions" class="condition-btn" [class.active]="isConditionSelected(cond)" (click)="selectCondition(cond)">{{cond}}</button>
-        </div>
-      </section>
+    
+      
       <button class="apply-filters-btn" (click)="applyFilters()">Apply Filters</button>
     </div>
   </aside>

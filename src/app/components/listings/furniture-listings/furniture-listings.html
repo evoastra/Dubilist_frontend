@@ -1,8 +1,10 @@
-<!-- Detail View (Shows when a listing is selected) -->
+<!-- ===================== -->
+<!-- DETAIL VIEW OVERLAY -->
+<!-- ===================== -->
 <div class="detail-overlay" *ngIf="selectedListing" (click)="closeDetail()">
   <div class="detail-container" (click)="$event.stopPropagation()">
-    
-    <!-- Close Button -->
+
+    <!-- Close -->
     <button class="close-btn" (click)="closeDetail()">
       <i class="bi bi-x-lg"></i>
     </button>
@@ -14,27 +16,36 @@
       <span class="crumb current">{{ selectedListing.title }}</span>
     </div>
 
-    <div class="detail-content ">
-      
-      <!-- Left Section -->
+    <div class="detail-content">
+
+      <!-- LEFT -->
       <div class="detail-left">
-        
+
         <!-- Image Carousel -->
         <div class="image-carousel">
-          <button class="carousel-btn prev" (click)="previousImage()" *ngIf="selectedListing.images && selectedListing.images.length > 1">
+          <button
+            class="carousel-btn prev"
+            *ngIf="selectedListing.images.length > 1"
+            (click)="previousImage()">
             <i class="bi bi-chevron-left"></i>
           </button>
-          
+
           <div class="main-image">
-            <img [src]="(selectedListing.images && selectedListing.images.length > 0) ? selectedListing.images[currentImageIndex] : selectedListing.image" [alt]="selectedListing.title" />
+            <img
+              [src]="selectedListing.images.length
+                ? selectedListing.images[currentImageIndex]
+                : selectedListing.image"
+              [alt]="selectedListing.title" />
           </div>
-          
-          <button class="carousel-btn next" (click)="nextImage()" *ngIf="selectedListing.images && selectedListing.images.length > 1">
+
+          <button
+            class="carousel-btn next"
+            *ngIf="selectedListing.images.length > 1"
+            (click)="nextImage()">
             <i class="bi bi-chevron-right"></i>
           </button>
 
-          <!-- Image indicators -->
-          <div class="image-indicators" *ngIf="selectedListing.images && selectedListing.images.length > 1">
+          <div class="image-indicators" *ngIf="selectedListing.images.length > 1">
             <span
               *ngFor="let img of selectedListing.images; let i = index"
               class="indicator"
@@ -44,16 +55,17 @@
           </div>
         </div>
 
-        <!-- Title & Description -->
+        <!-- Description -->
         <div class="detail-section">
           <h1 class="listing-title">{{ selectedListing.title }}</h1>
           <p class="listing-description">{{ selectedListing.description }}</p>
         </div>
 
-        <!-- Specifications -->
+        <!-- Specs -->
         <div class="detail-section specifications">
           <h2 class="section-title">Specifications</h2>
           <div class="specs-grid">
+
             <div class="spec-item" *ngIf="selectedListing.condition">
               <div class="spec-value">{{ selectedListing.condition }}</div>
               <div class="spec-label">Condition</div>
@@ -64,282 +76,230 @@
               <div class="spec-label">Material</div>
             </div>
 
-            <div class="spec-item" *ngIf="selectedListing.lengthCm && selectedListing.widthCm && selectedListing.heightCm">
-              <div class="spec-value">{{ selectedListing.lengthCm }} x {{ selectedListing.widthCm }} x {{ selectedListing.heightCm }} cm</div>
-              <div class="spec-label">Dimensions (L x W x H)</div>
+            <div
+              class="spec-item"
+              *ngIf="selectedListing.lengthCm && selectedListing.widthCm && selectedListing.heightCm">
+              <div class="spec-value">
+                {{ selectedListing.lengthCm }} ×
+                {{ selectedListing.widthCm }} ×
+                {{ selectedListing.heightCm }} cm
+              </div>
+              <div class="spec-label">Dimensions (L × W × H)</div>
             </div>
 
             <div class="spec-item" *ngIf="selectedListing.weight">
               <div class="spec-value">{{ selectedListing.weight }}</div>
               <div class="spec-label">Weight</div>
             </div>
+
           </div>
         </div>
       </div>
 
-      <!-- Right Sidebar -->
+      <!-- RIGHT -->
       <div class="detail-right">
-        
-        <!-- Price Card -->
+
         <div class="price-card">
           <h3 class="price-label">Price</h3>
-          <p class="price-value">{{ selectedListing.currency }} {{ selectedListing.price | number }}</p>
+          <p class="price-value">
+            {{ selectedListing.currency }} {{ selectedListing.price | number }}
+          </p>
         </div>
 
-        <!-- Location Card -->
         <div class="info-card">
           <h3 class="card-title">Location</h3>
           <p class="location-text">{{ selectedListing.location }}</p>
         </div>
 
-        <!-- Seller Information -->
         <div class="seller-card">
           <h3 class="card-title">Seller Information</h3>
-          
+
           <div class="seller-profile">
-            <img [src]="selectedListing.sellerImage" [alt]="selectedListing.sellerName" class="seller-avatar" />
+            <img [src]="selectedListing.sellerImage" class="seller-avatar" />
             <div class="seller-info">
               <h4 class="seller-name">{{ selectedListing.sellerName }}</h4>
               <p class="seller-contact">{{ selectedListing.sellerPhone }}</p>
             </div>
           </div>
 
-          <!-- Contact Buttons -->
           <button class="contact-btn call-btn" (click)="callSeller()">
             Call Now
           </button>
 
           <button class="contact-btn whatsapp-btn" (click)="chatWhatsApp()">
-            <i class="bi bi-whatsapp"></i>
-            Chat with WhatsApp
+            <i class="bi bi-whatsapp"></i> WhatsApp
           </button>
+
+          <!-- Chat -->
+          <button
+            class="contact-btn chat-btn"
+            *ngIf="isLoggedIn"
+            (click)="startChatWithSeller(selectedListing)">
+            <i class="bi bi-chat-dots"></i> Chat on Dubilist
+          </button>
+
+          <p *ngIf="!isLoggedIn" class="login-hint">
+            Login to chat with seller
+          </p>
         </div>
 
-        <!-- Actions -->
-        <button class="action-btn favorite-btn" (click)="toggleFavorite()" [class.favorited]="isFavorite">
-          <i class="bi" [class.bi-heart]="!isFavorite" [class.bi-heart-fill]="isFavorite"></i>
-          {{ isFavorite ? 'Added to Favourites' : 'Add to Favourites' }}
+        <!-- Favorite -->
+        <button
+          class="action-btn favorite-btn"
+          *ngIf="isLoggedIn"
+          (click)="toggleFavorite(selectedListing, $event)"
+          [class.favorited]="selectedListing.isFavorite">
+          <i class="bi"
+             [class.bi-heart]="!selectedListing.isFavorite"
+             [class.bi-heart-fill]="selectedListing.isFavorite"></i>
+          {{ selectedListing.isFavorite ? 'Added to Favourites' : 'Add to Favourites' }}
         </button>
 
         <button class="action-btn report-btn" (click)="reportAd()">
-          Report this Ad
-          <i class="bi bi-flag"></i>
+          Report this Ad <i class="bi bi-flag"></i>
         </button>
-      </div>
 
+      </div>
     </div>
   </div>
 </div>
 
-
+<!-- ===================== -->
+<!-- LISTINGS PAGE -->
+<!-- ===================== -->
 <div class="mt-5">
-<!-- Listings View (Main Page) -->
 <div class="listings-page" [class.hidden]="selectedListing">
-  
-  <!-- Left Sidebar: Filters -->
-  <aside class="filters-sidebar">
+
+  <!-- FILTER SIDEBAR (DESKTOP) -->
+  <aside class="filters-sidebar d-none d-md-block">
     <div class="filters-container">
       <h2 class="filters-title">Filters</h2>
 
-      <!-- Sort By -->
       <section class="filter-section">
         <h3 class="section-label">Sort by</h3>
         <div class="sort-buttons">
-          <button
-            class="sort-btn"
-            [class.active]="isSortSelected('newest')"
-            (click)="selectSortBy('newest')">
-            Newest
-          </button>
-          <button
-            class="sort-btn"
-            [class.active]="isSortSelected('relevance')"
-            (click)="selectSortBy('relevance')">
-            Relevance
-          </button>
-        </div>
-        <div class="sort-buttons-row">
-          <button
-            class="sort-btn-small"
-            [class.active]="isSortSelected('price-low')"
-            (click)="selectSortBy('price-low')">
-            Price : Low to High
-          </button>
-          <button
-            class="sort-btn-small"
-            [class.active]="isSortSelected('price-high')"
-            (click)="selectSortBy('price-high')">
-            Price : High to Low
-          </button>
+          <button class="sort-btn"
+                  [class.active]="isSortSelected('newest')"
+                  (click)="selectSortBy('newest')">Newest</button>
+          <button class="sort-btn"
+                  [class.active]="isSortSelected('price-low')"
+                  (click)="selectSortBy('price-low')">Price Low → High</button>
+          <button class="sort-btn"
+                  [class.active]="isSortSelected('price-high')"
+                  (click)="selectSortBy('price-high')">Price High → Low</button>
         </div>
       </section>
 
-      <!-- Type of Furniture -->
-      <section class="filter-section">
-        <h3 class="section-label">Type of Furniture</h3>
-        <div class="furniture-type-grid">
-          <button
-            *ngFor="let type of furnitureTypes"
-            class="furniture-type-btn"
-            [class.active]="isFurnitureTypeSelected(type)"
-            (click)="toggleFurnitureType(type)">
-            {{ type }}
-          </button>
-        </div>
-      </section>
-
-      <!-- Material -->
-      <section class="filter-section">
-        <h3 class="section-label">Material</h3>
-        <div class="material-list">
-          <label *ngFor="let material of materials" class="material-checkbox">
-            <input
-              type="checkbox"
-              [checked]="isMaterialSelected(material)"
-              (change)="toggleMaterial(material)"
-            />
-            <span>{{ material }}</span>
-          </label>
-        </div>
-      </section>
-
-      <!-- Price Range -->
-      <section class="filter-section">
-        <h3 class="section-label">Price Range (AED)</h3>
-        <div class="price-inputs">
-          <input
-            type="number"
-            placeholder="Min"
-            [(ngModel)]="minPrice"
-            class="price-input"
-          />
-          <input
-            type="number"
-            placeholder="Max"
-            [(ngModel)]="maxPrice"
-            class="price-input"
-          />
-        </div>
-      </section>
-
-      <!-- Condition -->
-      <section class="filter-section">
-        <h3 class="section-label">Condition</h3>
-        <div class="condition-buttons">
-          <button
-            *ngFor="let condition of conditions"
-            class="condition-btn"
-            [class.active]="isConditionSelected(condition)"
-            (click)="selectCondition(condition)">
-            {{ condition }}
-          </button>
-        </div>
-      </section>
-
-      <!-- Location -->
-      <section class="filter-section">
-        <h3 class="section-label">Location</h3>
-        <div class="location-select">
-          <i class="bi bi-geo-alt"></i>
-          <select [(ngModel)]="selectedLocation" class="location-dropdown">
-            <option *ngFor="let loc of locations" [value]="loc">{{ loc }}</option>
-          </select>
-          <i class="bi bi-chevron-down"></i>
-        </div>
-      </section>
-
-      <!-- Apply Button -->
       <button class="apply-filters-btn" (click)="applyFilters()">
         Apply Filters
       </button>
     </div>
   </aside>
 
-  <!-- Main Content -->
+  <!-- MAIN -->
   <main class="listings-main">
-    
-    <!-- Header -->
-    <div class="listings-header">
+
+    <!-- HEADER -->
+    <div class="listings-header d-flex align-items-center justify-content-between">
       <h1 class="page-title">Furniture</h1>
-      
-      <!-- Search Bar -->
-      <div class="search-container">
-        <i class="bi bi-search search-icon"></i>
-        <input
-          type="text"
-          placeholder="Search"
-          [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()"
-          class="search-input"
-        />
-      </div>
+
+      <!-- Mobile Filter Icon -->
+      <button
+        class="btn btn-outline-secondary d-md-none"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#mobileFilters">
+        <i class="bi bi-funnel"></i>
+      </button>
     </div>
 
-    <!-- Results Header -->
-   
+    <!-- SEARCH -->
+    <div class="search-container">
+      <i class="bi bi-search search-icon"></i>
+      <input
+        class="search-input"
+        placeholder="Search furniture..."
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()" />
+    </div>
 
-    <!-- Loading State -->
+    <!-- LOADING -->
     <div class="loading-state" *ngIf="isLoading">
       <div class="spinner"></div>
       <p>Loading furniture...</p>
     </div>
 
-    <!-- Listings Grid -->
-    <div class="listings-grid" *ngIf="!isLoading && filteredListings.length > 0">
+    <!-- GRID -->
+    <div
+      class="listings-grid"
+      *ngIf="!isLoading"
+      (window:scroll)="onScroll()">
+
       <div
-        *ngFor="let listing of filteredListings"
+        *ngFor="let listing of paginatedListings"
         class="listing-card"
         (click)="viewListing(listing.id)">
-        
+
         <div class="card-image">
           <img [src]="listing.image" [alt]="listing.title" />
+
+          <button
+            class="favorite-btn"
+            *ngIf="isLoggedIn"
+            (click)="toggleFavorite(listing, $event)">
+            <i class="bi"
+               [ngClass]="listing.isFavorite ? 'bi-heart-fill' : 'bi-heart'"></i>
+          </button>
         </div>
 
         <div class="card-content">
           <h3 class="listing-title">{{ listing.title }}</h3>
-          
           <p class="listing-price">
-            <span class="price-value">{{ listing.currency }} {{ listing.price | number }}</span>
+            {{ listing.currency }} {{ listing.price | number }}
           </p>
-
           <p class="listing-location">{{ listing.location }}</p>
         </div>
       </div>
     </div>
 
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="!isLoading && filteredListings.length === 0">
-      <i class="bi bi-basket-x"></i>
-      <h3>No furniture found</h3>
-      <p>Try adjusting your filters or search criteria</p>
+    <!-- LOADERS -->
+    <div class="infinite-loader" *ngIf="isFetchingMore">
+      <div class="spinner-border text-primary"></div>
     </div>
 
-    <!-- Pagination -->
-    <div class="pagination" *ngIf="!isLoading && filteredListings.length > 0">
-      <button
-        class="page-arrow"
-        (click)="previousPage()"
-        [disabled]="currentPage === 1">
-        <i class="bi bi-chevron-left"></i>
-      </button>
-
-      <button
-        *ngFor="let page of [1, 2, 3, 4, 5]"
-        class="page-number"
-        [class.active]="page === currentPage"
-        (click)="onPageChange(page)">
-        {{ page }}
-      </button>
-
-      <button
-        class="page-arrow"
-        (click)="nextPage()"
-        [disabled]="currentPage === totalPages">
-        <i class="bi bi-chevron-right"></i>
-      </button>
+    <div
+      class="no-more-listings text-center"
+      *ngIf="allLoaded && paginatedListings.length">
+      No more furniture 🛋️
     </div>
 
   </main>
-
 </div>
+</div>
+
+<!-- ===================== -->
+<!-- MOBILE FILTER OFFCANVAS -->
+<!-- ===================== -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileFilters">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Filters</h5>
+    <button class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <section class="filter-section">
+      <h3 class="section-label">Sort by</h3>
+      <div class="sort-buttons">
+        <button class="sort-btn" (click)="selectSortBy('newest')">Newest</button>
+        <button class="sort-btn" (click)="selectSortBy('price-low')">Price Low → High</button>
+        <button class="sort-btn" (click)="selectSortBy('price-high')">Price High → Low</button>
+      </div>
+    </section>
+
+    <button
+      class="apply-filters-btn w-100"
+      data-bs-dismiss="offcanvas"
+      (click)="applyFilters()">
+      Apply Filters
+    </button>
+  </div>
 </div>

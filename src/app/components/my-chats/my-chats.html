@@ -71,18 +71,16 @@
 
       <!-- MESSAGES -->
       <div class="chat-messages" id="chatMessages">
-        <div
-          *ngFor="let msg of messages"
-          class="message"
-          [class.me]="msg.senderId !== selectedRoom.otherParty.id">
-
-          <div class="bubble">
-            {{ msg.content }}
-            <small class="time">
-              {{ msg.createdAt | date:'shortTime' }}
-            </small>
-          </div>
-        </div>
+       <div
+  *ngFor="let msg of messages"
+  class="message"
+  [class.me]="msg.senderId === currentUserId"> <div class="bubble">
+    {{ msg.content }}
+    <small class="time">
+      {{ msg.createdAt | date:'shortTime' }}
+    </small>
+  </div>
+</div>
       </div>
 
       <!-- INPUT -->

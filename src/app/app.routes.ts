@@ -23,6 +23,8 @@ import { FavouritesComponent } from './components/my-favourites/my-favourites';
 import { ChatComponent } from './components/my-chats/my-chats';
 
 import { AuthGuard } from './guards/auth-guard';
+import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy';
+import { AboutUsComponent } from './components/about-us/about-us';
 
 export const routes: Routes = [
 
@@ -32,6 +34,8 @@ export const routes: Routes = [
 
   { path: '', component: LandingPage },
   { path: 'home', component: HomePage },
+  {path:'privacy-policy',component:PrivacyPolicyComponent},
+  {path:'about-us',component:AboutUsComponent},
 
   /* AUTH */
   { path: 'auth/login', component: AuthLoginComponent },

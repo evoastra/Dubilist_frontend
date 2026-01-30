@@ -1,28 +1,36 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { ListingsService } from '../../../services/listing-service';
+import { AuthService } from '../../../services/auth-service';
+import { ChatService } from '../../../services/chat-service';
 
-interface FurnitureListing {
+export interface FurnitureListing {
   id: number;
   title: string;
   price: number;
   currency: string;
   location: string;
+
   image: string;
-  images?: string[];
+  images: string[];
+
   condition?: string;
   material?: string;
   description?: string;
+
   lengthCm?: number;
   widthCm?: number;
   heightCm?: number;
   weight?: string;
+
   sellerName?: string;
   sellerPhone?: string;
   sellerEmail?: string;
   sellerImage?: string;
+
+  isFavorite: boolean;
 }
 
 @Component({
@@ -34,37 +42,40 @@ interface FurnitureListing {
 })
 export class FurnitureListingsComponent implements OnInit {
 
-  // =====================
-  // DATA
-  // =====================
-  listings: FurnitureListing[] = [];
+  /* =====================
+     DATA SOURCES
+  ===================== */
+  allListings: FurnitureListing[] = [];
   filteredListings: FurnitureListing[] = [];
+  paginatedListings: FurnitureListing[] = [];
+
   selectedListing: FurnitureListing | null = null;
 
+  /* =====================
+     STATE
+  ===================== */
   isLoading = false;
+  isFetchingMore = false;
+  allLoaded = false;
+  isLoggedIn = false;
 
-  // =====================
-  // PAGINATION
-  // =====================
-  currentPage = 1;
-  pageSize = 12;
-  totalPages = 0;
-
-  // =====================
-  // DETAIL VIEW
-  // =====================
   currentImageIndex = 0;
-  isFavorite = false;
 
-  // =====================
-  // SEARCH & SORT
-  // =====================
+  /* =====================
+     INFINITE SCROLL
+  ===================== */
+  pageSize = 12;
+  currentPage = 1;
+
+  /* =====================
+     SEARCH & SORT
+  ===================== */
   searchQuery = '';
   selectedSortBy = 'newest';
 
-  // =====================
-  // FILTERS
-  // =====================
+  /* =====================
+     FILTERS
+  ===================== */
   selectedFurnitureTypes: string[] = [];
   furnitureTypes = ['Sofa', 'Bed', 'Dining Table', 'Chair', 'Dressing Table'];
 
@@ -74,59 +85,192 @@ export class FurnitureListingsComponent implements OnInit {
   minPrice = 0;
   maxPrice = 0;
 
-  selectedCondition = 'new';
+  selectedCondition = '';
   conditions = ['New', 'Like New', 'Used'];
 
-  selectedLocation = 'Dubai';
+  selectedLocation = '';
   locations = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK', 'Fujairah'];
 
   constructor(
-    private route: ActivatedRoute,
-    private listingsService: ListingsService
+    private listingsService: ListingsService,
+    private authService: AuthService,
+    private router: Router,
+    private chatService:ChatService
   ) {}
 
+  /* =====================
+     INIT
+  ===================== */
   ngOnInit(): void {
-    this.loadListings();
-
-    this.route.params.subscribe(params => {
-      if (params['id']) {
-        const id = +params['id'];
-        const found = this.listings.find(l => l.id === id);
-        if (found) this.viewListing(id);
-      }
-    });
+    this.isLoggedIn = this.authService.isLoggedIn();
+    this.fetchListings();
   }
 
-  // =====================
-  // FETCH FROM BACKEND
-  // =====================
-  loadListings(): void {
+  /* =====================
+     FETCH FROM BACKEND
+  ===================== */
+  fetchListings(): void {
     this.isLoading = true;
 
-    // categoryId = 7 → Furniture
-    this.listingsService.getAllListings(7).subscribe({
+    // categoryId = 6 → Furniture
+    this.listingsService.getAllListings(6).subscribe({
       next: (res: any) => {
-        this.listings = res.data.map(this.mapBackendFurniture);
-        this.applyFilters();
-        this.isLoading = false;
+        const mapped: FurnitureListing[] =
+          res.data.map((l: any) => this.mapBackendFurniture(l));
+
+        if (!this.isLoggedIn) {
+          this.setListings(mapped);
+          return;
+        }
+
+        this.listingsService.getFavoriteListingIds().subscribe({
+          next: (favRes: any) => {
+            const favIds: number[] = favRes || [];
+            mapped.forEach(l => (l.isFavorite = favIds.includes(l.id)));
+            this.setListings(mapped);
+          },
+          error: () => this.setListings(mapped)
+        });
       },
-      error: () => {
-        this.isLoading = false;
-      }
+      error: () => (this.isLoading = false)
     });
   }
 
-  // =====================
-  // VIEW DETAIL
-  // =====================
-  viewListing(listingId: number): void {
-    const listing = this.listings.find(l => l.id === listingId);
-    if (!listing) return;
+  private setListings(listings: FurnitureListing[]): void {
+    this.allListings = listings;
+    this.filteredListings = [...listings];
+    this.resetPagination();
+    this.isLoading = false;
+  }
 
-    this.selectedListing = listing;
+  /* =====================
+     FILTERS
+  ===================== */
+  toggleMaterial(material: string): void {
+    const i = this.selectedMaterials.indexOf(material);
+    i > -1 ? this.selectedMaterials.splice(i, 1) : this.selectedMaterials.push(material);
+    this.applyFilters();
+  }
+
+  isMaterialSelected(material: string): boolean {
+    return this.selectedMaterials.includes(material);
+  }
+
+  selectCondition(condition: string): void {
+    this.selectedCondition = condition;
+    this.applyFilters();
+  }
+
+  isConditionSelected(condition: string): boolean {
+    return this.selectedCondition === condition;
+  }
+
+  selectSortBy(sort: string): void {
+    this.selectedSortBy = sort;
+    this.applyFilters();
+  }
+
+  isSortSelected(sort: string): boolean {
+    return this.selectedSortBy === sort;
+  }
+
+  onSearch(): void {
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    let result = [...this.allListings];
+
+    if (this.minPrice > 0) result = result.filter(l => l.price >= this.minPrice);
+    if (this.maxPrice > 0) result = result.filter(l => l.price <= this.maxPrice);
+
+    if (this.selectedCondition) {
+      result = result.filter(l => l.condition === this.selectedCondition);
+    }
+
+    if (this.selectedMaterials.length) {
+      result = result.filter(l =>
+        l.material && this.selectedMaterials.includes(l.material)
+      );
+    }
+
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      result = result.filter(
+        l =>
+          l.title.toLowerCase().includes(q) ||
+          l.location.toLowerCase().includes(q)
+      );
+    }
+
+    this.filteredListings = this.sortListings(result);
+    this.resetPagination();
+  }
+
+  private sortListings(list: FurnitureListing[]): FurnitureListing[] {
+    switch (this.selectedSortBy) {
+      case 'price-low':
+        return list.sort((a, b) => a.price - b.price);
+      case 'price-high':
+        return list.sort((a, b) => b.price - a.price);
+      default:
+        return list;
+    }
+  }
+
+  /* =====================
+     INFINITE SCROLL
+  ===================== */
+  onScroll(): void {
+    if (this.isFetchingMore || this.allLoaded) return;
+
+    const threshold = 300;
+    const position = window.innerHeight + window.scrollY;
+    const height = document.body.offsetHeight;
+
+    if (position + threshold >= height) {
+      this.loadMore();
+    }
+  }
+
+  loadMore(): void {
+    this.isFetchingMore = true;
+
+    setTimeout(() => {
+      this.currentPage++;
+      this.appendPage();
+      this.isFetchingMore = false;
+    }, 400);
+  }
+
+  resetPagination(): void {
+    this.currentPage = 1;
+    this.allLoaded = false;
+    this.paginatedListings = [];
+    this.appendPage();
+  }
+
+  appendPage(): void {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    const chunk = this.filteredListings.slice(start, end);
+
+    if (!chunk.length) {
+      this.allLoaded = true;
+      return;
+    }
+
+    this.paginatedListings = [...this.paginatedListings, ...chunk];
+  }
+
+  /* =====================
+     DETAIL VIEW
+  ===================== */
+  viewListing(id: number): void {
+    this.listingsService.getSingleListing(id).subscribe(res => {
+      this.selectedListing = this.mapBackendFurniture(res.data);
+    });
     this.currentImageIndex = 0;
-    this.isFavorite = false;
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -134,30 +278,49 @@ export class FurnitureListingsComponent implements OnInit {
     this.selectedListing = null;
   }
 
-  // =====================
-  // IMAGE CAROUSEL
-  // =====================
   previousImage(): void {
-    if (!this.selectedListing?.images?.length) return;
+    if (!this.selectedListing) return;
     this.currentImageIndex =
       (this.currentImageIndex - 1 + this.selectedListing.images.length) %
       this.selectedListing.images.length;
   }
 
   nextImage(): void {
-    if (!this.selectedListing?.images?.length) return;
+    if (!this.selectedListing) return;
     this.currentImageIndex =
       (this.currentImageIndex + 1) %
       this.selectedListing.images.length;
   }
 
-  selectImage(index: number): void {
-    this.currentImageIndex = index;
+  selectImage(i: number): void {
+    this.currentImageIndex = i;
   }
 
-  // =====================
-  // CONTACT ACTIONS
-  // =====================
+  /* =====================
+     FAVORITES
+  ===================== */
+  toggleFavorite(listing: FurnitureListing, event?: MouseEvent): void {
+    event?.stopPropagation();
+    if (!this.isLoggedIn) return;
+
+    const prev = listing.isFavorite;
+    listing.isFavorite = !prev;
+
+    const req = listing.isFavorite
+      ? this.listingsService.addToFavorites(listing.id)
+      : this.listingsService.removeFromFavorites(listing.id);
+
+    req.subscribe({
+      error: () => {
+        listing.isFavorite = prev;
+        alert('Unable to update favorite');
+      }
+    });
+  }
+
+  /* =====================
+     CONTACT
+  ===================== */
   callSeller(): void {
     if (this.selectedListing?.sellerPhone) {
       window.location.href = `tel:${this.selectedListing.sellerPhone}`;
@@ -170,135 +333,70 @@ export class FurnitureListingsComponent implements OnInit {
     window.open(`https://wa.me/${phone}`, '_blank');
   }
 
-  toggleFavorite(): void {
-    this.isFavorite = !this.isFavorite;
-  }
-
   reportAd(): void {
     if (confirm('Are you sure you want to report this ad?')) {
       alert('Thanks. We will review this listing.');
     }
   }
 
-  // =====================
-  // FILTER & SORT
-  // =====================
-  selectSortBy(sort: string): void {
-    this.selectedSortBy = sort;
-    this.applyFilters();
-  }
-
-  isSortSelected(sort: string): boolean {
-    return this.selectedSortBy === sort;
-  }
-
-  toggleFurnitureType(type: string): void {
-    const i = this.selectedFurnitureTypes.indexOf(type);
-    i > -1 ? this.selectedFurnitureTypes.splice(i, 1) : this.selectedFurnitureTypes.push(type);
-  }
-
-  isFurnitureTypeSelected(type: string): boolean {
-    return this.selectedFurnitureTypes.includes(type);
-  }
-
-  toggleMaterial(material: string): void {
-    const i = this.selectedMaterials.indexOf(material);
-    i > -1 ? this.selectedMaterials.splice(i, 1) : this.selectedMaterials.push(material);
-  }
-
-  isMaterialSelected(material: string): boolean {
-    return this.selectedMaterials.includes(material);
-  }
-
-  selectCondition(condition: string): void {
-    this.selectedCondition = condition.toLowerCase();
-  }
-
-  isConditionSelected(condition: string): boolean {
-    return this.selectedCondition === condition.toLowerCase();
-  }
-
-  applyFilters(): void {
-    let result = [...this.listings];
-
-    if (this.minPrice > 0) result = result.filter(l => l.price >= this.minPrice);
-    if (this.maxPrice > 0) result = result.filter(l => l.price <= this.maxPrice);
-
-    if (this.selectedCondition !== 'new') {
-      result = result.filter(l => l.condition?.toLowerCase() === this.selectedCondition);
+   startChatWithSeller(listing: FurnitureListing): void {
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
     }
-
-    if (this.selectedMaterials.length) {
-      result = result.filter(l => l.material && this.selectedMaterials.includes(l.material));
-    }
-
-    if (this.searchQuery.trim()) {
-      const q = this.searchQuery.toLowerCase();
-      result = result.filter(l =>
-        l.title.toLowerCase().includes(q) ||
-        l.location.toLowerCase().includes(q)
-      );
-    }
-
-    this.filteredListings = this.sortListings(result);
-    this.totalPages = Math.ceil(this.filteredListings.length / this.pageSize);
+  
+    this.chatService.createOrGetRoom(listing.id).subscribe({
+      next: (res: any) => {
+        const roomId = res?.data?.id;
+  
+        if (!roomId) {
+          alert('Unable to open chat room');
+          return;
+        }
+  
+        this.router.navigate(['/my-chats'], {
+          queryParams: { roomId }
+        });
+      },
+      error: () => {
+        alert('Unable to start chat. Please try again.');
+      }
+    });
   }
 
-  sortListings(list: FurnitureListing[]): FurnitureListing[] {
-    switch (this.selectedSortBy) {
-      case 'price-low':
-        return list.sort((a, b) => a.price - b.price);
-      case 'price-high':
-        return list.sort((a, b) => b.price - a.price);
-      default:
-        return list;
-    }
-  }
 
-  onSearch(): void {
-    this.applyFilters();
-  }
-
-  // =====================
-  // PAGINATION
-  // =====================
-  onPageChange(page: number): void {
-    if (page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  previousPage(): void {
-    this.onPageChange(this.currentPage - 1);
-  }
-
-  nextPage(): void {
-    this.onPageChange(this.currentPage + 1);
-  }
-
-  // =====================
-  // BACKEND → UI MAPPER
-  // =====================
+  /* =====================
+     BACKEND → UI MAPPER
+  ===================== */
   mapBackendFurniture(l: any): FurnitureListing {
+    const details = l.furnitureDetails;
+    const images = details?.images || [];
+
     return {
       id: l.id,
       title: l.title,
-      price: +l.price,
-      currency: l.currency,
-      location: l.city,
-      image: l.images?.[0]?.imageUrl || 'assets/no-image.jpg',
-      images: l.images?.map((i: any) => i.imageUrl) || [],
-      condition: l.condition,
-      material: l.furnitureDetails?.material,
+      price: Number(l.price),
+      currency: l.currency || 'AED',
+      location: l.city || 'Dubai',
+
+      image: images[0] || 'assets/no-image.jpg',
+      images,
+
+      condition: details?.condition,
+      material: details?.material,
       description: l.description,
-      lengthCm: l.furnitureDetails?.lengthCm,
-      widthCm: l.furnitureDetails?.widthCm,
-      heightCm: l.furnitureDetails?.heightCm,
-      weight: l.furnitureDetails?.weight,
-      sellerName: l.user?.name,
+
+      lengthCm: details?.lengthCm,
+      widthCm: details?.widthCm,
+      heightCm: details?.heightCm,
+      weight: details?.weight,
+
+      sellerName: l.user?.name || 'Private Seller',
       sellerPhone: l.contactPhone,
       sellerEmail: l.contactEmail,
-      sellerImage: l.user?.avatarUrl || 'assets/avatar.png'
+      sellerImage: l.user?.avatarUrl || 'assets/avatar.png',
+
+      isFavorite: !!l.isFavorite
     };
   }
 }

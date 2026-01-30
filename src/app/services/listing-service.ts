@@ -79,7 +79,7 @@ export class ListingsService {
 
    getFavoriteListingIds(): Observable<number[]> {
     return this.http.get<{ success: boolean; data: any[] }>(`${this.favoritesUrl}`).pipe(
-      map((response: any) => response.data.map((fav: any) => fav.listingId))
+      map((response: any) => response.data.map((fav: any) => fav.listing.id))
     );
   }
 
