@@ -1128,3 +1128,183 @@ select:focus-visible {
     padding: 0;
   }
 }
+/* ================= FAVORITE BUTTON (LISTING CARD) ================= */
+
+.card-image {
+  position: relative; /* REQUIRED */
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10; /* 🔥 THIS IS THE KEY FIX */
+
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.favorite-btn i {
+  font-size: 18px;
+  color: #ff7a00;
+}
+
+/* Hover */
+.favorite-btn:hover {
+  background: #fff;
+  transform: scale(1.05);
+}
+
+/* Active (filled heart) */
+.favorite-btn i.bi-heart-fill {
+  color: #e53935;
+}
+/* ===================== REPORT MODAL ===================== */
+
+/* Backdrop */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  animation: fadeIn 0.25s ease;
+}
+
+/* Modal Container */
+.modal-container {
+  background: #fff;
+  width: 100%;
+  max-width: 420px;
+  padding: 22px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.25s ease;
+}
+
+/* Title */
+.modal-container h3 {
+  margin: 0 0 14px 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #000;
+}
+
+/* Labels */
+.modal-container label {
+  display: block;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+}
+
+/* Select & Textarea */
+.modal-container select,
+.modal-container textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  resize: none;
+}
+
+.modal-container select:focus,
+.modal-container textarea:focus {
+  border-color: #ffa500;
+  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.15);
+}
+
+/* Actions */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* Buttons */
+.modal-actions .btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+/* Cancel */
+.modal-actions .btn.cancel {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.modal-actions .btn.cancel:hover {
+  background: #d5d5d5;
+}
+
+/* Danger */
+.modal-actions .btn.danger {
+  background: #e53935;
+  color: #fff;
+}
+
+.modal-actions .btn.danger:hover:not(:disabled) {
+  background: #d32f2f;
+}
+
+.modal-actions .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ===================== MOBILE ===================== */
+@media (max-width: 480px) {
+  .modal-container {
+    margin: 0 12px;
+    padding: 18px;
+  }
+
+  .modal-container h3 {
+    font-size: 1.05rem;
+  }
+}

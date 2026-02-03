@@ -477,6 +477,19 @@ input:focus, select:focus, textarea:focus {
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 40px;
 }
+.toast-box {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  color: #fff;
+  z-index: 9999;
+}
+
+.toast-box.success { background: #28a745; }
+.toast-box.error { background: #dc3545; }
+.toast-box.warning { background: #ffc107; color: #000; }
 
 .hero-image-box {
   width: 180px;

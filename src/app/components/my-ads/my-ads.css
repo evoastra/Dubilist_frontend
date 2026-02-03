@@ -3,7 +3,9 @@
   padding: 30px;
   
 }
-
+.cont {
+  margin-top: 80px;
+}
 .tabs {
   display: flex;
   gap: 20px;
@@ -51,4 +53,104 @@
 .meta {
   font-size: 13px;
   color: #777;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.tab-btn {
+  border: none;
+  background: none;
+  margin-right: 20px;
+  padding-bottom: 6px;
+  font-weight: 500;
+}
+
+.tab-btn.active {
+  border-bottom: 2px solid #ffb400;
+  color: #ffb400;
+}
+
+.ad-card {
+  display: flex;
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.05);
+}
+
+.ad-image {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.ad-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  margin-left: 15px;
+}
+
+.price {
+  color: #ffb400;
+  font-weight: 600;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.overlay-box {
+  background: #fff;
+  width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.applicant-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.applicant-row:hover {
+  background: #f8f9fa;
+}
+
+.applicant-row img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+}
+
+.profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
 }

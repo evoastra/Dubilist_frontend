@@ -123,17 +123,10 @@ export class AddPostService {
     /* ================= IMAGE UPLOAD ================= */
 
     // JOBS → LOGO
-    if (mainCatId === 2 && draft.logoFile) {
-      const logo = await this.uploadSingleImage(draft.logoFile, 'jobs');
-      await firstValueFrom(
-        this.http.put(`${this.baseUrl}/listings/${listingId}`, {
-          companyLogo: logo.url
-        })
-      );
-    }
+    
 
     // OTHERS → GALLERY
-    if (mainCatId !== 2 && draft.files?.length) {
+    if ( draft.files?.length) {
       await this.uploadGalleryImages(listingId, draft.files);
     }
 

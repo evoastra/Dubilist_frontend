@@ -78,8 +78,9 @@
       <div class="row">
         <div class="col-md-4 mb-4">
           <div class="dashboard-profile-card">
-            <img [src]="myProfile?.user?.avatarUrl || 'assets/placeholder.jpg'" class="dash-avatar">
-            <h3>{{ myProfile?.user?.name }}</h3>
+           <img [src]="myProfile?.profileImage || 'assets/placeholder.jpg'" class="dash-avatar">
+<h3>{{ myProfile?.name }}</h3>
+
             <p class="text-muted">{{ myProfile?.city }}</p>
             
             <div class="bg-light p-3 rounded mt-3">
@@ -105,7 +106,8 @@
 
             <h5 class="mt-4">Portfolio</h5>
             <div class="portfolio-grid">
-               <img *ngFor="let p of myProfile?.portfolio" [src]="p.url" class="portfolio-img">
+             <img *ngFor="let p of myProfile?.portfolio" [src]="p" class="portfolio-img">
+
             </div>
           </div>
         </div>
@@ -244,8 +246,8 @@
               <h4>Portfolio</h4>
               <div class="portfolio-grid" *ngIf="selectedDesigner.portfolio?.length; else noPortfolio">
                 <img *ngFor="let p of selectedDesigner.portfolio" 
-                     [src]="p.images?.[0] || p.url" 
-                     class="portfolio-img">
+                     [src]="p"
+     class="portfolio-img">
               </div>
               <ng-template #noPortfolio>
                 <div class="alert alert-light">No portfolio items uploaded yet.</div>
@@ -323,11 +325,18 @@
           <label class="form-label">Project Description</label>
           <textarea class="form-control" rows="3" [(ngModel)]="bookingForm.description"></textarea>
         </div>
+        <div class="mb-3">
+  <label class="form-label">Address</label>
+  <input class="form-control"
+         placeholder="Dubai, UAE"
+         [(ngModel)]="bookingForm.address">
+</div>
+
 
         <div class="row g-2 mb-4">
           <div class="col-6">
             <label class="form-label">Date</label>
-            <input type="date" class="form-control" [(ngModel)]="bookingForm.date">
+            <input type="date" class="form-control"  [min]="minBookingDate" [(ngModel)]="bookingForm.date">
           </div>
           <div class="col-6">
             <label class="form-label">Time</label>

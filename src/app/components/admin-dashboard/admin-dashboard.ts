@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AdminService } from '../../services/admin-service';
 import { AuthService } from '../../services/auth-service';
+import { ListingsService } from '../../services/listing-service';
 
 type DashboardTab = 'PENDING' | 'APPROVED' | 'REJECTED';
 type ApiStatus = 'pending' | 'approved' | 'rejected';
@@ -80,6 +81,7 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
+    private listingService: ListingsService,
     private auth: AuthService,
     private router: Router
   ) {}
@@ -298,7 +300,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   async remove(listingId: number) {
-    await this.adminService.removeListing(listingId);
+    await this.listingService.deleteListing(listingId);
     this.triggerToast('Listing removed');
     this.loadReports(this.reportPage);
     this.updateCounts();

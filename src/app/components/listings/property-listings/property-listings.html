@@ -99,7 +99,7 @@
       <!-- ================= LISTINGS GRID ================= -->
     <div class="listings-grid" *ngIf="!isLoading" (window:scroll)="onScroll()">
   <div
-    *ngFor="let listing of filteredListings"
+    *ngFor="let listing of paginatedListings"
     class="listing-card"
     (click)="viewListing(listing.id)">
 
@@ -213,7 +213,7 @@
   <div class="detail-container" (click)="$event.stopPropagation()">
 
     <!-- CLOSE -->
-    <button class="close-btn" (click)="closeDetail()">
+    <button class="close-btn" (click)="!showReportModal &&closeDetail()">
       <i class="bi bi-x-lg"></i>
     </button>
 
@@ -340,14 +340,13 @@
       </div>
 
       <!-- RIGHT -->
-      <div class="detail-right">
+       <div class="detail-right">
 
         <!-- PRICE -->
         <div class="price-card">
           <h3 class="price-label">Price</h3>
           <p class="price-value">
-            {{ selectedListing.currency }}
-            {{ selectedListing.price | number }}
+            {{ selectedListing.currency }} {{ selectedListing.price | number }}
           </p>
         </div>
 
@@ -363,9 +362,8 @@
 
           <div class="seller-profile">
             <img
-              [src]="selectedListing.sellerImage || 'assets/avatar.png'"
+              [src]="selectedListing.sellerImage"
               class="seller-avatar" />
-
             <div class="seller-info">
               <h4 class="seller-name">{{ selectedListing.sellerName }}</h4>
               <p class="seller-contact">{{ selectedListing.sellerPhone }}</p>
@@ -373,26 +371,73 @@
           </div>
 
           <button class="contact-btn call-btn" (click)="callSeller()">
-            <i class="bi bi-telephone"></i> Call Now
+            Call Now
           </button>
 
           <button class="contact-btn whatsapp-btn" (click)="chatWhatsApp()">
             <i class="bi bi-whatsapp"></i> WhatsApp
           </button>
 
-          <!-- WEBSITE CHAT -->
           <button
             class="contact-btn chat-btn"
             *ngIf="isLoggedIn"
             (click)="startChatWithSeller(selectedListing)">
             <i class="bi bi-chat-dots"></i> Chat on Dubilist
           </button>
+
           <p *ngIf="!isLoggedIn" class="login-hint">
-  Login to chat with seller
-</p>
+            Login to interact with seller
+          </p>
         </div>
 
+        <!-- FAVORITE -->
+       
+        <!-- REPORT -->
+        <button class="action-btn report-btn" (click)="reportAd(selectedListing.id)">
+          Report this Ad <i class="bi bi-flag"></i>
+        </button>
       </div>
     </div>
+  </div>
+</div>
+
+
+<!-- ===================== REPORT MODAL ===================== -->
+<div class="modal-backdrop" *ngIf="showReportModal">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+
+    <h3>Report this Listing</h3>
+
+    <!-- Reason -->
+    <label>Reason</label>
+    <select [(ngModel)]="reportReason">
+      <option value="">Select reason</option>
+      <option *ngFor="let r of reportReasons" [value]="r">
+        {{ r }}
+      </option>
+    </select>
+
+    <!-- Details -->
+    <label>Details (optional)</label>
+    <textarea
+      rows="4"
+      placeholder="Provide more information..."
+      [(ngModel)]="reportDetails">
+    </textarea>
+
+    <!-- Actions -->
+    <div class="modal-actions">
+      <button class="btn cancel" (click)="closeReportModal()">
+        Cancel
+      </button>
+
+      <button
+        class="btn danger"
+        (click)="submitReport()"
+        [disabled]="isReporting">
+        {{ isReporting ? 'Reporting...' : 'Submit Report' }}
+      </button>
+    </div>
+
   </div>
 </div>

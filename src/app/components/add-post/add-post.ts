@@ -30,7 +30,7 @@ interface SubCategory {
   templateUrl: './add-post.html',
   styleUrls: ['./add-post.css']
 })
-export class AddPostComponent implements OnInit, OnDestroy {
+export class AddPostComponent implements OnInit {
 
   math = Math;
 
@@ -94,8 +94,7 @@ export class AddPostComponent implements OnInit, OnDestroy {
   imagePreviews: string[] = [];
   maxImages = 5;
 
-  logoFile: File | null = null;
-  logoPreview: string | null = null;
+
 
   acceptedFileTypes = 'image/png,image/jpeg,image/webp';
 
@@ -136,6 +135,7 @@ export class AddPostComponent implements OnInit, OnDestroy {
   modelName: '',
   condition: '',
   storage: '',
+  material: '',
 
   // Property
   listingType: '',
@@ -184,17 +184,10 @@ export class AddPostComponent implements OnInit, OnDestroy {
     this.files = draft.files || [];
     this.imagePreviews = this.files.map(f => URL.createObjectURL(f));
 
-    this.logoFile = draft.logoFile || null;
-    if (this.logoFile) {
-      this.logoPreview = URL.createObjectURL(this.logoFile);
-    }
+   
   }
 
-  ngOnDestroy(): void {
-    this.imagePreviews.forEach(url => URL.revokeObjectURL(url));
-    if (this.logoPreview) URL.revokeObjectURL(this.logoPreview);
-  }
-
+ 
   /* -------------------- GETTERS -------------------- */
 
   get filteredSubCategories(): SubCategory[] {
@@ -215,16 +208,18 @@ export class AddPostComponent implements OnInit, OnDestroy {
 
   /* -------------------- CATEGORY HANDLING -------------------- */
 
-  onMainCategoryChange(id: number) {
-    this.selectedMainCategoryId = id;
-    this.selectedSubCategoryId = null;
+ onMainCategoryChange(id: number) {
+  this.selectedMainCategoryId = id;
+  this.selectedSubCategoryId = null;
 
-    this.files = [];
-    this.imagePreviews.forEach(u => URL.revokeObjectURL(u));
-    this.imagePreviews = [];
+  this.files = [];
+  this.imagePreviews.forEach(u => URL.revokeObjectURL(u));
+  this.imagePreviews = [];
 
-    this.removeLogo();
-  }
+  // 🔥 THIS IS THE KEY
+  this.maxImages = id === 2 ? 1 : 5;
+}
+
 
   onSubCategoryChange(id: number) {
     this.selectedSubCategoryId = id;
@@ -255,19 +250,14 @@ export class AddPostComponent implements OnInit, OnDestroy {
     const inputFiles = event.target?.files || event.dataTransfer?.files;
     if (!inputFiles) return;
 
-    if (this.isJobsCategory) {
-      const file = inputFiles[0];
-      if (this.logoPreview) URL.revokeObjectURL(this.logoPreview);
-      this.logoFile = file;
-      this.logoPreview = URL.createObjectURL(file);
-    } else {
+ 
       Array.from(inputFiles)
         .slice(0, this.maxImages - this.files.length)
         .forEach((f: any) => {
           this.files.push(f);
           this.imagePreviews.push(URL.createObjectURL(f));
         });
-    }
+    
 
     if (event.target) event.target.value = '';
   }
@@ -278,11 +268,7 @@ export class AddPostComponent implements OnInit, OnDestroy {
     this.files.splice(i, 1);
   }
 
-  removeLogo() {
-    if (this.logoPreview) URL.revokeObjectURL(this.logoPreview);
-    this.logoFile = null;
-    this.logoPreview = null;
-  }
+ 
   
   applySubCategoryToModel(id: number) {
   const sub = this.subCategories.find(s => s.id === id);
@@ -313,7 +299,6 @@ export class AddPostComponent implements OnInit, OnDestroy {
   onDragOver(e: DragEvent) { e.preventDefault(); }
   onDragLeave(e: DragEvent) { e.preventDefault(); }
   onDropFiles(e: DragEvent) { e.preventDefault(); this.onFileChange(e); }
-  onDropLogo(e: DragEvent) { e.preventDefault(); this.onFileChange(e); }
 
   /* -------------------- AI DESCRIPTION -------------------- */
 
@@ -379,8 +364,7 @@ export class AddPostComponent implements OnInit, OnDestroy {
       selectedSubCategoryId: this.selectedSubCategoryId,
       model: this.model,
       files: this.files,
-      logoFile: this.logoFile,
-      logoPreview: this.logoPreview
+     
     };
 
     this.draftService.setDraft(draft);

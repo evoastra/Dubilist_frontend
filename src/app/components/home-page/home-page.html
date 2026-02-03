@@ -3,10 +3,10 @@
 
 
 
-<section class="search_section d-flex px-3 px-md-5 align-items-center">
+<section class="search_section d-flex px-md-5 align-items-center">
   
 
-  <div class="container hero-section text-center text-white py-4 py-md-5">
+  <div class="container hero-section text-center text-white  py-md-5">
     <div class="overlay w-100 h-100"></div>
     <h4 class="fw-bold mb-4">
       Best place to sell and buy anything from cars to homes and everything in between
@@ -40,10 +40,12 @@
               type="text"
               class="form-control border-0"
               [placeholder]="searchPlaceholder"
+              [(ngModel)]="searchQuery"
+               (keyup.enter)="onSearch()"
             />
           </div>
 
-          <button class="btn btn-warning text-white fw-bold px-5 py-2">
+          <button class="btn btn-warning text-white fw-bold px-5 py-2"  (click)="onSearch()">
             Search
           </button>
         </div>
@@ -51,6 +53,56 @@
     </div>
   </div>
 </section>
+
+
+<!-- ================= SEARCH RESULTS ================= -->
+<section
+  class="featured-listings container"
+  *ngIf="hasSearched"
+>
+  <h2>
+    Search Results
+    <span class="text-muted fs-6">
+      for "{{ searchQuery }}"
+    </span>
+  </h2>
+
+  <!-- Loader -->
+  <div *ngIf="isSearching" class="text-center py-5">
+    <div class="spinner-border text-warning"></div>
+  </div>
+
+  <!-- Results -->
+  <div
+    class="featured-row p-3 p-md-4"
+    *ngIf="!isSearching && searchResults.length" 
+  >
+    <div
+      class="listing-card"
+      *ngFor="let item of searchResults"
+      (click)="goToCategory(item)"
+    >
+      <div class="image-wrapper">
+        <img [src]="item.imageUrl" [alt]="item.title" />
+      </div>
+
+      <div>
+        <p class="mb-0">{{ item.title }}</p>
+        <p class="price mb-0">{{ item.price }}</p>
+        <p class="city mb-0">{{ item.city }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- No results -->
+  <p
+    *ngIf="!isSearching && !searchResults.length"
+    class="text-muted text-center py-4"
+  >
+    No results found 😕
+  </p>
+</section>
+
 
 <div class="post_add_section px-3 px-md-5">
   <section class="bg-warning add-post py-4 px-3 px-lg-5">
@@ -168,14 +220,13 @@
 </section>
 
 <section class="featured-listings container">
-  <h2>Featured Listings</h2>
+  <h2>Featured For You</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of listings">
+    <div class="listing-card" *ngFor="let item of featuredListings"  (click)="goToCategory(item)">
       <div class="image-wrapper">
         <img [src]="item.imageUrl" [alt]="item.title" />
       </div>
-
       <div>
         <p class="mb-0">{{ item.title }}</p>
         <p class="price mb-0">{{ item.price }}</p>
@@ -186,10 +237,10 @@
 </section>
 
 <section class="featured-listings container">
-  <h2>Popular in Cars</h2>
+  <h2>Popular in Motors</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of popularCars">
+    <div class="listing-card" *ngFor="let item of popularCars"  (click)="goToCategory(item)">
       <div class="image-wrapper">
         <img [src]="item.imageUrl" [alt]="item.title" />
       </div>
@@ -207,7 +258,7 @@
   <h2>Popular in Furniture</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of popularFurniture">
+    <div class="listing-card" *ngFor="let item of popularFurniture"  (click)="goToCategory(item)">
       <div class="image-wrapper">
         <img [src]="item.imageUrl" [alt]="item.title" />
       </div>
@@ -225,7 +276,7 @@
   <h2>Popular in Resdentials</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of residentialListings">
+    <div class="listing-card" *ngFor="let item of residentialListings"  (click)="goToCategory(item)">
       <div class="image-wrapper">
         <img [src]="item.imageUrl" [alt]="item.title" />
       </div>
@@ -243,7 +294,7 @@
   <h2>Popular in Electronics</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of electronicsListings">
+    <div class="listing-card" *ngFor="let item of electronicsListings"  (click)="goToCategory(item)">
       <div class="image-wrapper">
         <img [src]="item.imageUrl" [alt]="item.title" />
       </div>
@@ -261,7 +312,7 @@
   <h2>Popular in Classifieds</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of classifiedListings">
+    <div class="listing-card" *ngFor="let item of classifiedListings"  (click)="goToCategory(item)">
       <div class="image-wrapper">
         <img [src]="item.imageUrl" [alt]="item.title" />
       </div>

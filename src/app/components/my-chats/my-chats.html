@@ -31,9 +31,13 @@
 
         <div class="flex-grow-1">
           <div class="fw-semibold">{{ room.otherParty.name }}</div>
-          <small class="text-muted">
-            {{ room.lastMessage?.content || 'No messages yet' }}
+           <small class="text-muted">
+         Regarding: {{ room.listing?.title || 'Listing chat' }}
           </small>
+          <p class="text-muted">
+            {{ room.lastMessage?.content || 'No messages yet' }}
+          </p>
+         
         </div>
 
         <div class="text-end">

@@ -1,14 +1,14 @@
 <div class="mt-5">
 
+  <!-- ================= LISTINGS PAGE ================= -->
   <div class="listings-page" [class.hidden]="selectedListing">
 
-    <!-- ===================== -->
-    <!-- FILTERS (DESKTOP) -->
-    <!-- ===================== -->
+    <!-- ================= FILTERS (DESKTOP) ================= -->
     <aside class="filters-sidebar d-none d-md-block">
       <div class="filters-container">
         <h2 class="filters-title">Filters</h2>
 
+        <!-- Fuel -->
         <section class="filter-section">
           <h3 class="section-label">Fuel</h3>
           <div class="condition-buttons">
@@ -22,6 +22,7 @@
           </div>
         </section>
 
+        <!-- Transmission -->
         <section class="filter-section">
           <h3 class="section-label">Transmission</h3>
           <div class="condition-buttons">
@@ -35,6 +36,7 @@
           </div>
         </section>
 
+        <!-- Condition -->
         <section class="filter-section">
           <h3 class="section-label">Condition</h3>
           <div class="condition-buttons">
@@ -54,16 +56,13 @@
       </div>
     </aside>
 
-    <!-- ===================== -->
-    <!-- MAIN CONTENT -->
-    <!-- ===================== -->
+    <!-- ================= MAIN CONTENT ================= -->
     <main class="listings-main">
 
       <!-- HEADER -->
-      <div class="listings-header d-flex align-items-center justify-content-between">
+      <div class="listings-header d-flex justify-content-between align-items-center">
         <h1 class="page-title">Motors Listings</h1>
 
-        <!-- MOBILE FILTER BUTTON -->
         <button
           class="btn btn-outline-secondary d-md-none"
           data-bs-toggle="offcanvas"
@@ -74,15 +73,12 @@
 
       <!-- SEARCH -->
       <div class="search-container">
-        
-             <i class="bi bi-search"></i>
-
-       
+        <i class="bi bi-search"></i>
         <input
-          [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()"
+          class="search-input"
           placeholder="Search cars..."
-          class="search-input"/>
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()">
       </div>
 
       <!-- LOADING -->
@@ -91,51 +87,46 @@
         <p>Loading...</p>
       </div>
 
-      <!-- LISTINGS -->
-      <div
-        class="listings-grid"
-        *ngIf="!isLoading"
-        (window:scroll)="onScroll()">
-
+      <!-- LISTINGS GRID -->
+      <div class="listings-grid" *ngIf="!isLoading && paginatedListings.length">
         <div
           *ngFor="let listing of paginatedListings"
           class="listing-card"
           (click)="viewListing(listing.id)">
 
           <div class="card-image">
-            <img [src]="listing.image" [alt]="listing.title" />
+            <img [src]="listing.image" [alt]="listing.title">
 
-            <!-- FAVORITE -->
             <button
-              class="favorite-btn"
               *ngIf="isLoggedIn"
+              class="favorite-btn"
               (click)="toggleFavorite(listing, $event)">
-              <i
-                class="bi"
-                [ngClass]="listing.isFavorite ? 'bi-heart-fill' : 'bi-heart'">
-              </i>
+              <i class="bi" [ngClass]="listing.isFavorite ? 'bi-heart-fill' : 'bi-heart'"></i>
             </button>
           </div>
 
           <div class="card-content">
             <h3 class="listing-title">{{ listing.title }}</h3>
-            <p class="listing-price">
-              {{ listing.currency }} {{ listing.price | number }}
-            </p>
+            <p class="listing-price">{{ listing.currency }} {{ listing.price | number }}</p>
             <p class="listing-location">{{ listing.location }}</p>
           </div>
         </div>
       </div>
 
-      <!-- INFINITE SCROLL LOADER -->
+      <!-- EMPTY STATE -->
+      <div class="empty-state" *ngIf="!isLoading && !paginatedListings.length">
+        <i class="bi bi-car-front"></i>
+        <h3>No vehicles found</h3>
+        <p>Try adjusting your filters</p>
+      </div>
+
+      <!-- INFINITE LOADER -->
       <div class="infinite-loader" *ngIf="isFetchingMore">
         <div class="spinner-border text-primary"></div>
       </div>
 
-      <!-- NO MORE DATA -->
-      <div
-        class="no-more-listings text-center"
-        *ngIf="allLoaded && paginatedListings.length">
+      <!-- NO MORE -->
+      <div class="no-more-listings text-center" *ngIf="allLoaded && paginatedListings.length">
         No more listings 🚗
       </div>
 
@@ -143,20 +134,19 @@
   </div>
 </div>
 
-<!-- ===================== -->
-<!-- DETAIL OVERLAY (RESTORED) -->
-<!-- ===================== -->
-<div class="detail-overlay" *ngIf="selectedListing as listing">
+<!-- ================= DETAIL OVERLAY ================= -->
+<div class="detail-overlay" *ngIf="selectedListing" (click)="closeDetail()">
   <div class="detail-container" (click)="$event.stopPropagation()">
 
     <button class="close-btn" (click)="closeDetail()">
       <i class="bi bi-x-lg"></i>
     </button>
 
+    <!-- BREADCRUMB -->
     <div class="breadcrumb">
       <span class="crumb" (click)="closeDetail()">Motors</span>
       <span class="crumb-sep">/</span>
-      <span class="crumb current">{{ listing.title }}</span>
+      <span class="crumb current">{{ selectedListing.title }}</span>
     </div>
 
     <div class="detail-content">
@@ -168,27 +158,28 @@
         <div class="image-carousel">
           <button
             class="carousel-btn prev"
-            *ngIf="listing.images.length > 1"
+            *ngIf="selectedListing.images.length > 1"
             (click)="previousImage()">
             <i class="bi bi-chevron-left"></i>
           </button>
 
           <div class="main-image">
             <img
-              [src]="listing.images[currentImageIndex]"
-              [alt]="listing.title"/>
+              [src]="selectedListing.images.length
+                ? selectedListing.images[currentImageIndex].imageUrl
+                : selectedListing.image">
           </div>
 
           <button
             class="carousel-btn next"
-            *ngIf="listing.images.length > 1"
+            *ngIf="selectedListing.images.length > 1"
             (click)="nextImage()">
             <i class="bi bi-chevron-right"></i>
           </button>
 
-          <div class="image-indicators" *ngIf="listing.images.length > 1">
+          <div class="image-indicators" *ngIf="selectedListing.images.length > 1">
             <span
-              *ngFor="let img of listing.images; let i = index"
+              *ngFor="let img of selectedListing.images; let i = index"
               class="indicator"
               [class.active]="i === currentImageIndex"
               (click)="selectImage(i)">
@@ -198,59 +189,69 @@
 
         <!-- DESCRIPTION -->
         <div class="detail-section">
-          <h1 class="listing-title">{{ listing.title }}</h1>
-          <p class="listing-description">{{ listing.description }}</p>
+          <h1 class="listing-title">{{ selectedListing.title }}</h1>
+          <p class="listing-description">{{ selectedListing.description }}</p>
         </div>
 
-        <!-- SPECS -->
+        <!-- SPECIFICATIONS (FIXED & COMPLETE) -->
         <div class="detail-section specifications">
           <h2 class="section-title">Specifications</h2>
 
           <div class="specs-grid">
             <div class="spec-item">
-               <div class="spec-label">Year</div>
-              <div class="spec-value">{{ listing.year }}</div>
-             
+              <div class="spec-value">{{ selectedListing.year }}</div>
+              <div class="spec-label">Year</div>
             </div>
+
             <div class="spec-item">
-          
+              <div class="spec-value">{{ selectedListing.make }}</div>
               <div class="spec-label">Make</div>
-                  <div class="spec-value">{{ listing.make }}</div>
             </div>
-          
-           
+
             <div class="spec-item">
-           
+              <div class="spec-value">{{ selectedListing.model }}</div>
+              <div class="spec-label">Model</div>
+            </div>
+
+            <div class="spec-item">
+              <div class="spec-value">{{ selectedListing.mileage }}</div>
+              <div class="spec-label">Mileage</div>
+            </div>
+
+            <div class="spec-item">
+              <div class="spec-value">{{ selectedListing.fuel }}</div>
               <div class="spec-label">Fuel</div>
-                 <div class="spec-value">{{ listing.fuel }}</div>
             </div>
+
             <div class="spec-item">
-             
+              <div class="spec-value">{{ selectedListing.transmission }}</div>
               <div class="spec-label">Transmission</div>
-               <div class="spec-value">{{ listing.transmission }}</div>
             </div>
+
             <div class="spec-item">
-             
+              <div class="spec-value">{{ selectedListing.condition }}</div>
               <div class="spec-label">Condition</div>
-               <div class="spec-value">{{ listing.condition }}</div>
             </div>
           </div>
         </div>
+
       </div>
 
       <!-- RIGHT -->
       <div class="detail-right">
 
+        <!-- PRICE -->
         <div class="price-card">
           <h3 class="price-label">Price</h3>
           <p class="price-value">
-            {{ listing.currency }} {{ listing.price | number }}
+            {{ selectedListing.currency }} {{ selectedListing.price | number }}
           </p>
         </div>
 
+        <!-- LOCATION (EXPLICIT FIX) -->
         <div class="info-card">
           <h3 class="card-title">Location</h3>
-          <p class="location-text">{{ listing.location }}</p>
+          <p class="location-text">{{ selectedListing.location }}</p>
         </div>
 
         <!-- SELLER -->
@@ -258,27 +259,23 @@
           <h3 class="card-title">Seller Information</h3>
 
           <div class="seller-profile">
-            <img
-              [src]="listing.sellerImage"
-              class="seller-avatar"/>
+            <img [src]="selectedListing.sellerImage" class="seller-avatar">
             <div class="seller-info">
-              <h4 class="seller-name">{{ listing.sellerName }}</h4>
-              <p class="seller-contact">{{ listing.sellerPhone }}</p>
+              <h4 class="seller-name">{{ selectedListing.sellerName }}</h4>
+              <p class="seller-contact">{{ selectedListing.sellerPhone }}</p>
             </div>
           </div>
 
-          <button class="contact-btn call-btn" (click)="callSeller()">
-            Call Now
-          </button>
+          <button class="contact-btn call-btn" (click)="callSeller()">Call Now</button>
 
           <button class="contact-btn whatsapp-btn" (click)="chatWhatsApp()">
             <i class="bi bi-whatsapp"></i> WhatsApp
           </button>
 
           <button
-            class="contact-btn chat-btn"
             *ngIf="isLoggedIn"
-            (click)="startChatWithSeller(listing)">
+            class="contact-btn chat-btn"
+            (click)="startChatWithSeller(selectedListing)">
             <i class="bi bi-chat-dots"></i> Chat on Dubilist
           </button>
 
@@ -286,33 +283,35 @@
             Login to chat with seller
           </p>
         </div>
-      </div>
 
+        <!-- REPORT -->
+        <button
+          class="action-btn report-btn"
+          (click)="reportAd(selectedListing.id)">
+          Report this Ad <i class="bi bi-flag"></i>
+        </button>
+
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ===================== -->
-<!-- MOBILE FILTER OFFCANVAS -->
-<!-- ===================== -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileFilters">
+<!-- ================= MOBILE FILTERS ================= -->
+<div class="offcanvas offcanvas-start" id="mobileFilters">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title">Filters</h5>
+    <h5>Filters</h5>
     <button class="btn-close" data-bs-dismiss="offcanvas"></button>
   </div>
 
   <div class="offcanvas-body">
-    <!-- SAME FILTERS AS DESKTOP -->
-    <!-- (kept identical for consistency) -->
-
+    <!-- Same filters as desktop -->
     <section class="filter-section">
       <h3 class="section-label">Fuel</h3>
       <div class="condition-buttons">
-        <button
-          *ngFor="let fuel of fuels"
-          class="condition-btn"
-          [class.active]="selectedFuel === fuel"
-          (click)="selectFuel(fuel)">
+        <button *ngFor="let fuel of fuels"
+                class="condition-btn"
+                [class.active]="selectedFuel === fuel"
+                (click)="selectFuel(fuel)">
           {{ fuel }}
         </button>
       </div>
@@ -321,11 +320,10 @@
     <section class="filter-section">
       <h3 class="section-label">Transmission</h3>
       <div class="condition-buttons">
-        <button
-          *ngFor="let trans of transmissions"
-          class="condition-btn"
-          [class.active]="selectedTransmission === trans"
-          (click)="selectTransmission(trans)">
+        <button *ngFor="let trans of transmissions"
+                class="condition-btn"
+                [class.active]="selectedTransmission === trans"
+                (click)="selectTransmission(trans)">
           {{ trans }}
         </button>
       </div>
@@ -334,11 +332,10 @@
     <section class="filter-section">
       <h3 class="section-label">Condition</h3>
       <div class="condition-buttons">
-        <button
-          *ngFor="let cond of conditions"
-          class="condition-btn"
-          [class.active]="isConditionSelected(cond)"
-          (click)="selectCondition(cond)">
+        <button *ngFor="let cond of conditions"
+                class="condition-btn"
+                [class.active]="isConditionSelected(cond)"
+                (click)="selectCondition(cond)">
           {{ cond }}
         </button>
       </div>
@@ -350,5 +347,35 @@
       (click)="applyFilters()">
       Apply Filters
     </button>
+  </div>
+</div>
+
+<!-- ================= REPORT MODAL ================= -->
+<div class="modal-backdrop" *ngIf="showReportModal">
+  <div class="modal-container">
+    <h3>Report this Listing</h3>
+
+    <label>Reason</label>
+    <select [(ngModel)]="reportReason">
+      <option value="">Select reason</option>
+      <option *ngFor="let r of reportReasons" [value]="r">{{ r }}</option>
+    </select>
+
+    <label>Details (optional)</label>
+    <textarea
+      rows="4"
+      [(ngModel)]="reportDetails"
+      placeholder="Provide more details...">
+    </textarea>
+
+    <div class="modal-actions">
+      <button class="btn cancel" (click)="closeReportModal()">Cancel</button>
+      <button
+        class="btn danger"
+        [disabled]="isReporting"
+        (click)="submitReport()">
+        {{ isReporting ? 'Reporting...' : 'Submit Report' }}
+      </button>
+    </div>
   </div>
 </div>

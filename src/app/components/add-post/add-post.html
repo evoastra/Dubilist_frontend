@@ -511,47 +511,29 @@
       <div class="mb-3">
         <label class="form-label">{{ fileUploadLabel }}</label>
 
-        <!-- JOBS LOGO UPLOAD -->
-        <ng-container *ngIf="selectedMainCategoryId === 2">
-          <div class="file-drop-zone"
-               (dragover)="onDragOver($event)"
-               (dragleave)="onDragLeave($event)"
-               (drop)="onDropLogo($event)"
-               [class.disabled]="logoFile">
-            <i class="bi bi-cloud-upload"></i>
-            <p>Upload Company Logo</p>
-            <input type="file" class="form-control"
-                   [accept]="acceptedFileTypes"
-                   (change)="onFileChange($event)"
-                   [disabled]="logoFile">
-          </div>
-
-          <div class="logo-preview mt-3" *ngIf="logoPreview">
-             <div class="d-flex align-items-center border p-2 rounded">
-                <img [src]="logoPreview" style="height:50px;" />
-                <span class="ms-2 small">{{ logoFile?.name }}</span>
-                <button type="button" class="btn btn-sm text-danger ms-auto"
-                        (click)="removeLogo()">&times;</button>
-             </div>
-          </div>
-        </ng-container>
-
+     
         <!-- NORMAL IMAGES -->
-        <ng-container *ngIf="selectedMainCategoryId !== 2">
-          <div class="file-drop-zone"
-               (dragover)="onDragOver($event)"
-               (dragleave)="onDragLeave($event)"
-               (drop)="onDropFiles($event)"
-               [class.disabled]="files.length >= maxImages">
-            <i class="bi bi-cloud-upload"></i>
-            <p>Upload Images (Max {{ maxImages }})</p>
-            <input type="file"
-                   class="form-control"
-                   [accept]="acceptedFileTypes"
-                   multiple
-                   (change)="onFileChange($event)"
-                   [disabled]="files.length >= maxImages" />
-          </div>
+        <ng-container >
+      <div class="file-drop-zone"
+     (dragover)="onDragOver($event)"
+     (dragleave)="onDragLeave($event)"
+     (drop)="onDropFiles($event)"
+     [class.disabled]="files.length >= maxImages">
+
+  <i class="bi bi-cloud-upload"></i>
+  <p>
+    Upload {{ selectedMainCategoryId === 2 ? 'Company Logo' : 'Images' }}
+    (Max {{ maxImages }})
+  </p>
+
+  <input type="file"
+         class="form-control"
+         [accept]="acceptedFileTypes"
+         [multiple]="selectedMainCategoryId !== 2"
+         (change)="onFileChange($event)"
+         [disabled]="files.length >= maxImages" />
+</div>
+
 
           <div class="image-preview-container mt-3" *ngIf="imagePreviews.length">
             <div class="preview-grid">

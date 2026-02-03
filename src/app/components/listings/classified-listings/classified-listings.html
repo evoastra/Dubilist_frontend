@@ -1,110 +1,358 @@
-<!-- classifieds-listings.component.html - COMPLETE -->
 <div class="mt-5">
 
+  <!-- ===================== -->
+  <!-- LISTINGS PAGE -->
+  <!-- ===================== -->
+  <div class="listings-page" [class.hidden]="selectedListing">
 
+    <!-- ===================== -->
+    <!-- FILTERS (DESKTOP) -->
+    <!-- ===================== -->
+    <aside class="filters-sidebar d-none d-md-block">
+      <div class="filters-container">
+        <h2 class="filters-title">Filters</h2>
 
-<div class="listings-page " [class.hidden]="selectedListing">
-  <aside class="filters-sidebar">
-    <div class="filters-container">
-      <h2 class="filters-title">Filters</h2>
-      <section class="filter-section">
-        <h3 class="section-label">Sort by</h3>
-        <div class="sort-buttons">
-          <button class="sort-btn" [class.active]="isSortSelected('newest')" (click)="selectSortBy('newest')">Newest</button>
-          <button class="sort-btn" [class.active]="isSortSelected('relevance')" (click)="selectSortBy('relevance')">Relevance</button>
-        </div>
-      </section>
-      <section class="filter-section">
-        <h3 class="section-label">Category</h3>
-        <div class="furniture-type-grid">
-          <button *ngFor="let cat of categories" class="furniture-type-btn" [class.active]="isCategorySelected(cat)" (click)="toggleCategory(cat)">{{cat}}</button>
-        </div>
-      </section>
-    
-      
-      <button class="apply-filters-btn" (click)="applyFilters()">Apply Filters</button>
-    </div>
-  </aside>
-  <main class="listings-main">
-    <div class="listings-header">
-      <h1 class="page-title">Classifieds</h1>
+        <!-- SORT -->
+        <section class="filter-section">
+          <h3 class="section-label">Sort by</h3>
+          <div class="sort-buttons">
+            <button
+              class="sort-btn"
+              [class.active]="isSortSelected('newest')"
+              (click)="selectSortBy('newest')">
+              Newest
+            </button>
+
+            <button
+              class="sort-btn"
+              [class.active]="isSortSelected('price-low')"
+              (click)="selectSortBy('price-low')">
+              Price: Low to High
+            </button>
+
+            <button
+              class="sort-btn"
+              [class.active]="isSortSelected('price-high')"
+              (click)="selectSortBy('price-high')">
+              Price: High to Low
+            </button>
+          </div>
+        </section>
+
+        <!-- CATEGORY -->
+        <section class="filter-section">
+          <h3 class="section-label">Category</h3>
+          <div class="furniture-type-grid">
+            <button
+              *ngFor="let cat of categories"
+              class="furniture-type-btn"
+              [class.active]="isCategorySelected(cat)"
+              (click)="toggleCategory(cat)">
+              {{ cat }}
+            </button>
+          </div>
+        </section>
+
+        <!-- CONDITION -->
+        <section class="filter-section">
+          <h3 class="section-label">Condition</h3>
+          <div class="condition-buttons">
+            <button
+              *ngFor="let cond of conditions"
+              class="condition-btn"
+              [class.active]="selectedCondition === cond"
+              (click)="selectCondition(cond)">
+              {{ cond }}
+            </button>
+          </div>
+        </section>
+
+        <button class="apply-filters-btn" (click)="applyFilters()">
+          Apply Filters
+        </button>
+      </div>
+    </aside>
+
+    <!-- ===================== -->
+    <!-- MAIN CONTENT -->
+    <!-- ===================== -->
+    <main class="listings-main">
+
+      <!-- HEADER -->
+      <div class="listings-header d-flex align-items-center justify-content-between">
+        <h1 class="page-title">Classifieds</h1>
+      </div>
+
+      <!-- SEARCH -->
       <div class="search-container">
         <i class="bi bi-search"></i>
-        <input [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search..." class="search-input">
+        <input
+          class="search-input"
+          placeholder="Search classifieds..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()" />
       </div>
-    </div>
-    <div class="loading-state" *ngIf="isLoading"><div class="spinner"></div><p>Loading...</p></div>
-    <div class="listings-grid" *ngIf="!isLoading">
-      <div *ngFor="let listing of filteredListings" class="listing-card" (click)="viewListing(listing.id)">
-        <div class="card-image"><img [src]="listing.image" [alt]="listing.title"></div>
-        <div class="card-content">
-          <h3 class="listing-title">{{listing.title}}</h3>
-          <p class="listing-price">{{listing.currency}} {{listing.price|number}}</p>
-          <p class="listing-location">{{listing.location}}</p>
+
+      <!-- ===================== -->
+      <!-- SKELETON LOADER -->
+      <!-- ===================== -->
+      <div class="listings-grid" *ngIf="isLoading">
+        <div
+          class="listing-card skeleton"
+          *ngFor="let s of skeletonArray">
+          <div class="skeleton-image"></div>
+          <div class="skeleton-text"></div>
+          <div class="skeleton-text short"></div>
         </div>
       </div>
-    </div>
-  </main>
+
+      <!-- ===================== -->
+      <!-- LISTINGS GRID -->
+      <!-- ===================== -->
+      <div
+        class="listings-grid"
+        *ngIf="!isLoading && paginatedListings.length">
+
+        <div
+          *ngFor="let listing of paginatedListings"
+          class="listing-card"
+          (click)="viewListing(listing.id)">
+
+          <div class="card-image">
+            <img
+              [src]="listing.image"
+              [alt]="listing.title"
+              loading="lazy" />
+
+            <!-- FAVORITE (VISIBLE) -->
+            <button
+              class="favorite-btn"
+               *ngIf="isLoggedIn"
+              (click)="toggleFavorite(listing, $event)">
+              <i
+                class="bi"
+                [ngClass]="listing.isFavorite ? 'bi-heart-fill' : 'bi-heart'">
+              </i>
+            </button>
+          </div>
+
+          <div class="card-content">
+            <h3 class="listing-title">{{ listing.title }}</h3>
+            <p class="listing-price">
+              {{ listing.currency }} {{ listing.price | number }}
+            </p>
+            <p class="listing-location">{{ listing.location }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== -->
+      <!-- EMPTY STATE -->
+      <!-- ===================== -->
+      <div
+        class="empty-state"
+        *ngIf="!isLoading && !paginatedListings.length">
+        <i class="bi bi-inbox"></i>
+        <h3>No classifieds found</h3>
+        <p>Try adjusting filters or search</p>
+      </div>
+
+      <!-- ===================== -->
+      <!-- INFINITE LOADER -->
+      <!-- ===================== -->
+      <div class="infinite-loader" *ngIf="isFetchingMore">
+        <div class="spinner-border text-primary"></div>
+      </div>
+
+      <div
+        class="no-more-listings text-center"
+        *ngIf="allLoaded && paginatedListings.length">
+        No more listings 📦
+      </div>
+
+    </main>
+  </div>
 </div>
 
-<div class="detail-overlay" *ngIf="selectedListing as listing">
+<!-- ===================== -->
+<!-- DETAIL OVERLAY -->
+<!-- ===================== -->
+<div
+  class="detail-overlay"
+  *ngIf="selectedListing"
+  (click)="closeDetail()">
+
   <div class="detail-container" (click)="$event.stopPropagation()">
-    <button class="close-btn" (click)="closeDetail()"><i class="bi bi-x-lg"></i></button>
+
+    <button class="close-btn" (click)="closeDetail()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <!-- BREADCRUMB -->
     <div class="breadcrumb">
-      <span class="crumb" (click)="closeDetail()">Classifieds</span><span class="crumb-sep">/</span>
-      <span class="crumb current">{{listing.title}}</span>
+      <span class="crumb" (click)="closeDetail()">Classifieds</span>
+      <span class="crumb-sep">/</span>
+      <span class="crumb current">{{ selectedListing.title }}</span>
     </div>
+
     <div class="detail-content">
+
+      <!-- LEFT -->
       <div class="detail-left">
+
+        <!-- IMAGE CAROUSEL -->
         <div class="image-carousel">
-          <button class="carousel-btn prev" (click)="previousImage()" *ngIf="listing.images.length>1"><i class="bi bi-chevron-left"></i></button>
-          <div class="main-image"><img [src]="listing.images[currentImageIndex]" [alt]="listing.title"></div>
-          <button class="carousel-btn next" (click)="nextImage()" *ngIf="listing.images.length>1"><i class="bi bi-chevron-right"></i></button>
-          <div class="image-indicators" *ngIf="listing.images.length>1">
-            <span *ngFor="let img of listing.images; let i=index" class="indicator" [class.active]="i===currentImageIndex" (click)="selectImage(i)"></span>
+          <button
+            class="carousel-btn prev"
+            *ngIf="selectedListing.images.length > 1"
+            (click)="previousImage()">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+
+          <div class="main-image">
+            <img
+              [src]="selectedListing.images[currentImageIndex]"
+              [alt]="selectedListing.title" />
+          </div>
+
+          <button
+            class="carousel-btn next"
+            *ngIf="selectedListing.images.length > 1"
+            (click)="nextImage()">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+
+          <div
+            class="image-indicators"
+            *ngIf="selectedListing.images.length > 1">
+            <span
+              *ngFor="let img of selectedListing.images; let i = index"
+              class="indicator"
+              [class.active]="i === currentImageIndex"
+              (click)="selectImage(i)">
+            </span>
           </div>
         </div>
+
+        <!-- DESCRIPTION -->
         <div class="detail-section">
-          <h1 class="listing-title">{{listing.title}}</h1>
-          <p class="listing-description">{{listing.description}}</p>
+          <h1 class="listing-title">{{ selectedListing.title }}</h1>
+          <p class="listing-description">{{ selectedListing.description }}</p>
         </div>
+
+        <!-- SPECIFICATIONS -->
         <div class="detail-section specifications">
           <h2 class="section-title">Specifications</h2>
+
           <div class="specs-grid">
             <div class="spec-item">
-              <div class="spec-value">{{listing.condition}}</div>
+              <div class="spec-value">{{ selectedListing.condition }}</div>
               <div class="spec-label">Condition</div>
             </div>
-            <div class="spec-item" *ngIf="listing.material">
-              <div class="spec-value">{{listing.material}}</div>
+
+            <div class="spec-item" *ngIf="selectedListing.material">
+              <div class="spec-value">{{ selectedListing.material }}</div>
               <div class="spec-label">Material</div>
+            </div>
+
+            <div class="spec-item" *ngIf="selectedListing.color">
+              <div class="spec-value">{{ selectedListing.color }}</div>
+              <div class="spec-label">Color</div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- RIGHT -->
       <div class="detail-right">
+
+        <!-- PRICE -->
         <div class="price-card">
           <h3 class="price-label">Price</h3>
-          <p class="price-value">{{listing.currency}} {{listing.price|number}}</p>
+          <p class="price-value">
+            {{ selectedListing.currency }}
+            {{ selectedListing.price | number }}
+          </p>
         </div>
+
+        <!-- LOCATION -->
         <div class="info-card">
           <h3 class="card-title">Location</h3>
-          <p class="location-text">{{listing.location}}</p>
+          <p class="location-text">{{ selectedListing.location }}</p>
         </div>
+
+        <!-- SELLER -->
         <div class="seller-card">
           <h3 class="card-title">Seller Information</h3>
+
           <div class="seller-profile">
-            <img [src]="listing.sellerImage" [alt]="listing.sellerName" class="seller-avatar">
+            <img
+              [src]="selectedListing.sellerImage"
+              class="seller-avatar" />
             <div class="seller-info">
-              <h4 class="seller-name">{{listing.sellerName}}</h4>
-              <p class="seller-contact">{{listing.sellerPhone}}</p>
+              <h4 class="seller-name">{{ selectedListing.sellerName }}</h4>
+              <p class="seller-contact">{{ selectedListing.sellerPhone }}</p>
             </div>
           </div>
-          <button class="contact-btn call-btn" (click)="callSeller()">Call Now</button>
-          <button class="contact-btn whatsapp-btn" (click)="chatWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp</button>
+
+          <button class="contact-btn call-btn" (click)="callSeller()">
+            Call Now
+          </button>
+
+          <button class="contact-btn whatsapp-btn" (click)="chatWhatsApp()">
+            <i class="bi bi-whatsapp"></i> WhatsApp
+          </button>
         </div>
+
+        <!-- FAVORITE (DETAIL) -->
+        
+
+        <!-- REPORT -->
+        <button
+          class="action-btn report-btn"
+          (click)="reportAd()">
+          Report this Ad <i class="bi bi-flag"></i>
+        </button>
+
       </div>
     </div>
   </div>
 </div>
+
+<!-- ===================== -->
+<!-- REPORT MODAL (SAME AS MOTORS) -->
+<!-- ===================== -->
+<div class="modal-backdrop" *ngIf="showReportModal">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+
+    <h3>Report this Listing</h3>
+
+    <label>Reason</label>
+    <select [(ngModel)]="reportReason">
+      <option value="">Select reason</option>
+      <option *ngFor="let r of reportReasons" [value]="r">
+        {{ r }}
+      </option>
+    </select>
+
+    <label>Details (optional)</label>
+    <textarea
+      rows="4"
+      [(ngModel)]="reportDetails"
+      placeholder="Provide more details...">
+    </textarea>
+
+    <div class="modal-actions">
+      <button class="btn cancel" (click)="closeReportModal()">
+        Cancel
+      </button>
+      <button
+        class="btn danger"
+        [disabled]="isReporting"
+        (click)="submitReport()">
+        {{ isReporting ? 'Reporting...' : 'Submit Report' }}
+      </button>
+    </div>
+
+  </div>
 </div>

@@ -1,10 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  HostListener
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+
 import { ListingsService } from '../../../services/listing-service';
 import { AuthService } from '../../../services/auth-service';
 import { ChatService } from '../../../services/chat-service';
-import { Router } from '@angular/router';
+
+/* =====================
+   INTERFACE
+===================== */
+export interface MotorImage {
+  imageUrl: string;
+}
+
 
 export interface MotorsListing {
   id: number;
@@ -12,8 +25,10 @@ export interface MotorsListing {
   price: number;
   currency: string;
   location: string;
+
   image: string;
-  images: string[];
+  images: MotorImage[];
+
   year: number;
   make: string;
   model: string;
@@ -21,10 +36,13 @@ export interface MotorsListing {
   fuel: string;
   transmission: string;
   condition: string;
+
   description?: string;
+
   sellerName: string;
   sellerPhone: string;
   sellerImage: string;
+
   isFavorite: boolean;
 }
 
@@ -33,15 +51,16 @@ export interface MotorsListing {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './motor-listings.html',
-  styleUrls: ['./motor-listings.css'],
+  styleUrls: ['./motor-listings.css']
 })
 export class MotorListingsComponent implements OnInit {
+
   /* =====================
-     DATA SOURCES
+     DATA
   ===================== */
   allListings: MotorsListing[] = [];
   filteredListings: MotorsListing[] = [];
-  paginatedListings: MotorsListing[] = []; // 🔥 REQUIRED BY HTML
+  paginatedListings: MotorsListing[] = [];
 
   selectedListing: MotorsListing | null = null;
 
@@ -53,27 +72,70 @@ export class MotorListingsComponent implements OnInit {
   allLoaded = false;
   isLoggedIn = false;
 
-  currentImageIndex = 0;
+  /* =====================
+     SKELETON
+  ===================== */
+  skeletonArray = Array.from({ length: 12 });
 
   /* =====================
-     INFINITE SCROLL
+     PAGINATION
   ===================== */
   pageSize = 12;
   currentPage = 1;
 
   /* =====================
-     SEARCH & FILTERS
+     DETAIL VIEW
+  ===================== */
+  currentImageIndex = 0;
+
+  /* =====================
+     SEARCH (kept)
   ===================== */
   searchQuery = '';
 
-  selectedFuel = '';
-  fuels = ['Petrol', 'Diesel', 'Electric'];
+  /* =====================
+     REPORT MODAL
+  ===================== */
+  showReportModal = false;
+  reportListingId: number | null = null;
+  reportReason = '';
+  reportDetails = '';
+  isReporting = false;
 
-  selectedTransmission = '';
-  transmissions = ['Automatic', 'Manual'];
+  reportReasons = [
+    'Fraud / Scam',
+    'Inappropriate Content',
+    'Duplicate Listing',
+    'Wrong Information',
+    'Other'
+  ];
+  /* =====================
+   FILTER STUBS (TEMP)
+   Required for template binding
+===================== */
 
-  selectedCondition = 'New';
-  conditions = ['New', 'Like New', 'Used'];
+// Fuel
+fuels: string[] = [];
+selectedFuel = '';
+selectFuel(_: string): void {}
+
+// Transmission
+transmissions: string[] = [];
+selectedTransmission = '';
+selectTransmission(_: string): void {}
+
+// Condition
+conditions: string[] = [];
+selectedCondition = '';
+selectCondition(_: string): void {}
+isConditionSelected(_: string): boolean {
+  return false;
+}
+
+// Apply / Search
+applyFilters(): void {}
+onSearch(): void {}
+
 
   constructor(
     private listingsService: ListingsService,
@@ -91,138 +153,66 @@ export class MotorListingsComponent implements OnInit {
   }
 
   /* =====================
-     FETCH FROM API
+     FETCH
   ===================== */
- fetchListings(): void {
-  this.isLoading = true;
+  fetchListings(): void {
+    this.isLoading = true;
 
-  this.listingsService.getAllListings(1).subscribe({
-    next: (res: any) => {
-      const mapped: MotorsListing[] = res.data.map((l: any) =>
-        this.mapBackendListing(l)
-      );
+    this.listingsService.getAllListings(1).subscribe({
+      next: (res: any) => {
+        const mapped: MotorsListing[] =
+          res.data.map((l: any) => this.mapBackendListing(l));
 
-      if (!this.isLoggedIn) {
-        this.setListings(mapped);
-        return;
-      }
-
-      this.listingsService.getFavoriteListingIds().subscribe({
-        next: (favRes: any) => {
-          const favoriteIds: number[] = favRes || [];
-        
-          mapped.forEach(l => {
-            l.isFavorite = favoriteIds.includes(l.id);
-          });
-
-          this.setListings(mapped); // ✅ render AFTER favorites
-        },
-        error: () => {
+        if (!this.isLoggedIn) {
           this.setListings(mapped);
+          return;
         }
-      });
-    },
-    error: () => (this.isLoading = false)
-  });
-}
 
+        this.listingsService.getFavoriteListingIds().subscribe({
+          next: (favRes: any) => {
+            const favIds: number[] = favRes || [];
+            mapped.forEach(l => {
+              l.isFavorite = favIds.includes(l.id);
+            });
+            this.setListings(mapped);
+          },
+          error: () => this.setListings(mapped)
+        });
+      },
+      error: () => (this.isLoading = false)
+    });
+  }
 
-
-private setListings(listings: MotorsListing[]): void {
-  this.allListings = listings;
-  this.filteredListings = [...listings];
-  this.resetPagination();
-  this.isLoading = false;
-}
-
-
-  /* =====================
-     FILTERS
-  ===================== */
-  applyFilters(): void {
-    let result = [...this.allListings];
-
-    if (this.selectedFuel) {
-      result = result.filter(l => l.fuel === this.selectedFuel);
-    }
-
-    if (this.selectedTransmission) {
-      result = result.filter(l => l.transmission === this.selectedTransmission);
-    }
-
-    if (this.selectedCondition) {
-      result = result.filter(l => l.condition === this.selectedCondition);
-    }
-
-    if (this.searchQuery.trim()) {
-      const q = this.searchQuery.toLowerCase();
-      result = result.filter(
-        l =>
-          l.title.toLowerCase().includes(q) ||
-          l.make.toLowerCase().includes(q) ||
-          l.model.toLowerCase().includes(q)
-      );
-    }
-
-    this.filteredListings = result;
+  private setListings(listings: MotorsListing[]): void {
+    this.allListings = listings;
+    this.filteredListings = [...listings];
     this.resetPagination();
-  }
-
-  selectFuel(fuel: string): void {
-    this.selectedFuel = fuel;
-    this.applyFilters();
-  }
-
-  selectTransmission(trans: string): void {
-    this.selectedTransmission = trans;
-    this.applyFilters();
-  }
-
-  selectCondition(cond: string): void {
-    this.selectedCondition = cond;
-    this.applyFilters();
-  }
-
-  isConditionSelected(cond: string): boolean {
-    return this.selectedCondition === cond;
-  }
-
-  onSearch(): void {
-
-     let result = [...this.allListings];
-
-     const q = this.searchQuery.toLowerCase().trim();
-      result = result.filter(
-        l =>
-          l.title.toLowerCase().includes(q) 
-      );
-      this.filteredListings = result;
-      this.resetPagination();
+    this.isLoading = false;
   }
 
   /* =====================
-     INFINITE SCROLL
+     INFINITE SCROLL (STABLE)
   ===================== */
-  onScroll(): void {
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
     if (this.isFetchingMore || this.allLoaded) return;
 
-    const threshold = 300;
-    const position = window.innerHeight + window.scrollY;
-    const height = document.body.offsetHeight;
+    const nearBottom =
+      window.innerHeight + window.scrollY >=
+      document.body.offsetHeight - 300;
 
-    if (position + threshold >= height) {
+    if (nearBottom) {
       this.loadMore();
     }
   }
 
   loadMore(): void {
     this.isFetchingMore = true;
-
     setTimeout(() => {
       this.currentPage++;
       this.appendPage();
       this.isFetchingMore = false;
-    }, 500);
+    }, 400);
   }
 
   resetPagination(): void {
@@ -235,48 +225,53 @@ private setListings(listings: MotorsListing[]): void {
   appendPage(): void {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
-    const nextChunk = this.filteredListings.slice(start, end);
+    const chunk = this.filteredListings.slice(start, end);
 
-    if (nextChunk.length === 0) {
+    if (!chunk.length) {
       this.allLoaded = true;
       return;
     }
 
-    this.paginatedListings = [...this.paginatedListings, ...nextChunk];
+    this.paginatedListings.push(...chunk);
   }
 
   /* =====================
      FAVORITES
   ===================== */
   toggleFavorite(listing: MotorsListing, event: MouseEvent): void {
-  event.stopPropagation();
-  if (!this.isLoggedIn) return;
-
-  const prev = listing.isFavorite;
-  listing.isFavorite = !prev;
-
-  const req = listing.isFavorite
-    ? this.listingsService.addToFavorites(listing.id)
-    : this.listingsService.removeFromFavorites(listing.id);
-
-  req.subscribe({
-    error: () => {
-      listing.isFavorite = prev; // rollback
-      alert('Unable to update favorite');
+    event.stopPropagation();
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
     }
-  });
-}
 
+    const prev = listing.isFavorite;
+    listing.isFavorite = !prev;
+
+    const req = listing.isFavorite
+      ? this.listingsService.addToFavorites(listing.id)
+      : this.listingsService.removeFromFavorites(listing.id);
+
+    req.subscribe({
+      error: () => {
+        listing.isFavorite = prev;
+        alert('Unable to update favorite');
+      }
+    });
+  }
 
   /* =====================
      DETAIL VIEW
   ===================== */
   viewListing(id: number): void {
-    this.listingsService.getSingleListing(id).subscribe(listing=>{
-      this.selectedListing = this.mapBackendListing(listing.data);
-   })
-    this.currentImageIndex = 0;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.listingsService.getSingleListing(id).subscribe({
+      next: (res: any) => {
+        this.selectedListing = this.mapBackendListing(res.data);
+        this.currentImageIndex = 0;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+      error: () => alert('Unable to load listing')
+    });
   }
 
   closeDetail(): void {
@@ -302,85 +297,134 @@ private setListings(listings: MotorsListing[]): void {
   }
 
   /* =====================
-     CONTACT
+     CONTACT (AUTH GUARDED)
   ===================== */
   callSeller(): void {
-    if (this.selectedListing) {
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+    if (this.selectedListing?.sellerPhone) {
       window.location.href = `tel:${this.selectedListing.sellerPhone}`;
     }
   }
 
   chatWhatsApp(): void {
-    if (this.selectedListing) {
-      window.open(
-        `https://wa.me/${this.selectedListing.sellerPhone.replace(/\D/g, '')}`,
-        '_blank'
-      );
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
     }
+    if (!this.selectedListing?.sellerPhone) return;
+
+    const phone = this.selectedListing.sellerPhone.replace(/\D/g, '');
+    window.open(`https://wa.me/${phone}`, '_blank');
   }
 
   startChatWithSeller(listing: MotorsListing): void {
-  if (!this.isLoggedIn) {
-    this.router.navigate(['/auth/login']);
-    return;
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
+    this.chatService.createOrGetRoom(listing.id).subscribe({
+      next: (res: any) => {
+        const roomId = res?.data?.id;
+        if (roomId) {
+          this.router.navigate(['/my-chats'], {
+            queryParams: { roomId }
+          });
+        }
+      },
+      error: () => alert('Unable to start chat')
+    });
   }
 
-  this.chatService.createOrGetRoom(listing.id).subscribe({
-    next: (res: any) => {
-      const roomId = res?.data?.id;
-
-      if (!roomId) {
-        alert('Unable to open chat room');
-        return;
-      }
-
-      this.router.navigate(['/my-chats'], {
-        queryParams: { roomId }
-      });
-    },
-    error: () => {
-      alert('Unable to start chat. Please try again.');
+  /* =====================
+     REPORT LISTING
+  ===================== */
+  reportAd(id: number): void {
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
     }
-  });
-}
 
+    this.reportListingId = id;
+    this.reportReason = '';
+    this.reportDetails = '';
+    this.showReportModal = true;
+  }
+
+  closeReportModal(): void {
+    this.showReportModal = false;
+    this.reportListingId = null;
+  }
+
+  submitReport(): void {
+    if (!this.reportListingId || !this.reportReason.trim()) {
+      alert('Please select a reason');
+      return;
+    }
+
+    this.isReporting = true;
+
+    this.listingsService.reportListing(this.reportListingId, {
+      reason: this.reportReason,
+      details: this.reportDetails
+    }).subscribe({
+      next: () => {
+        this.isReporting = false;
+        this.closeReportModal();
+        alert('Report submitted successfully ✅');
+      },
+      error: (err: any) => {
+        this.isReporting = false;
+        alert(
+          err?.error?.message ||
+          err?.message ||
+          'Failed to submit report'
+        );
+      }
+    });
+  }
 
   /* =====================
      BACKEND MAPPER
   ===================== */
   mapBackendListing(l: any): MotorsListing {
-  // 1. Target the motorDetails object where the data actually lives
-  const details = l.motorDetails;
-  
-  // 2. Extract the images array from motorDetails (it's a string array in your JSON)
-  const motorImages = details?.images || [];
+    const details = l.motorDetails;
+   const images = (l?.images || []).map((img: any) => ({
+    imageUrl: img.imageUrl
+  }));
+  const allImages = [...images];
 
-  return {
-    id: l.id,
-    title: l.title,
-    price: +l.price,
-    currency: l.currency || 'AED',
-    location: l.city || 'Abu Dhabi',
-    
-    // FIX: Map the first string in the array to 'image'
-    image: motorImages.length > 0 ? motorImages[0] : 'assets/no-image.jpg',
-    
-    // FIX: Map the full string array to 'images'
-    images: motorImages,
+    return {
+      id: l.id,
+      title: l.title,
+      price: Number(l.price),
+      currency: l.currency || 'AED',
+      location: l.city || 'UAE',
 
-    year: details?.year,
-    make: details?.make,
-    model: details?.model,
-    mileage: details?.kilometres ? `${details.kilometres.toLocaleString()} km` : '0 km',
-    fuel: details?.fuelType,
-    transmission: details?.transmission,
-    condition: details?.condition,
-    description: l.description,
-    
-    sellerName: l.user?.name || 'Private Seller',
-    sellerPhone: l.contactPhone,
-    sellerImage: l.user?.avatarUrl || 'assets/avatar.png',
-    isFavorite: !!l.isFavorite 
-  };
-}
+       image: allImages[0]?.imageUrl ?? 'assets/placeholder.png',
+      images: allImages,
+
+      year: details?.year,
+      make: details?.make,
+      model: details?.model,
+      mileage: details?.kilometres
+        ? `${details.kilometres.toLocaleString()} km`
+        : '0 km',
+
+      fuel: details?.fuelType,
+      transmission: details?.transmission,
+      condition: details?.condition,
+
+      description: l.description,
+
+      sellerName: l.user?.name || 'Private Seller',
+      sellerPhone: l.contactPhone,
+      sellerImage: l.user?.avatarUrl || 'assets/avatar.png',
+
+      isFavorite: !!l.isFavorite
+    };
+  }
 }

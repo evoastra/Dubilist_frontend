@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { ListingsService } from '../../../services/listing-service';
 import { AuthService } from '../../../services/auth-service';
 import { ChatService } from '../../../services/chat-service';
+import { error } from 'console';
 
 export interface PropertyImage {
   imageUrl: string;
@@ -47,6 +48,7 @@ export interface PropertyListing {
 })
 export class PropertyListingsComponent implements OnInit {
 
+
   /* ===================== DATA ===================== */
   allListings: PropertyListing[] = [];
   filteredListings: PropertyListing[] = [];
@@ -58,6 +60,23 @@ export class PropertyListingsComponent implements OnInit {
   isFetchingMore = false;
   allLoaded = false;
   isLoggedIn = false;
+
+  /* ===================== REPORT MODAL ===================== */
+showReportModal = false;
+reportListingId: number | null = null;
+
+reportReason = '';
+reportDetails = '';
+isReporting = false;
+
+reportReasons = [
+  'Fraud / Scam',
+  'Inappropriate Content',
+  'Duplicate Listing',
+  'Wrong Information',
+  'Other'
+];
+
 
   /* ===================== SKELETON ===================== */
 skeletonArray = Array.from({ length: 12 });
@@ -93,6 +112,11 @@ skeletonArray = Array.from({ length: 12 });
     this.isLoggedIn = this.authService.isLoggedIn();
     this.fetchListings();
   }
+
+@HostListener('window:scroll', [])
+onWindowScroll(): void {
+  this.onScroll();
+}
 
   /* ===================== FETCH ===================== */
   fetchListings(): void {
@@ -165,7 +189,7 @@ skeletonArray = Array.from({ length: 12 });
       );
     }
 
-    this.filteredListings = data;
+    this.paginatedListings = data;
     this.resetPagination();
   }
 
@@ -175,6 +199,53 @@ skeletonArray = Array.from({ length: 12 });
       ? this.selectedPropertyTypes.splice(i, 1)
       : this.selectedPropertyTypes.push(type);
   }
+
+  reportAd(id: number): void {
+   
+  if (!this.isLoggedIn) {
+    this.router.navigate(['/auth/login']);
+    return;
+  }
+
+  this.reportListingId = id;
+  this.reportReason = '';
+  this.reportDetails = '';
+  this.showReportModal = true;
+}
+closeReportModal(): void {
+  this.showReportModal = false;
+  this.reportListingId = null;
+}
+
+submitReport(): void {
+  if (!this.reportListingId || !this.reportReason.trim()) {
+    alert('Please select a reason');
+    return;
+  }
+
+  this.isReporting = true;
+
+  this.listingsService.reportListing(this.reportListingId, {
+    reason: this.reportReason,
+    details: this.reportDetails
+  }).subscribe({
+    next: () => {
+      this.isReporting = false;
+      this.closeReportModal();
+      alert('Report submitted successfully ✅');
+    },
+    error: (error: any) => {
+      this.isReporting = false;
+       const message =
+    error?.error?.error?.message ||
+    error?.error?.message ||
+    error?.message ||
+    'Failed to submit report ❌';
+      alert(message);
+    }
+  });
+}
+
 
   selectFurnishing(option: string): void {
     this.selectedFurnishing = option.toLowerCase();
@@ -282,12 +353,20 @@ skeletonArray = Array.from({ length: 12 });
 
   /* ===================== CONTACT ===================== */
   callSeller(): void {
+    if (!this.isLoggedIn) {
+    this.router.navigate(['/auth/login']);
+    return;
+  }
     if (this.selectedListing?.sellerPhone) {
       window.location.href = `tel:${this.selectedListing.sellerPhone}`;
     }
   }
 
   chatWhatsApp(): void {
+    if (!this.isLoggedIn) {
+    this.router.navigate(['/auth/login']);
+    return;
+  }
     if (!this.selectedListing?.sellerPhone) return;
     const phone = this.selectedListing.sellerPhone.replace(/\D/g, '');
     window.open(`https://wa.me/${phone}`, '_blank');

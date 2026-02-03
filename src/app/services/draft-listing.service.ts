@@ -33,8 +33,7 @@ export class DraftListingService {
       // Store raw files
       files: data.files ? [...data.files] : [],
       
-      logoFile: data.logoFile ?? null,
-      logoPreview: data.logoPreview ?? null
+    
     };
   }
 

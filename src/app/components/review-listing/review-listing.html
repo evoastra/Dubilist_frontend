@@ -50,9 +50,9 @@
         </ng-container>
 
         <ng-container *ngIf="mainCatId === 3">
-          <div class="col-md-4"><strong>Type:</strong><br>{{ model.saleType }}</div>
-          <div class="col-md-4"><strong>Area:</strong><br>{{ model.area }} sq.ft</div>
-          <div class="col-md-4"><strong>Bed/Bath:</strong><br>{{ model.bedrooms }} Bed / {{ model.bathrooms }} Bath</div>
+          <div class="col-md-4"><strong>Type:</strong><br>{{ model.propertyType }}</div>
+          <div class="col-md-4"><strong>Area:</strong><br>{{ model.areaSqft }} sq.ft</div>
+          <div class="col-md-4"><strong>Bed/Bath:</strong><br>{{ model.bedrooms }} Bed / {{ model.bedrooms }} Bath / {{ model.bathrooms }}</div>
           <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
 
@@ -63,9 +63,17 @@
           <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
 
-        <ng-container *ngIf="mainCatId === 6">
+         <ng-container *ngIf="mainCatId === 4">
+          <div class="col-md-4"><strong>Brand:</strong><br>{{ model.brand }}</div>
           <div class="col-md-4"><strong>Material:</strong><br>{{ model.material }}</div>
-          <div class="col-md-4"><strong>Condition:</strong><br>{{ model.itemCondition }}</div>
+          <div class="col-md-4"><strong>Condition:</strong><br>{{ model.condition }}</div>
+          <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
+        </ng-container>
+
+        <ng-container *ngIf="mainCatId === 6">
+          <div class="col-md-4"><strong>Brand:</strong><br>{{ model.brand }}</div>
+          <div class="col-md-4"><strong>Material:</strong><br>{{ model.material }}</div>
+          <div class="col-md-4"><strong>Condition:</strong><br>{{ model.condition }}</div>
           <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
       </div>
@@ -100,7 +108,7 @@
     <button class="btn btn-outline-secondary px-5 py-2" (click)="editAd()" [disabled]="isSubmitting">
       <i class="bi bi-arrow-left me-2"></i> Back to Edit
     </button>
-    <button class="btn btn-primary flex-grow-1 fw-bold py-2 shadow-sm" (click)="publishAd()" [disabled]="isSubmitting">
+    <button class="btn btn-warning flex-grow-1 fw-bold py-2 shadow-sm" (click)="publishAd()" [disabled]="isSubmitting">
       <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
       {{ isSubmitting ? 'Uploading & Publishing...' : 'Confirm & Publish Ad' }}
     </button>
@@ -115,11 +123,11 @@
         <div class="success-icon mb-4">
           <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
         </div>
-        <h2 class="fw-bold">Ad Published!</h2>
-        <p class="text-muted mb-4">Your advertisement for <strong>{{ model.title }}</strong> is now live.</p>
+        <h2 class="fw-bold">Ad Published! and Submitted for Review</h2>
+        <p class="text-muted mb-4">Your advertisement for <strong>{{ model.title }}</strong>will be live when approved.</p>
         
         <div class="d-grid gap-2">
-          <button class="btn btn-primary btn-lg rounded-pill" (click)="goToMyAds()">Manage My Listings</button>
+          <button class="btn btn-warning btn-lg rounded-pill" (click)="goToMyAds()">Manage My Listings</button>
           <button class="btn btn-link text-decoration-none" (click)="router.navigate(['/home'])">Back to Homepage</button>
         </div>
       </div>

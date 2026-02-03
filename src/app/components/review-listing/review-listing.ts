@@ -45,18 +45,14 @@ export class ReviewListingComponent implements OnInit, OnDestroy {
     this.generatePreviews();
   }
 
-  generatePreviews() {
-    if (!this.draft) return;
-    
-    // 1. Job Logo
-    if (this.mainCatId === 2 && this.draft.logoPreview) {
-      this.imagePreviews = [this.draft.logoPreview];
-    } 
-    // 2. Gallery Images
-    else if (this.draft.files && this.draft.files.length > 0) {
-      this.imagePreviews = this.draft.files.map(f => URL.createObjectURL(f));
-    }
-  }
+generatePreviews(): void {
+  if (!this.draft?.files?.length) return;
+
+  this.imagePreviews = this.draft.files.map(file =>
+    URL.createObjectURL(file)
+  );
+}
+
 
   getMainCategoryName(id: number): string {
     const map: Record<number, string> = {
@@ -99,15 +95,11 @@ export class ReviewListingComponent implements OnInit, OnDestroy {
 
   goToMyAds() {
     this.showSuccessModal = false;
-    this.router.navigate(['/my-listings']); // Adjust route as needed
+    this.router.navigate(['/my-ads']); // Adjust route as needed
   }
+ngOnDestroy(): void {
+  this.imagePreviews.forEach(url => URL.revokeObjectURL(url));
+}
 
-  ngOnDestroy() {
-    // Cleanup Object URLs specifically created in this component
-    // Note: logoPreview comes from service, so we treat it carefully, 
-    // but the gallery previews here are fresh ObjectURLs
-    if (this.mainCatId !== 2) {
-      this.imagePreviews.forEach(url => URL.revokeObjectURL(url));
-    }
-  }
+ 
 }

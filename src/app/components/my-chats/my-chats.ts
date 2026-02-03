@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ChatService } from '../../services/chat-service';
 
 @Component({
@@ -17,63 +18,90 @@ export class ChatComponent implements OnInit {
 
   selectedRoom: any = null;
   messageText = '';
+
   isLoadingRooms = false;
   isLoadingMessages = false;
-  currentUserId:any=null;
 
-  constructor(private chatService: ChatService) {}
+  currentUserId: number | null = null;
+
+  constructor(
+    private chatService: ChatService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-  this.currentUserId = user.id; 
-
+    // ✅ Get logged-in user correctly
+    const userRaw = localStorage.getItem('user_data');
+    if (userRaw) {
+      this.currentUserId = JSON.parse(userRaw).id;
+    }
 
     this.loadChatRooms();
   }
 
-  // ======================
-  // LOAD ROOMS
-  // ======================
-  loadChatRooms() {
+  /* ======================
+     LOAD CHAT ROOMS
+     ====================== */
+  loadChatRooms(): void {
     this.isLoadingRooms = true;
 
     this.chatService.getMyChatRooms().subscribe({
       next: (res: any) => {
         this.rooms = res.data || [];
         this.isLoadingRooms = false;
+
+        // ✅ Auto-open room if coming from listing
+        const roomId = Number(
+          this.route.snapshot.queryParamMap.get('roomId')
+        );
+        if (roomId) {
+          this.openRoomById(roomId);
+        }
       },
-      error: () => (this.isLoadingRooms = false)
+      error: () => {
+        this.isLoadingRooms = false;
+      }
     });
   }
 
-  // ======================
-  // SELECT ROOM
-  // ======================
-  openRoom(room: any) {
+  /* ======================
+     OPEN ROOM
+     ====================== */
+  openRoom(room: any): void {
     this.selectedRoom = room;
     this.loadMessages(room.id);
   }
 
-  // ======================
-  // LOAD MESSAGES
-  // ======================
-  loadMessages(roomId: number) {
+  openRoomById(roomId: number): void {
+    const room = this.rooms.find(r => r.id === roomId);
+    if (room) {
+      this.openRoom(room);
+    }
+  }
+
+  /* ======================
+     LOAD MESSAGES
+     ====================== */
+  loadMessages(roomId: number): void {
     this.isLoadingMessages = true;
 
     this.chatService.getMessages(roomId).subscribe({
       next: (res: any) => {
         this.messages = res.data || [];
         this.isLoadingMessages = false;
+
         setTimeout(() => this.scrollToBottom(), 50);
       },
-      error: () => (this.isLoadingMessages = false)
+      error: () => {
+        this.isLoadingMessages = false;
+      }
     });
   }
 
-  // ======================
-  // SEND MESSAGE
-  // ======================
-  sendMessage() {
+  /* ======================
+     SEND MESSAGE
+     ====================== */
+  sendMessage(): void {
     if (!this.messageText.trim() || !this.selectedRoom) return;
 
     const text = this.messageText;
@@ -87,8 +115,13 @@ export class ChatComponent implements OnInit {
     });
   }
 
-  scrollToBottom() {
+  /* ======================
+     SCROLL
+     ====================== */
+  scrollToBottom(): void {
     const el = document.getElementById('chatMessages');
-    if (el) el.scrollTop = el.scrollHeight;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
   }
 }

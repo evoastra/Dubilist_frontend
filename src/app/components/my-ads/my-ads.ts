@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { ListingsService } from '../../services/listing-service';
 
 @Component({
@@ -16,8 +17,15 @@ export class MyAdsComponent implements OnInit {
   loading = true;
   activeTab: 'active' | 'inactive' = 'active';
 
+  /* JOB APPLICATION STATES */
+  showApplications = false;
+  selectedJob: any = null;
+  applications: any[] = [];
+  selectedApplication: any = null;
+
   constructor(
-    private myListingsService: ListingsService,
+    private listingsService: ListingsService,
+    private http: HttpClient,
     private router: Router
   ) {}
 
@@ -27,15 +35,12 @@ export class MyAdsComponent implements OnInit {
 
   loadMyAds() {
     this.loading = true;
-    this.myListingsService.getMyListings().subscribe({
+    this.listingsService.getMyListings().subscribe({
       next: (res: any) => {
         this.listings = res.data || [];
         this.loading = false;
       },
-      error: () => {
-        this.loading = false;
-        alert('Failed to load ads');
-      }
+      error: () => this.loading = false
     });
   }
 
@@ -47,14 +52,46 @@ export class MyAdsComponent implements OnInit {
     );
   }
 
-  removeAd(id: number) {
-    if (!confirm('Are you sure you want to remove this ad?')) return;
+  isJob(ad: any): boolean {
+    return ad.category?.slug === 'jobs' && ad.jobDetails;
+  }
 
-    this.myListingsService.deleteListing(id).subscribe({
+  /* ---------- JOB APPLICATION FLOW ---------- */
+
+  openApplications(ad: any) {
+    this.selectedJob = ad;
+    this.showApplications = true;
+    this.selectedApplication = null;
+
+    this.listingsService.getJobApplications(ad.id)
+      .subscribe(res => {
+        this.applications = res.data || [];
+      });
+  }
+
+  openApplicant(app: any) {
+    this.listingsService.getApplicationById(app.id)
+      .subscribe(res => {
+        this.selectedApplication = res.data;
+      });
+  }
+
+  closeApplications() {
+    this.showApplications = false;
+    this.selectedJob = null;
+    this.selectedApplication = null;
+    this.applications = [];
+  }
+
+  /* ---------- OTHER ---------- */
+
+  removeAd(id: number) {
+    if (!confirm('Remove this ad?')) return;
+
+    this.listingsService.deleteListing(id).subscribe({
       next: () => {
         this.listings = this.listings.filter(a => a.id !== id);
-      },
-      error: () => alert('Failed to remove ad')
+      }
     });
   }
 

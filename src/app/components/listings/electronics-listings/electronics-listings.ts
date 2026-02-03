@@ -1,7 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  HostListener
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+
 import { ListingsService } from '../../../services/listing-service';
 import { AuthService } from '../../../services/auth-service';
 import { ChatService } from '../../../services/chat-service';
@@ -16,7 +21,6 @@ export interface ElectronicsListing {
   image: string;
   images: string[];
 
-  // Electronics details
   subCategory?: string;
   brand?: string;
   model?: string;
@@ -35,12 +39,10 @@ export interface ElectronicsListing {
   accessories?: string | null;
   description?: string;
 
-  // Seller
   sellerName?: string;
   sellerPhone?: string;
   sellerImage?: string;
 
-  // New features
   isFavorite: boolean;
 }
 
@@ -53,18 +55,14 @@ export interface ElectronicsListing {
 })
 export class ElectronicsListingsComponent implements OnInit {
 
-  /* =====================
-     DATA SOURCES
-  ===================== */
+  /* ================= DATA ================= */
   allListings: ElectronicsListing[] = [];
   filteredListings: ElectronicsListing[] = [];
   paginatedListings: ElectronicsListing[] = [];
 
   selectedListing: ElectronicsListing | null = null;
 
-  /* =====================
-     STATE
-  ===================== */
+  /* ================= STATE ================= */
   isLoading = false;
   isFetchingMore = false;
   allLoaded = false;
@@ -72,21 +70,18 @@ export class ElectronicsListingsComponent implements OnInit {
 
   currentImageIndex = 0;
 
-  /* =====================
-     INFINITE SCROLL
-  ===================== */
+  /* ================= SKELETON ================= */
+  skeletonArray = Array.from({ length: 12 });
+
+  /* ================= PAGINATION ================= */
   pageSize = 12;
   currentPage = 1;
 
-  /* =====================
-     SEARCH & SORT
-  ===================== */
+  /* ================= SEARCH & SORT ================= */
   searchQuery = '';
-  selectedSortBy = 'newest';
+  selectedSortBy: 'newest' | 'price-low' | 'price-high' = 'newest';
 
-  /* =====================
-     FILTERS
-  ===================== */
+  /* ================= FILTERS ================= */
   selectedCategories: string[] = [];
   categories = [
     'Mobile Phone',
@@ -97,8 +92,23 @@ export class ElectronicsListingsComponent implements OnInit {
     'Refrigerator'
   ];
 
-  selectedCondition = 'New';
-  conditions = ['New', 'Like New', 'Used'];
+  selectedCondition = 'Any';
+  conditions = ['Any', 'New', 'Like New', 'Used'];
+
+  /* ================= REPORT ================= */
+  showReportModal = false;
+  reportListingId: number | null = null;
+  reportReason = '';
+  reportDetails = '';
+  isReporting = false;
+
+  reportReasons = [
+    'Fraud / Scam',
+    'Inappropriate Content',
+    'Duplicate Listing',
+    'Wrong Information',
+    'Other'
+  ];
 
   constructor(
     private listingsService: ListingsService,
@@ -107,37 +117,31 @@ export class ElectronicsListingsComponent implements OnInit {
     private router: Router
   ) {}
 
-  /* =====================
-     INIT
-  ===================== */
   ngOnInit(): void {
     this.isLoggedIn = this.authService.isLoggedIn();
     this.fetchListings();
   }
 
-  /* =====================
-     FETCH FROM BACKEND
-  ===================== */
+  /* ================= FETCH ================= */
   fetchListings(): void {
     this.isLoading = true;
 
-    // categoryId = 5 → Electronics
     this.listingsService.getAllListings(5).subscribe({
       next: (res: any) => {
-        const mapped: ElectronicsListing[] =
-          res.data.map((l: any) => this.mapBackendElectronics(l));
+        const mapped: ElectronicsListing[] = res.data.map((l: any) =>
+          this.mapBackendElectronics(l)
+        );
 
         if (!this.isLoggedIn) {
           this.setListings(mapped);
           return;
         }
 
-        // Fetch favorites if logged in
         this.listingsService.getFavoriteListingIds().subscribe({
-          next: (favRes: any) => {
-            const favoriteIds: number[] = favRes || [];
+          next: (favRes) => {
+            const favIds: number[] = favRes || [];
             mapped.forEach(l => {
-              l.isFavorite = favoriteIds.includes(l.id);
+              l.isFavorite = favIds.includes(l.id);
             });
             this.setListings(mapped);
           },
@@ -148,39 +152,37 @@ export class ElectronicsListingsComponent implements OnInit {
     });
   }
 
-  private setListings(listings: ElectronicsListing[]): void {
-    this.allListings = listings;
-    this.filteredListings = [...listings];
+  private setListings(list: ElectronicsListing[]): void {
+    this.allListings = list;
+    this.filteredListings = [...list];
     this.resetPagination();
     this.isLoading = false;
   }
 
-  /* =====================
-     FILTERS & SEARCH
-  ===================== */
-  toggleCategory(category: string): void {
-    const idx = this.selectedCategories.indexOf(category);
-    idx > -1
-      ? this.selectedCategories.splice(idx, 1)
-      : this.selectedCategories.push(category);
+  /* ================= FILTERS ================= */
+  toggleCategory(cat: string): void {
+    const i = this.selectedCategories.indexOf(cat);
+    i >= 0
+      ? this.selectedCategories.splice(i, 1)
+      : this.selectedCategories.push(cat);
     this.applyFilters();
   }
 
-  isCategorySelected(category: string): boolean {
-    return this.selectedCategories.includes(category);
+  isCategorySelected(cat: string): boolean {
+    return this.selectedCategories.includes(cat);
   }
 
-  selectCondition(condition: string): void {
-    this.selectedCondition = condition;
+  selectCondition(cond: string): void {
+    this.selectedCondition = cond;
     this.applyFilters();
   }
 
-  selectSortBy(sort: string): void {
+  selectSortBy(sort: any): void {
     this.selectedSortBy = sort;
     this.applyFilters();
   }
 
-  isSortSelected(sort: string): boolean {
+  isSortSelected(sort: any): boolean {
     return this.selectedSortBy === sort;
   }
 
@@ -189,60 +191,53 @@ export class ElectronicsListingsComponent implements OnInit {
   }
 
   applyFilters(): void {
-    let result = [...this.allListings];
+    let data = [...this.allListings];
 
     if (this.selectedCategories.length) {
-      result = result.filter(
+      data = data.filter(
         l => l.subCategory && this.selectedCategories.includes(l.subCategory)
       );
     }
 
-    if (this.selectedCondition) {
-      result = result.filter(l => l.condition === this.selectedCondition);
+    if (this.selectedCondition !== 'Any') {
+      data = data.filter(l => l.condition === this.selectedCondition);
     }
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
-      result = result.filter(
+      data = data.filter(
         l =>
           l.title.toLowerCase().includes(q) ||
           l.brand?.toLowerCase().includes(q)
       );
     }
 
-    this.filteredListings = this.sortListings(result);
+    if (this.selectedSortBy === 'price-low') {
+      data.sort((a, b) => a.price - b.price);
+    } else if (this.selectedSortBy === 'price-high') {
+      data.sort((a, b) => b.price - a.price);
+    }
+
+    this.filteredListings = data;
     this.resetPagination();
   }
 
-  private sortListings(list: ElectronicsListing[]): ElectronicsListing[] {
-    switch (this.selectedSortBy) {
-      case 'price-low':
-        return list.sort((a, b) => a.price - b.price);
-      case 'price-high':
-        return list.sort((a, b) => b.price - a.price);
-      default:
-        return list;
+  /* ================= SCROLL ================= */
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    if (this.isFetchingMore || this.allLoaded) return;
+
+    const nearBottom =
+      window.innerHeight + window.scrollY >=
+      document.body.offsetHeight - 300;
+
+    if (nearBottom) {
+      this.loadMore();
     }
   }
 
-  /* =====================
-     INFINITE SCROLL
-  ===================== */
-  onScroll(): void {
-    if (this.isFetchingMore || this.allLoaded) return;
-
-    const threshold = 300;
-    const position = window.innerHeight + window.scrollY;
-    const height = document.body.offsetHeight;
-
-    if (position + threshold >= height) {
-      this.loadMore();
-    }
-  } 
- 
   loadMore(): void {
     this.isFetchingMore = true;
-
     setTimeout(() => {
       this.currentPage++;
       this.appendPage();
@@ -262,27 +257,30 @@ export class ElectronicsListingsComponent implements OnInit {
     const end = start + this.pageSize;
     const chunk = this.filteredListings.slice(start, end);
 
-    if (chunk.length === 0) {
+    if (!chunk.length) {
       this.allLoaded = true;
       return;
     }
 
-    this.paginatedListings = [...this.paginatedListings, ...chunk];
+    this.paginatedListings.push(...chunk);
   }
 
-  /* =====================
-     DETAIL VIEW
-  ===================== */
+  /* ================= DETAIL ================= */
   viewListing(id: number): void {
-    this.listingsService.getSingleListing(id).subscribe(listing => {
-      this.selectedListing = this.mapBackendElectronics(listing.data);
+    this.listingsService.getSingleListing(id).subscribe({
+      next: (res: any) => {
+        this.selectedListing = this.mapBackendElectronics(res.data);
+        this.currentImageIndex = 0;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },error: (err:any) => {
+        
+        alert(err.error.message || 'Failed to load listing details');
+      }
     });
-
-    this.currentImageIndex = 0;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   closeDetail(): void {
+    if (this.showReportModal) return;
     this.selectedListing = null;
   }
 
@@ -304,12 +302,13 @@ export class ElectronicsListingsComponent implements OnInit {
     this.currentImageIndex = i;
   }
 
-  /* =====================
-     FAVORITES
-  ===================== */
+  /* ================= FAVORITES ================= */
   toggleFavorite(listing: ElectronicsListing, event?: MouseEvent): void {
     event?.stopPropagation();
-    if (!this.isLoggedIn) return;
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
 
     const prev = listing.isFavorite;
     listing.isFavorite = !prev;
@@ -326,19 +325,24 @@ export class ElectronicsListingsComponent implements OnInit {
     });
   }
 
-  /* =====================
-     CONTACT
-  ===================== */
+  /* ================= CONTACT ================= */
   callSeller(): void {
-    if (this.selectedListing?.sellerPhone) {
-      window.location.href = `tel:${this.selectedListing.sellerPhone}`;
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
     }
+    window.location.href = `tel:${this.selectedListing?.sellerPhone}`;
   }
 
   chatWhatsApp(): void {
-    if (!this.selectedListing?.sellerPhone) return;
-    const phone = this.selectedListing.sellerPhone.replace(/\D/g, '');
-    window.open(`https://wa.me/${phone}`, '_blank');
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+    const phone = this.selectedListing?.sellerPhone?.replace(/\D/g, '');
+    if (phone) {
+      window.open(`https://wa.me/${phone}`, '_blank');
+    }
   }
 
   startChatWithSeller(listing: ElectronicsListing): void {
@@ -350,28 +354,61 @@ export class ElectronicsListingsComponent implements OnInit {
     this.chatService.createOrGetRoom(listing.id).subscribe({
       next: (res: any) => {
         const roomId = res?.data?.id;
-        if (!roomId) {
-          alert('Unable to open chat room');
-          return;
+        if (roomId) {
+          this.router.navigate(['/my-chats'], {
+            queryParams: { roomId }
+          });
         }
-        this.router.navigate(['/my-chats'], { queryParams: { roomId } });
-      },
-      error: () => alert('Unable to start chat')
+      }
     });
   }
 
-  reportAd(): void {
-    if (confirm('Are you sure you want to report this ad?')) {
-      alert('Thank you. We will review this listing.');
+  /* ================= REPORT ================= */
+  reportAd(id: number): void {
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
     }
+
+    this.reportListingId = id;
+    this.reportReason = '';
+    this.reportDetails = '';
+    this.showReportModal = true;
   }
 
-  /* =====================
-     BACKEND → UI MAPPER
-  ===================== */
+  closeReportModal(): void {
+    this.showReportModal = false;
+    this.reportListingId = null;
+  }
+
+  submitReport(): void {
+    if (!this.reportListingId || !this.reportReason.trim()) {
+      alert('Please select a reason');
+      return;
+    }
+
+    this.isReporting = true;
+
+    this.listingsService.reportListing(this.reportListingId, {
+      reason: this.reportReason,
+      details: this.reportDetails
+    }).subscribe({
+      next: () => {
+        this.isReporting = false;
+        this.closeReportModal();
+        alert('Report submitted successfully');
+      },
+      error: () => {
+        this.isReporting = false;
+        alert('Failed to submit report');
+      }
+    });
+  }
+
+  /* ================= MAPPER ================= */
   mapBackendElectronics(l: any): ElectronicsListing {
-    const details = l.electronicDetails;
-    const images = details?.images || [];
+    const d = l.electronicDetails;
+    const images = d?.images || [];
 
     return {
       id: l.id,
@@ -381,24 +418,24 @@ export class ElectronicsListingsComponent implements OnInit {
       location: l.city || 'Dubai',
 
       image: images[0] || 'assets/no-image.jpg',
-      images,
+      images: images.length ? images : ['assets/no-image.jpg'],
 
-      subCategory: details?.subCategory,
-      brand: details?.brand,
-      model: details?.model,
-      modelNumber: details?.modelNumber,
-      condition: details?.condition,
-      storage: details?.storage,
-      ram: details?.ram,
-      processor: details?.processor,
-      operatingSystem: details?.operatingSystem,
-      screenSize: details?.screenSize,
-      resolution: details?.resolution,
-      color: details?.color,
-      warrantyStatus: details?.warrantyStatus,
-      hasOriginalBox: details?.hasOriginalBox,
-      hasCharger: details?.hasCharger,
-      accessories: details?.accessories,
+      subCategory: d?.subCategory,
+      brand: d?.brand,
+      model: d?.model,
+      modelNumber: d?.modelNumber,
+      condition: d?.condition,
+      storage: d?.storage,
+      ram: d?.ram,
+      processor: d?.processor,
+      operatingSystem: d?.operatingSystem,
+      screenSize: d?.screenSize,
+      resolution: d?.resolution,
+      color: d?.color,
+      warrantyStatus: d?.warrantyStatus,
+      hasOriginalBox: d?.hasOriginalBox,
+      hasCharger: d?.hasCharger,
+      accessories: d?.accessories,
       description: l.description,
 
       sellerName: l.user?.name || 'Private Seller',

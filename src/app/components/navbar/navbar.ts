@@ -52,8 +52,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     /* =========================
        USER STATE SUBSCRIPTION
        ========================= */
+     
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.user = user;
+      
       this.isAdmin = user?.role === 'admin';
       
       if (user) {

@@ -3,9 +3,16 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { ListingsService } from '../../../services/listing-service';
+import { AuthService } from '../../../services/auth-service';
+import { routes } from '../../../app.routes';
+import { Router } from '@angular/router';
+
 
 interface Job {
   id: number;
+  applicationEmail?: string;
+  applicationUrl?: string;
+  applicationDeadline?: string;
   title: string;
   company: string;
   location: string;
@@ -38,7 +45,6 @@ export class JobsListingsComponent implements OnInit {
   // STATE
   // =====================
   currentView = signal<'list' | 'details' | 'apply'>('list');
-  selectedJobId = signal<number | null>(null);
 
   // =====================
   // FILTERS
@@ -50,19 +56,23 @@ export class JobsListingsComponent implements OnInit {
   locationFilter = '';
   minSalary: number | null = null;
   maxSalary: number | null = null;
+  isloggedIn = false;
 
   // =====================
   // PAGINATION
   // =====================
   currentPage = 1;
   pageSize = 4;
+  resumeFile: File | null = null;
+isSubmitting = false;
+
 
   // =====================
   // DATA
   // =====================
   jobs: Job[] = [];
   isLoading = false;
-
+  selectedJob:Job|null = null ;
   // =====================
   // FORM
   // =====================
@@ -71,21 +81,28 @@ export class JobsListingsComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private listingsService: ListingsService
+    private listingsService: ListingsService,
+    private authService: AuthService,
+    private router: Router
   ) {
-    this.applyForm = this.fb.group({
-      fullName: ['', Validators.required],
-      dateOfBirth: ['', Validators.required],
-      qualification: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      mobile: ['', Validators.required],
-      coverLetter: [''],
-      salaryExpectation: ['', Validators.required],
-      resume: [null]
-    });
+   this.applyForm = this.fb.group({
+  fullName: ['', Validators.required],
+  dateOfBirth: ['', Validators.required],
+  qualification: ['', Validators.required],
+  email: ['', [Validators.required, Validators.email]],
+  mobile: ['', Validators.required],
+  jobStatus: ['', Validators.required], // 🔥 REQUIRED
+  coverLetter: [''],
+  salaryExpectation: ['', Validators.required]
+});
+
   }
 
   ngOnInit() {
+    if(this.authService.isLoggedIn()){
+      this.isloggedIn = true;
+    }
+
     this.loadJobs();
   }
 
@@ -98,8 +115,9 @@ export class JobsListingsComponent implements OnInit {
     // categoryId = 2 → Jobs
     this.listingsService.getAllListings(2).subscribe({
       next: (res: any) => {
+           this.isLoading = false;
         this.jobs = res.data.map(this.mapBackendJob);
-        this.isLoading = false;
+     
       },
       error: () => {
         this.isLoading = false;
@@ -107,14 +125,24 @@ export class JobsListingsComponent implements OnInit {
     });
   }
 
+  onFileSelected(event: any) {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  if (file.size > 5 * 1024 * 1024) {
+    this.showToast('File size must be under 5MB', 'error');
+    return;
+  }
+
+  this.resumeFile = file;
+  this.uploadedFileName = file.name;
+}
+
   // =====================
   // COMPUTED
   // =====================
-  selectedJob = computed(() => {
-    const id = this.selectedJobId();
-    return this.jobs.find(j => j.id === id) || null;
-  });
-
+ 
   get filteredJobs() {
     return this.jobs
       .filter(job => {
@@ -207,12 +235,21 @@ export class JobsListingsComponent implements OnInit {
   // NAVIGATION
   // =====================
   viewJobDetails(id: number) {
-    this.selectedJobId.set(id);
-    this.currentView.set('details');
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    this.listingsService.getSingleListing(id).subscribe({
+      next: (res: any) => {
+        this.selectedJob = this.mapBackendJob(res.data);  
+        this.currentView.set('details');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    });
   }
 
   goToApply() {
+     if (!this.isloggedIn) {
+      this.showToast('Please log in to apply for jobs', 'warning');
+    this.router.navigate(['/auth/login']);
+    return;
+  }
     this.currentView.set('apply');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
@@ -222,7 +259,7 @@ export class JobsListingsComponent implements OnInit {
       this.currentView.set('details');
     } else {
       this.currentView.set('list');
-      this.selectedJobId.set(null);
+      this.selectedJob = null;
     }
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
@@ -230,47 +267,139 @@ export class JobsListingsComponent implements OnInit {
   // =====================
   // FORM
   // =====================
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.uploadedFileName = file.name;
-    }
+
+submitApplication() {
+  if (!this.selectedJob) {
+    this.showToast('No job selected', 'error');
+    return;
   }
 
-  submitApplication() {
-    if (this.applyForm.valid) {
-      alert(`Application Submitted for ${this.selectedJob()?.title}!`);
-      this.applyForm.reset();
-      this.uploadedFileName = null;
-      this.goBack();
-    } else {
-      alert('Please fill all required fields');
-    }
+  if (this.applyForm.invalid || !this.resumeFile) {
+    this.showToast('Please complete all fields and upload resume', 'error');
+    return;
   }
+
+  const jobId = this.selectedJob.id; // ✅ TS now knows this is NOT null
+  this.isSubmitting = true;
+
+  this.listingsService.uploadResume(this.resumeFile).subscribe({
+    next: (uploadRes: any) => {
+
+      const payload = {
+        name: this.applyForm.value.fullName,
+        email: this.applyForm.value.email,
+        mobileNo: this.applyForm.value.mobile,
+        dob: this.applyForm.value.dateOfBirth,
+        qualification: this.applyForm.value.qualification,
+        jobStatus: this.applyForm.value.jobStatus,
+        salaryExpectation: this.applyForm.value.salaryExpectation,
+        salaryCurrency: 'AED',
+        resumeUrl: uploadRes.data.url,
+        resumeS3Key: uploadRes.data.s3Key,
+        coverLetter: this.applyForm.value.coverLetter
+      };
+
+      this.listingsService.applyToJob(jobId, payload).subscribe({
+        next: () => {
+          this.showToast('Application submitted successfully 🎉', 'success');
+          this.applyForm.reset();
+          this.resumeFile = null;
+          this.uploadedFileName = null;
+          this.goBack();
+          this.isSubmitting = false;
+        },
+        error: err => {
+          this.isSubmitting = false;
+
+          if (err.error?.message === 'Already applied') {
+            this.showToast('You have already applied for this job', 'warning');
+          } else {
+            this.showToast(err.error?.message || 'Application failed', 'error');
+          }
+        }
+      });
+    },
+    error: () => {
+      this.isSubmitting = false;
+      this.showToast('Resume upload failed', 'error');
+    }
+  });
+}
+
+toastMessage = '';
+toastType: 'success' | 'error' | 'warning' = 'success';
+showToastFlag = false;
+
+showToast(message: string, type: 'success' | 'error' | 'warning') {
+  this.toastMessage = message;
+  this.toastType = type;
+  this.showToastFlag = true;
+
+  setTimeout(() => this.showToastFlag = false, 3000);
+}
+
 
   // =====================
   // BACKEND → UI MAPPER
   // =====================
-  mapBackendJob(l: any): Job {
-    return {
-      id: l.id,
-      title: l.jobTitle || l.title,
-      company: l.companyName || l.user?.name,
-      location: l.city,
-      type: l.jobType,
-      minSalary: l.salaryMin,
-      maxSalary: l.salaryMax,
-      currency: 'AED',
-      level: l.experienceMin >= 5 ? 'Senior' : l.experienceMin >= 2 ? 'Mid' : 'Entry',
-      isFeatured: l.isFeatured || false,
-      imageUrl: l.images?.[0]?.imageUrl || 'assets/job-placeholder.jpg',
-      logoUrl: l.user?.avatarUrl || 'assets/company-logo.png',
-      category: 'Jobs',
-      description: l.description,
-      longDescription: l.description,
-      responsibilities: l.responsibilities || [],
-      requirements: l.skillsRequired || [],
-      benefits: l.benefits || []
-    };
-  }
+ mapBackendJob(l: any): Job {
+  const details = l.jobDetails;
+  const images = l.images || [];
+
+  return {
+    id: l.id,
+
+    // Core info
+    title: details?.jobTitle || l.title,
+    company: details?.companyName || l.user?.name || 'Company',
+    category: l.category?.name || 'Jobs',
+
+    // Location & type
+    location: l.city || 'UAE',
+    type: details?.jobType || 'Full-time',
+
+    // Salary (respect hideSalary)
+    minSalary: details?.hideSalary ? 0 : Number(details?.salaryMin || 0),
+    maxSalary: details?.hideSalary ? 0 : Number(details?.salaryMax || 0),
+    currency: details?.currency || l.currency || 'AED',
+
+    // Experience
+    level:
+      details?.experienceLevel ||
+      (details?.experienceMin >= 5
+        ? 'Senior'
+        : details?.experienceMin >= 2
+        ? 'Mid'
+        : 'Entry'),
+
+    // Flags
+    isFeatured: !!l.isFeatured,
+
+    // Images
+    imageUrl:
+      images[0]?.imageUrl ||
+      details?.companyLogoUrl ||
+      'assets/job-placeholder.jpg',
+
+    logoUrl:
+      details?.companyLogoUrl ||
+      l.user?.avatarUrl ||
+      'assets/company-logo.png',
+
+    // Descriptions
+    description: l.description || '',
+    longDescription: l.description || '',
+
+    // Arrays (safe defaults)
+    responsibilities: details?.responsibilities || [],
+    requirements: details?.skillsRequired || [],
+    benefits: details?.benefits || [],
+
+    // Extra useful fields (optional but good)
+    applicationEmail: details?.applicationEmail || l.contactEmail,
+    applicationUrl: details?.applicationUrl || null,
+    applicationDeadline: details?.applicationDeadline || null
+  };
+}
+
 }

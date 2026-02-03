@@ -12,45 +12,44 @@ export class DesignerService {
   private BOOKING_API = `${environment.apiUrl}/api/bookings`;
   private UPLOAD_API = `${environment.apiUrl}/api/upload`;
 
-  private FAV_KEY = 'designer_favourites';
-
   constructor(private http: HttpClient) {}
 
   /* =====================================================
      DESIGNERS – PUBLIC
   ===================================================== */
 
-  /** 1. Get all designers */
-  getAllDesigners(): Observable<any[]> {
-    return this.http.get<any[]>(this.DESIGNER_API);
+  getAllDesigners(): Observable<any> {
+    return this.http.get<any>(this.DESIGNER_API);
   }
 
-  /** 2. Get designer by ID */
   getDesignerById(id: number): Observable<any> {
     return this.http.get<any>(`${this.DESIGNER_API}/${id}`);
   }
 
-  /** 3. Get nearby designers */
-  getNearbyDesigners(lat: number, lng: number, radius = 50): Observable<any[]> {
+  getNearbyDesigners(lat: number, lng: number, radius = 50): Observable<any> {
     const params = new HttpParams()
       .set('latitude', lat)
       .set('longitude', lng)
       .set('radius', radius);
-    return this.http.get<any[]>(`${this.DESIGNER_API}/location/nearby`, { params });
+    return this.http.get<any>(`${this.DESIGNER_API}/location/nearby`, { params });
   }
 
-  /** 4. Get designer portfolio */
-  getDesignerPortfolio(id: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.DESIGNER_API}/${id}/portfolio`);
+  getDesignerPortfolio(id: number): Observable<any> {
+    return this.http.get<any>(`${this.DESIGNER_API}/${id}/portfolio`);
   }
 
-  /** 5. Get designer reviews */
-  getDesignerReviews(id: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.DESIGNER_API}/${id}/reviews`);
+  /** CLIENT: Get my bookings */
+getUserBookings(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.BOOKING_API}`);
+}
+
+
+  getDesignerReviews(id: number): Observable<any> {
+    return this.http.get<any>(`${this.DESIGNER_API}/${id}/reviews`);
   }
 
-  /** 6. Get designer availability */
-  getDesignerAvailability(id: number): Observable<any> {
+  /* ✅ MISSING EARLIER (API EXISTS) */
+  getAvailability(id: number): Observable<any> {
     return this.http.get<any>(`${this.DESIGNER_API}/${id}/availability`);
   }
 
@@ -58,22 +57,18 @@ export class DesignerService {
      DESIGNER PROFILE (AUTHENTICATED)
   ===================================================== */
 
-  /** 7. Create designer profile */
   createProfile(payload: any): Observable<any> {
     return this.http.post<any>(this.DESIGNER_API, payload);
   }
 
-  /** 8. Get my designer profile */
   getMyProfile(): Observable<any> {
     return this.http.get<any>(`${this.DESIGNER_API}/me/profile`);
   }
 
-  /** 9. Update designer profile */
   updateProfile(id: number, payload: any): Observable<any> {
     return this.http.put<any>(`${this.DESIGNER_API}/${id}`, payload);
   }
 
-  /** 10. Delete designer profile */
   deleteProfile(id: number): Observable<any> {
     return this.http.delete<any>(`${this.DESIGNER_API}/${id}`);
   }
@@ -82,7 +77,6 @@ export class DesignerService {
      PORTFOLIO
   ===================================================== */
 
-  /** 11. Add portfolio item */
   addPortfolioItem(designerId: number, payload: any): Observable<any> {
     return this.http.post<any>(
       `${this.DESIGNER_API}/${designerId}/portfolio`,
@@ -90,7 +84,6 @@ export class DesignerService {
     );
   }
 
-  /** 12. Update portfolio item */
   updatePortfolioItem(
     designerId: number,
     portfolioId: number,
@@ -102,7 +95,6 @@ export class DesignerService {
     );
   }
 
-  /** 13. Delete portfolio item */
   deletePortfolioItem(
     designerId: number,
     portfolioId: number
@@ -116,7 +108,6 @@ export class DesignerService {
      AVAILABILITY
   ===================================================== */
 
-  /** 14. Update availability */
   updateAvailability(designerId: number, payload: any): Observable<any> {
     return this.http.put<any>(
       `${this.DESIGNER_API}/${designerId}/availability`,
@@ -128,30 +119,29 @@ export class DesignerService {
      BOOKINGS – CLIENT
   ===================================================== */
 
-  /** 15. Get my bookings */
-  getMyBookings(): Observable<any[]> {
-    return this.http.get<any[]>(this.BOOKING_API);
+  getMyBookings(): Observable<any> {
+    return this.http.get<any>(this.BOOKING_API);
   }
 
-  /** 16. Get booking by ID */
   getBookingById(id: number): Observable<any> {
     return this.http.get<any>(`${this.BOOKING_API}/${id}`);
   }
 
-  /** 17. Create booking */
+  /* ❌ FIXED: WRONG ENDPOINT BEFORE */
   createBooking(designerId: number, payload: any): Observable<any> {
     return this.http.post<any>(
-      `${this.DESIGNER_API}/${designerId}/bookings`,
-      payload
+      `${this.BOOKING_API}/designers/${designerId}`,
+      {
+        bookingType: 'consultation', // REQUIRED by backend
+        ...payload
+      }
     );
   }
 
-  /** 18. Update booking */
   updateBooking(id: number, payload: any): Observable<any> {
     return this.http.put<any>(`${this.BOOKING_API}/${id}`, payload);
   }
 
-  /** 19. Cancel booking */
   cancelBooking(id: number, reason: string): Observable<any> {
     return this.http.post<any>(
       `${this.BOOKING_API}/${id}/cancel`,
@@ -163,12 +153,11 @@ export class DesignerService {
      BOOKINGS – DESIGNER
   ===================================================== */
 
-  /** 20. Get designer's bookings */
-  getDesignerBookings(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.BOOKING_API}/designer/my`);
+  /* ❌ FIXED: RESPONSE IS { success, data } */
+  getDesignerBookings(): Observable<any> {
+    return this.http.get<any>(`${this.BOOKING_API}/designer/my`);
   }
 
-  /** 21. Accept booking */
   acceptBooking(id: number, payload: any = {}): Observable<any> {
     return this.http.post<any>(
       `${this.BOOKING_API}/${id}/accept`,
@@ -176,7 +165,6 @@ export class DesignerService {
     );
   }
 
-  /** 22. Reject booking */
   rejectBooking(id: number, payload: any): Observable<any> {
     return this.http.post<any>(
       `${this.BOOKING_API}/${id}/reject`,
@@ -184,7 +172,6 @@ export class DesignerService {
     );
   }
 
-  /** 23. Complete booking */
   completeBooking(id: number): Observable<any> {
     return this.http.post<any>(
       `${this.BOOKING_API}/${id}/complete`,
@@ -192,7 +179,6 @@ export class DesignerService {
     );
   }
 
-  /** 24. Mark no-show */
   markNoShow(id: number): Observable<any> {
     return this.http.post<any>(
       `${this.BOOKING_API}/${id}/no-show`,
@@ -204,7 +190,6 @@ export class DesignerService {
      REVIEWS
   ===================================================== */
 
-  /** 25. Create review */
   createReview(bookingId: number, payload: any): Observable<any> {
     return this.http.post<any>(
       `${this.BOOKING_API}/${bookingId}/review`,
@@ -212,7 +197,6 @@ export class DesignerService {
     );
   }
 
-  /** 26. Respond to review */
   respondToReview(bookingId: number, payload: any): Observable<any> {
     return this.http.post<any>(
       `${this.BOOKING_API}/${bookingId}/review/response`,
@@ -237,9 +221,4 @@ export class DesignerService {
     formData.append('folder', folder);
     return this.http.post<any>(`${this.UPLOAD_API}/images`, formData);
   }
-
-  /* =====================================================
-     FAVOURITES (LOCAL)
-  ===================================================== */
-
 }

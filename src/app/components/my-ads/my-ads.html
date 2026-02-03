@@ -1,70 +1,159 @@
-<div class="my-ads-page mx-5">
+<div  class="cont">
+<div class="container my-4">
 
-  <!-- Header -->
+  <!-- HEADER -->
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>My Ads</h1>
+    <h1 class="text-warning">My Ads</h1>
     <button class="btn btn-warning text-white" (click)="postNewAd()">
       Post New Ad
     </button>
   </div>
 
-  <!-- Tabs -->
-  <div class="tabs mb-4">
-    <button
-      class="tab"
-      [class.active]="activeTab === 'active'"
-      (click)="activeTab = 'active'">
-      Active
-    </button>
-    <button
-      class="tab"
-      [class.active]="activeTab === 'inactive'"
-      (click)="activeTab = 'inactive'">
-      Inactive
-    </button>
+  <!-- TABS -->
+  <div class="mb-4">
+    <button class="tab-btn"
+      [class.active]="activeTab==='active'"
+      (click)="activeTab='active'">Active</button>
+
+    <button class="tab-btn"
+      [class.active]="activeTab==='inactive'"
+      (click)="activeTab='inactive'">Inactive</button>
   </div>
 
-  <!-- Loader -->
-  <p *ngIf="loading">Loading...</p>
-
-  <!-- Empty -->
-  <p *ngIf="!loading && filteredAds.length === 0">
-    No ads found.
-  </p>
-
-  <!-- Ads -->
-  <div *ngFor="let ad of filteredAds" class="ad-card mx-5">
+  <!-- ADS LIST -->
+  <div *ngFor="let ad of filteredAds" class="ad-card">
 
     <img
       class="ad-image"
-      [src]="ad.images?.[0]?.imageUrl || 'assets/no-image.png'" />
+      [src]="ad.images?.[0]?.imageUrl || 'assets/no-image.png'">
 
-    <div class="ad-info d-flex flex-row justify-content-between">
+    <div class="ad-content">
+
       <div>
-          <h5>{{ ad.title }}</h5>
+        <h5>{{ ad.title }}</h5>
 
-      <p class="price" *ngIf="ad.price">
-        AED {{ ad.price }}
-      </p>
+        <p class="price" *ngIf="ad.price && ad.price !== '0'">
+          AED {{ ad.price }}
+        </p>
 
-      <p class="meta">
-        {{ ad.category?.name }}
-      </p>
+        <p class="btn-outline-secondary  mb-1">
+          {{ ad.category?.name }}
+        </p>
 
-      <p class="meta">
-        Posted recently
-      </p>
+        <p class="text-muted text-warning d-flex align-items-center gap-2">
+          <i class="bi bi-eye"></i> {{ ad.viewsCount }} views
+        </p>
+          <button *ngIf="isJob(ad)"
+          class="btn btn-outline-warning mb-2"
+          (click)="openApplications(ad)">
+          View Applications
+        </button>
       </div>
-     
-     <div>
-        <button
-        class="btn btn-warning text-white"
-        (click)="removeAd(ad.id)">
-        Remove Ad
-      </button>
-     </div>
+
+      <div class="actions text-end">
+
       
+
+        <button class="btn btn-warning text-white"
+          (click)="removeAd(ad.id)">
+          Remove Ad
+        </button>
+
+      </div>
+
     </div>
   </div>
+</div>
+</div>
 
+<!-- ================= APPLICATIONS OVERLAY ================= -->
+
+<div class="overlay" *ngIf="showApplications">
+
+  <div class="overlay-box">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4>Applicants</h4>
+      <button class="btn-close" (click)="closeApplications()"></button>
+    </div>
+
+    <input class="form-control mb-3" placeholder="Search applicants">
+
+    <div *ngIf="!applications.length">
+      <p class="text-muted text-center">No applicants found</p>
+    </div>
+
+    <!-- APPLICANTS LIST -->
+    <div *ngIf="!selectedApplication">
+
+      <div class="applicant-row"
+        *ngFor="let app of applications"
+        (click)="openApplicant(app)">
+
+        <img src="assets/avatar.png">
+        <div>
+          <h6>{{ app.name }}</h6>
+          <p class="small text-muted mb-0">
+            {{ app.location }}
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- APPLICANT DETAIL -->
+    <div *ngIf="selectedApplication" class="row">
+
+      <div class="col-md-4 text-center border-end">
+        <img class="profile-pic" src="assets/avatar.png">
+        <h5 class="mt-2">{{ selectedApplication.name }}</h5>
+        <p class="text-muted">
+          Applied for {{ selectedJob?.title }}
+        </p>
+
+        <div class="text-start mt-3">
+          <p><strong>Email:</strong> {{ selectedApplication.email }}</p>
+          <p><strong>Phone:</strong> {{ selectedApplication.mobileNo }}</p>
+          <p><strong>Location:</strong> {{ selectedApplication.location }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+
+        <div class="card mb-3">
+          <div class="card-body d-flex justify-content-between">
+            <div>
+              <h6>Application Materials</h6>
+              <p class="small text-muted">
+                Resume
+              </p>
+            </div>
+            <a class="btn btn-outline-warning"
+              target="_blank"
+              [href]="selectedApplication.resumeUrl">
+              View
+            </a>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-body">
+            <h6>Skills</h6>
+            <span class="badge bg-light text-dark me-2"
+              *ngFor="let skill of selectedApplication.skillsRequired">
+              {{ skill }}
+            </span>
+          </div>
+        </div>
+
+        <div class="text-end">
+          <button class="btn btn-success me-2">Shortlist</button>
+          <button class="btn btn-danger">Reject</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
 </div>

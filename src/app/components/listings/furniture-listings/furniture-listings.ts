@@ -6,6 +6,14 @@ import { ListingsService } from '../../../services/listing-service';
 import { AuthService } from '../../../services/auth-service';
 import { ChatService } from '../../../services/chat-service';
 
+/* =====================
+   INTERFACE
+===================== */
+
+export interface FurnitureImage {
+  imageUrl: string;
+}
+
 export interface FurnitureListing {
   id: number;
   title: string;
@@ -14,7 +22,7 @@ export interface FurnitureListing {
   location: string;
 
   image: string;
-  images: string[];
+  images: FurnitureImage[];
 
   condition?: string;
   material?: string;
@@ -43,7 +51,7 @@ export interface FurnitureListing {
 export class FurnitureListingsComponent implements OnInit {
 
   /* =====================
-     DATA SOURCES
+     DATA
   ===================== */
   allListings: FurnitureListing[] = [];
   filteredListings: FurnitureListing[] = [];
@@ -62,7 +70,7 @@ export class FurnitureListingsComponent implements OnInit {
   currentImageIndex = 0;
 
   /* =====================
-     INFINITE SCROLL
+     PAGINATION
   ===================== */
   pageSize = 12;
   currentPage = 1;
@@ -76,26 +84,36 @@ export class FurnitureListingsComponent implements OnInit {
   /* =====================
      FILTERS
   ===================== */
-  selectedFurnitureTypes: string[] = [];
-  furnitureTypes = ['Sofa', 'Bed', 'Dining Table', 'Chair', 'Dressing Table'];
-
   selectedMaterials: string[] = [];
   materials = ['Wood', 'Metal', 'Plastic', 'Leather'];
-
-  minPrice = 0;
-  maxPrice = 0;
 
   selectedCondition = '';
   conditions = ['New', 'Like New', 'Used'];
 
-  selectedLocation = '';
-  locations = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK', 'Fujairah'];
+  minPrice = 0;
+  maxPrice = 0;
+
+  /* =====================
+     REPORT (SAME AS MOTORS)
+  ===================== */
+  showReportModal = false;
+  reportReason = '';
+  reportDetails = '';
+  isReporting = false;
+
+  reportReasons = [
+    'Fraud / Scam',
+    'Inappropriate Content',
+    'Duplicate Listing',
+    'Wrong Information',
+    'Other'
+  ];
 
   constructor(
     private listingsService: ListingsService,
     private authService: AuthService,
     private router: Router,
-    private chatService:ChatService
+    private chatService: ChatService
   ) {}
 
   /* =====================
@@ -107,7 +125,7 @@ export class FurnitureListingsComponent implements OnInit {
   }
 
   /* =====================
-     FETCH FROM BACKEND
+     FETCH
   ===================== */
   fetchListings(): void {
     this.isLoading = true;
@@ -115,8 +133,9 @@ export class FurnitureListingsComponent implements OnInit {
     // categoryId = 6 → Furniture
     this.listingsService.getAllListings(6).subscribe({
       next: (res: any) => {
-        const mapped: FurnitureListing[] =
-          res.data.map((l: any) => this.mapBackendFurniture(l));
+        const mapped:FurnitureListing[] = res.data.map((l: any) =>
+          this.mapBackendFurniture(l)
+        );
 
         if (!this.isLoggedIn) {
           this.setListings(mapped);
@@ -148,21 +167,15 @@ export class FurnitureListingsComponent implements OnInit {
   ===================== */
   toggleMaterial(material: string): void {
     const i = this.selectedMaterials.indexOf(material);
-    i > -1 ? this.selectedMaterials.splice(i, 1) : this.selectedMaterials.push(material);
+    i > -1
+      ? this.selectedMaterials.splice(i, 1)
+      : this.selectedMaterials.push(material);
     this.applyFilters();
-  }
-
-  isMaterialSelected(material: string): boolean {
-    return this.selectedMaterials.includes(material);
   }
 
   selectCondition(condition: string): void {
     this.selectedCondition = condition;
     this.applyFilters();
-  }
-
-  isConditionSelected(condition: string): boolean {
-    return this.selectedCondition === condition;
   }
 
   selectSortBy(sort: string): void {
@@ -181,16 +194,13 @@ export class FurnitureListingsComponent implements OnInit {
   applyFilters(): void {
     let result = [...this.allListings];
 
-    if (this.minPrice > 0) result = result.filter(l => l.price >= this.minPrice);
-    if (this.maxPrice > 0) result = result.filter(l => l.price <= this.maxPrice);
-
     if (this.selectedCondition) {
       result = result.filter(l => l.condition === this.selectedCondition);
     }
 
     if (this.selectedMaterials.length) {
-      result = result.filter(l =>
-        l.material && this.selectedMaterials.includes(l.material)
+      result = result.filter(
+        l => l.material && this.selectedMaterials.includes(l.material)
       );
     }
 
@@ -224,11 +234,11 @@ export class FurnitureListingsComponent implements OnInit {
   onScroll(): void {
     if (this.isFetchingMore || this.allLoaded) return;
 
-    const threshold = 300;
-    const position = window.innerHeight + window.scrollY;
-    const height = document.body.offsetHeight;
+    const nearBottom =
+      window.innerHeight + window.scrollY >=
+      document.body.offsetHeight - 300;
 
-    if (position + threshold >= height) {
+    if (nearBottom) {
       this.loadMore();
     }
   }
@@ -260,7 +270,7 @@ export class FurnitureListingsComponent implements OnInit {
       return;
     }
 
-    this.paginatedListings = [...this.paginatedListings, ...chunk];
+    this.paginatedListings.push(...chunk);
   }
 
   /* =====================
@@ -270,6 +280,7 @@ export class FurnitureListingsComponent implements OnInit {
     this.listingsService.getSingleListing(id).subscribe(res => {
       this.selectedListing = this.mapBackendFurniture(res.data);
     });
+
     this.currentImageIndex = 0;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -311,10 +322,7 @@ export class FurnitureListingsComponent implements OnInit {
       : this.listingsService.removeFromFavorites(listing.id);
 
     req.subscribe({
-      error: () => {
-        listing.isFavorite = prev;
-        alert('Unable to update favorite');
-      }
+      error: () => (listing.isFavorite = prev)
     });
   }
 
@@ -333,44 +341,68 @@ export class FurnitureListingsComponent implements OnInit {
     window.open(`https://wa.me/${phone}`, '_blank');
   }
 
-  reportAd(): void {
-    if (confirm('Are you sure you want to report this ad?')) {
-      alert('Thanks. We will review this listing.');
-    }
-  }
-
-   startChatWithSeller(listing: FurnitureListing): void {
+  startChatWithSeller(listing: FurnitureListing): void {
     if (!this.isLoggedIn) {
       this.router.navigate(['/auth/login']);
       return;
     }
-  
+
     this.chatService.createOrGetRoom(listing.id).subscribe({
       next: (res: any) => {
         const roomId = res?.data?.id;
-  
-        if (!roomId) {
-          alert('Unable to open chat room');
-          return;
+        if (roomId) {
+          this.router.navigate(['/my-chats'], {
+            queryParams: { roomId }
+          });
         }
-  
-        this.router.navigate(['/my-chats'], {
-          queryParams: { roomId }
-        });
-      },
-      error: () => {
-        alert('Unable to start chat. Please try again.');
       }
     });
   }
 
+  /* =====================
+     REPORT (MODAL)
+  ===================== */
+  reportAd(): void {
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
+    this.reportReason = '';
+    this.reportDetails = '';
+    this.showReportModal = true;
+  }
+
+  closeReportModal(): void {
+    this.showReportModal = false;
+  }
+
+  submitReport(): void {
+    if (!this.reportReason.trim()) {
+      alert('Please select a reason');
+      return;
+    }
+
+    this.isReporting = true;
+
+    setTimeout(() => {
+      this.isReporting = false;
+      this.showReportModal = false;
+      alert('Report submitted successfully');
+    }, 800);
+  }
 
   /* =====================
-     BACKEND → UI MAPPER
+     BACKEND MAPPER
   ===================== */
   mapBackendFurniture(l: any): FurnitureListing {
     const details = l.furnitureDetails;
-    const images = details?.images || [];
+   const images = (l?.images || []).map((img: any) => ({
+    imageUrl: img.imageUrl
+  }));
+   
+  
+const allImages = [...images];
 
     return {
       id: l.id,
@@ -379,9 +411,8 @@ export class FurnitureListingsComponent implements OnInit {
       currency: l.currency || 'AED',
       location: l.city || 'Dubai',
 
-      image: images[0] || 'assets/no-image.jpg',
-      images,
-
+       image: allImages[0]?.imageUrl ?? 'assets/placeholder.png',
+      images: allImages,
       condition: details?.condition,
       material: details?.material,
       description: l.description,

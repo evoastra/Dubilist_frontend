@@ -120,7 +120,7 @@ export class AuthService {
       );
   }
 
-  getMe(): Observable<ApiResponse<User>> {
+  getMe() : Observable<ApiResponse<User>> {
     return this.http
       .get<ApiResponse<User>>(`${this.apiUrl}/auth/me`)
       .pipe(
