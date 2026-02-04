@@ -37,6 +37,34 @@
   align-items: center;
   justify-content: center;
 }
+/* Pagination New Theme */
+.page-btn {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #555;
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.page-btn:hover {
+  border-color: #ffa500;
+  color: #ffa500;
+}
+
+.active-page {
+  background: #ffa500 !important;
+  color: #fff !important;
+  border-color: #ffa500 !important;
+  font-weight: 600;
+}
+
+.page-btn.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
 
 .bg-light-blue { background: #e3f2fd; }
 .bg-light-purple { background: #f3e5f5; }

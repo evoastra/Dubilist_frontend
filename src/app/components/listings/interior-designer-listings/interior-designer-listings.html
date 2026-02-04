@@ -51,7 +51,7 @@
 
           <div class="row g-4">
             <div class="col-md-6 col-lg-4" *ngFor="let d of designers">
-              <div class="card designer-card h-100" (click)="openDesignerDetail(d)">
+              <div class="card designer-card h-100" (click)="openDesignerDetail(d.id)">
                 <img [src]="d.profileImage" class="card-img-top" alt="Profile">
                 <div class="card-body">
                   <h5 class="card-title">{{ d.name }}</h5>
@@ -59,7 +59,7 @@
                   
                   <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
                     <small class="location-text"><i class="bi bi-geo-alt-fill text-primary-custom"></i> {{ d.city }}</small>
-                    <button class="btn btn-sm btn-primary-custom">View Profile</button>
+                    <button class="btn btn-sm btn-primary-custom" >View Profile</button>
                   </div>
                 </div>
               </div>
@@ -78,7 +78,7 @@
       <div class="row">
         <div class="col-md-4 mb-4">
           <div class="dashboard-profile-card">
-           <img [src]="myProfile?.profileImage || 'assets/placeholder.jpg'" class="dash-avatar">
+           <img [src]="myProfile?.profileImage  || 'assets/images/avatarUrl.jpg'" class="dash-avatar">
 <h3>{{ myProfile?.name }}</h3>
 
             <p class="text-muted">{{ myProfile?.city }}</p>
@@ -88,7 +88,7 @@
               <h4 class="text-primary-custom m-0">AED {{ myProfile?.hourlyRate }} / Hr</h4>
             </div>
 
-            <button class="btn btn-outline-dark w-100 mt-3" (click)="showRequestsModal = true">
+            <button class="btn btn-outline-dark w-100 mt-3" (click)="openConsultantions()">
               View Consultation Requests
             </button>
             </div>
@@ -221,10 +221,10 @@
         <div class="col-lg-8">
           <div class="card border-0 shadow-sm p-4 mb-4">
             <div class="detail-header">
-              <img [src]="selectedDesigner.profileImage" class="detail-avatar">
+              <img [src]="selectedDesigner.user.avatarUrl  || 'assets/images/avatarUrl.jpg'" class="detail-avatar">
               <div>
                 <span class="badge bg-warning text-dark mb-2">Interior Designer</span>
-                <h2 class="m-0">{{ selectedDesigner.name }}</h2>
+                <h2 class="m-0">{{ selectedDesigner.user.name }}</h2>
                 <p class="text-muted m-0">{{ selectedDesigner.tagline }}</p>
                 <small><i class="bi bi-geo-alt"></i> {{ selectedDesigner.city }}</small>
               </div>
@@ -244,8 +244,8 @@
 
             <div>
               <h4>Portfolio</h4>
-              <div class="portfolio-grid" *ngIf="selectedDesigner.portfolio?.length; else noPortfolio">
-                <img *ngFor="let p of selectedDesigner.portfolio" 
+              <div class="portfolio-grid" *ngIf="selectedDesigner.photos?.length; else noPortfolio">
+                <img *ngFor="let p of selectedDesigner.photos" 
                      [src]="p"
      class="portfolio-img">
               </div>
@@ -352,7 +352,7 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Consultation Requests</h5>
+            <h5 class="modal-title">Previous Bookings</h5>
             <button type="button" class="btn-close" (click)="showRequestsModal = false"></button>
           </div>
           <div class="modal-body">
@@ -360,10 +360,49 @@
             <ul class="list-group">
               <li *ngFor="let r of myRequests" class="list-group-item d-flex justify-content-between align-items-center">
                 <div>
-                  <strong>{{ r.userName }}</strong><br>
-                  <small>{{ r.projectType }} - {{ r.status }}</small>
+                  <strong>{{ r.designer.user.name }}</strong><br>
+                  <button
+  class="btn"
+  [ngClass]="{
+    'btn-warning': r.status === 'pending',
+    'btn-success': r.status === 'approved',
+    'btn-danger' : r.status === 'rejected'
+  }">
+  {{ r.status }}
+</button>
                 </div>
-                <button class="btn btn-sm btn-outline-primary" (click)="selectedRequest=r; showClientDetailModal=true">View</button>
+                <button class="btn btn-sm btn-warning" (click)="openDesignerDetail(r.designer.id);showRequestsModal=false" >View Profile</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+     <div *ngIf="viewConsultations" class="modal d-block" style="background: rgba(0,0,0,0.5)">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Consultantions Requests</h5>
+            <button type="button" class="btn-close" (click)="viewConsultations = false"></button>
+          </div>
+          <div class="modal-body">
+            <div *ngIf="myRequests.length === 0" class="text-center py-3">No requests found.</div>
+            <ul class="list-group">
+              <li *ngFor="let r of myConsultantions" class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>{{ r.user.name }}</strong><br>
+                  <button
+  class="btn"
+  [ngClass]="{
+    'btn-warning': r.status === 'pending',
+    'btn-success': r.status === 'approved',
+    'btn-danger' : r.status === 'rejected'
+  }">
+  {{ r.status }}
+</button>
+                </div>
+                <button class="btn btn-sm btn-warning" (click)="showClientDetailModal=true;selectedRequest=r" >View Profile</button>
               </li>
             </ul>
           </div>
@@ -384,12 +423,12 @@
         <div class="row">
           <div class="col-md-4 text-center border-end">
             <div class="position-relative d-inline-block mb-3">
-              <img [src]="selectedRequest?.user?.avatarUrl || 'assets/images/default-avatar.png'" 
+              <img [src]="selectedRequest?.user?.avatarUrl || 'assets/images/avatarUrl.jpg'" 
                    class="rounded-circle border border-warning border-4 p-1" 
                    style="width: 130px; height: 130px; object-object: cover;">
             </div>
-            <h4 class="fw-bold mb-1">{{ selectedRequest?.userName }}</h4>
-            <p class="text-primary-custom fw-bold">{{ selectedRequest?.userPhone }}</p>
+            <h4 class="fw-bold mb-1">{{ selectedRequest?.user.name }}</h4>
+            <p class="text-primary-custom fw-bold">{{ selectedRequest?.user.phone }}</p>
           </div>
 
           <div class="col-md-8 ps-md-5">

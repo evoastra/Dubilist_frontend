@@ -21,6 +21,7 @@ export class InteriorDesignerListingsComponent implements OnInit {
   isDesigner = false;
 
   showRequestsModal = false;
+  viewConsultations=false;
   showClientDetailModal = false;
   showLoginModal = false;
 
@@ -30,8 +31,10 @@ export class InteriorDesignerListingsComponent implements OnInit {
   selectedDesigner: any = null;
 
   myProfile: any = null;
+  myConsultantions:any[]=[];
   myRequests: any[] = [];
   selectedRequest: any = null;
+  
 minBookingDate = new Date().toISOString().split('T')[0];
 
   activeAlerts: { message: string; type: 'success' | 'error' }[] = [];
@@ -135,7 +138,7 @@ minBookingDate = new Date().toISOString().split('T')[0];
       return;
     }
 
-    this.chatService.createOrGetRoom(this.selectedDesigner.id).subscribe({
+    this.chatService.createOrGetRoom(this.selectedDesigner.user.id).subscribe({
       next: (res: any) => {
         const roomId = res?.data?.id || res?.id;
         if (roomId) {
@@ -183,18 +186,13 @@ minBookingDate = new Date().toISOString().split('T')[0];
     this.designers = list;
   }
 
-  openDesignerDetail(designer: any) {
-    this.selectedDesigner = designer;
+  openDesignerDetail(id: number) {
     this.viewMode = 'detail';
 
-    this.designerService.getDesignerById(designer.id).subscribe({
+    this.designerService.getDesignerById(id).subscribe({
       next: (res: any) => {
         const d = res.data || res;
-        this.selectedDesigner = {
-          ...designer,
-          bio: d.bio,
-          portfolio: Array.isArray(d.photos) ? d.photos : []
-        };
+        this.selectedDesigner=d;
       },
       error: () => this.showAlert('Failed to load designer profile', 'error')
     });
@@ -210,6 +208,23 @@ minBookingDate = new Date().toISOString().split('T')[0];
   openDashboard() {
     this.viewMode = 'dashboard';
     this.loadMyBookings();
+  }
+
+ 
+  openConsultantions(){
+    this.viewConsultations=true;
+
+    this.designerService.getMyBookings().subscribe({
+      next:(res:any)=>{
+        this.myConsultantions=res?.data ;
+
+      },error:(err)=>{
+        this.showAlert(
+        err?.error?.message || 'Unable to load consultantions requests',
+        'error'
+      );
+      }
+    })
   }
 
   openRequests() {

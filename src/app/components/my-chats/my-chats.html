@@ -25,7 +25,7 @@
         [class.active]="room.id === selectedRoom?.id">
 
         <img
-          [src]="room.otherParty.avatarUrl || 'assets/avatar.png'"
+          [src]="room.otherParty.avatarUrl  || 'assets/images/avatarUrl.jpg'"
           class="avatar"
         />
 
@@ -59,7 +59,7 @@
       <!-- HEADER -->
       <div class="chat-header border-bottom">
         <img
-          [src]="selectedRoom.otherParty.avatarUrl || 'assets/avatar.png'"
+          [src]="selectedRoom.otherParty.avatarUrl  || 'assets/images/avatarUrl.jpg'"
           class="avatar me-2"
         />
         <div>

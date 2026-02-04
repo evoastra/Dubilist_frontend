@@ -148,9 +148,150 @@
   height: 45px;
   border-radius: 50%;
 }
+.app-container {
+  display: flex;
+  gap: 25px;
+
+  font-family: "Inter", sans-serif;
+}
+
+/* LEFT PANEL */
+.left-panel {
+  width: 30%;
+  padding: 25px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  text-align: center;
+}
 
 .profile-pic {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
+  object-fit: cover;
 }
+
+.candidate-name {
+  font-size: 20px;
+  margin-top: 15px;
+  font-weight: 600;
+}
+
+.applied-for {
+  color: #777;
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+/* CONTACT SECTION */
+.contact-section {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+
+.icon-box i {
+  font-size: 22px;
+  color: #ffa500;
+  margin-top: 4px;
+}
+
+.contact-text {
+ 
+
+}
+
+.contact-label {
+  margin: 0;
+  font-size: 13px;
+  color: #999;
+}
+
+.contact-value {
+  margin: 0;
+  font-size: 15px;
+ 
+}
+
+/* RIGHT PANEL */
+.right-panel {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* CARD BLOCK */
+.card-block {
+  background: white;
+  border: 1px solid #e5e5e5;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.view-btn {
+  background: #ffa500;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+/* ITEM ROW */
+.item-row {
+  margin-top: 15px;
+  display: flex;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+}
+
+.item-icon i {
+  font-size: 28px;
+  color: #ffa500;
+}
+
+.item-info .item-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.item-info .item-subtext {
+  margin: 0;
+  font-size: 13px;
+  color: #888;
+}
+
+
+/* SALARY */
+.salary-tag {
+  background: #fff7e6;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ACTIONS */
+.actions {
+  text-align: right;
+  margin-top: 10px;
+}
+

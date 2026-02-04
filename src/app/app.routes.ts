@@ -36,6 +36,7 @@ export const routes: Routes = [
   { path: 'home', component: HomePage },
   {path:'privacy-policy',component:PrivacyPolicyComponent},
   {path:'about-us',component:AboutUsComponent},
+  {path:'terms-of-use',loadComponent:()=>import('./components/terms-of-use/terms-of-use').then(m=>m.TermsOfUseComponent)},
 
   /* AUTH */
   { path: 'auth/login', component: AuthLoginComponent },

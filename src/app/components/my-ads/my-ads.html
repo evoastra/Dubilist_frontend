@@ -25,7 +25,7 @@
 
     <img
       class="ad-image"
-      [src]="ad.images?.[0]?.imageUrl || 'assets/no-image.png'">
+      [src]="ad.images?.[0]?.imageUrl || 'assets/images/noImage.jpg'">
 
     <div class="ad-content">
 
@@ -36,6 +36,7 @@
           AED {{ ad.price }}
         </p>
 
+
         <p class="btn-outline-secondary  mb-1">
           {{ ad.category?.name }}
         </p>
@@ -43,6 +44,15 @@
         <p class="text-muted text-warning d-flex align-items-center gap-2">
           <i class="bi bi-eye"></i> {{ ad.viewsCount }} views
         </p>
+        
+
+        <div *ngIf="ad.reasonRejected">
+             <button  class="btn btn-outline-danger m-3">
+          Rejected : {{ ad.reasonRejected }}
+        </button> 
+        </div>
+       
+
           <button *ngIf="isJob(ad)"
           class="btn btn-outline-warning mb-2"
           (click)="openApplications(ad)">
@@ -73,7 +83,7 @@
   <div class="overlay-box">
 
     <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
       <h4>Applicants</h4>
       <button class="btn-close" (click)="closeApplications()"></button>
     </div>
@@ -91,11 +101,11 @@
         *ngFor="let app of applications"
         (click)="openApplicant(app)">
 
-        <img src="assets/avatar.png">
+        <img [src]="app.user.avatarUrl  || 'assets/images/avatarUrl.jpg'" class="profile-pic me-3">
         <div>
           <h6>{{ app.name }}</h6>
           <p class="small text-muted mb-0">
-            {{ app.location }}
+            {{ app.jobStatus }}
           </p>
         </div>
       </div>
@@ -103,57 +113,124 @@
     </div>
 
     <!-- APPLICANT DETAIL -->
-    <div *ngIf="selectedApplication" class="row">
+   <div *ngIf="selectedApplication" class="app-container">
 
-      <div class="col-md-4 text-center border-end">
-        <img class="profile-pic" src="assets/avatar.png">
-        <h5 class="mt-2">{{ selectedApplication.name }}</h5>
-        <p class="text-muted">
-          Applied for {{ selectedJob?.title }}
-        </p>
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <img
+      class="profile-pic"
+      [src]="selectedApplication.user?.avatarUrl || 'assets/images/avatarUrl.jpg'"
+    />
 
-        <div class="text-start mt-3">
-          <p><strong>Email:</strong> {{ selectedApplication.email }}</p>
-          <p><strong>Phone:</strong> {{ selectedApplication.mobileNo }}</p>
-          <p><strong>Location:</strong> {{ selectedApplication.location }}</p>
+    <h3 class="candidate-name">{{ selectedApplication.name }}</h3>
+    <p class="applied-for">
+      Applied for: {{ selectedApplication.jobListing?.jobDetails?.jobTitle }}
+    </p>
+
+    <div class="contact-section">
+
+      <div class="contact-item">
+        <div class="icon-box d-flex flex-row align-items-center justify-content-center">
+          <i class="bi bi-envelope"></i>
+           <p class="contact-label p-2">Email</p>
+        </div>
+        <div class="contact-text">
+         
+          <p class="contact-value">{{ selectedApplication.email }}</p>
         </div>
       </div>
 
-      <div class="col-md-8">
-
-        <div class="card mb-3">
-          <div class="card-body d-flex justify-content-between">
-            <div>
-              <h6>Application Materials</h6>
-              <p class="small text-muted">
-                Resume
-              </p>
-            </div>
-            <a class="btn btn-outline-warning"
-              target="_blank"
-              [href]="selectedApplication.resumeUrl">
-              View
-            </a>
-          </div>
+      <div class="contact-item">
+        <div class="icon-box d-flex flex-row align-items-center justify-content-center">
+          <i class="bi bi-telephone"></i>
+           <p class="contact-label p-2">Phone</p>
         </div>
-
-        <div class="card mb-3">
-          <div class="card-body">
-            <h6>Skills</h6>
-            <span class="badge bg-light text-dark me-2"
-              *ngFor="let skill of selectedApplication.skillsRequired">
-              {{ skill }}
-            </span>
-          </div>
+        <div class="contact-text">
+         
+          <p class="contact-value">{{ selectedApplication.mobileNo }}</p>
         </div>
+      </div>
 
-        <div class="text-end">
-          <button class="btn btn-success me-2">Shortlist</button>
-          <button class="btn btn-danger">Reject</button>
+      <div class="contact-item">
+        <div class="icon-box d-flex flex-row align-items-center justify-content-center">
+          <i class="bi bi-geo-alt"></i>
+           <p class="contact-label p-2">Location</p>
         </div>
+        <div class="contact-text">
+         
+          <p class="contact-value">
+            {{ selectedApplication.location || 'Not Provided' }}
+          </p>
+        </div>
+      </div>
 
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <!-- Application Materials -->
+    <div class="card-block">
+      <div class="card-header">
+        <h4>Application Materials</h4>
+        <a
+          class="view-btn"
+          target="_blank"
+          [href]="selectedApplication.resumeUrl"
+        >
+          View
+        </a>
+      </div>
+
+      <div class="item-row">
+        <div class="item-icon">
+          <i class="bi bi-file-earmark"></i>
+        </div>
+        <div class="item-info">
+          <p class="item-title">
+            {{ selectedApplication.name }} Resume 2024
+          </p>
+          <p class="item-subtext">Uploaded recently · PDF</p>
+        </div>
       </div>
     </div>
+
+    <!-- Education -->
+    <div class="card-block">
+      <h4>Education</h4>
+
+      <div class="item-row">
+        <div class="item-icon">
+          <i class="bi bi-mortarboard"></i>
+        </div>
+        <div class="item-info">
+          <p class="item-title">Bachelor's Degree</p>
+          <p class="item-subtext">
+            {{ selectedApplication.qualification }} ·
+            {{ selectedApplication.dob | date: 'yyyy' }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills (your API had none, so placeholders) -->
+   
+
+    <!-- Salary -->
+    <div class="card-block">
+      <h4>Salary Expected</h4>
+      <span class="salary-tag">
+        {{ selectedApplication.salaryExpectation }}
+        {{ selectedApplication.salaryCurrency }}
+      </span>
+    </div>
+
+   
+  </div>
+</div>
+
+
 
   </div>
 </div>

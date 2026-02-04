@@ -103,86 +103,114 @@ html {
 
 /* ==========================================================================
    4. WHY DUBILIST SECTION (Feature Grid)
-   ========================================================================== */
+ /* SECTION BACKGROUND */
 .dubilist-features-section {
   background-color: #f7f7f7;
-  margin-top: 0;
+  padding: 80px 0;
 }
 
-/* Two-column layout container */
-.container1 {
-  margin: 0 auto;
-  padding: 80px 20px;
+/* MAIN WRAPPER: Controls side-by-side layout */
+.features-wrapper {
+  max-width: 1300px;
+  margin: auto;
+  padding: 20px;
   display: flex;
-  flex-wrap: wrap; /* Allows wrapping on mobile */
+  gap: 50px;
+  align-items: flex-start;  /* IMPORTANT: aligns both top edges */
 }
 
-.why-dubilist-column {
-  flex: 1 1 350px;
+/* LEFT COLUMN */
+.why-left {
+  flex: 0 0 32%;          /* fixed width like screenshot */
+  max-width: 380px;
 }
 
+/* TITLES */
 .section-title-highlight {
   color: #ffa500;
   font-weight: 700;
-  font-size: 1.1rem;
-  text-transform: uppercase;
+  font-size: 1.2rem;
 }
 
 .section-headline {
-  font-size: 2rem;
+  font-size: 1.85rem;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
-/* Feature boxes inside the grid */
+/* RIGHT GRID */
 .features-grid {
-  flex: 2 1 600px;
+  flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  gap: 25px;
+  grid-template-columns: repeat(3, 1fr);
 }
 
+/* Tablet - 2 per row */
+@media (max-width: 992px) {
+  .features-wrapper {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .why-left {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile - 1 per row */
+@media (max-width: 576px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* FEATURE CARD */
 .feature-box {
-  border-radius: 12px;
-  padding: 25px;
-  background: #fff;
-  transition: transform 0.3s ease;
+  background: white;
+  padding: 25px 20px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center; /* EXACT like screenshot */
+  border: 1px solid #efefef;
 }
 
-.feature-box:hover {
-  transform: translateY(-5px);
+.icon-container {
+  margin-bottom: 10px;
 }
 
+/* ICON STYLING */
+.feature-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-1 { background: #ffa500; color: white; } .icon-2 { background: #ffcc00; color: white; } .icon-3 { background: #ffa500; color: white; } .icon-4 { background: #555; color: white; } .icon-5 { background: #2f95ff; color: white; } .icon-6 { background: #e65c8a; color: white; }
+
+/* TEXT */
 .feature-box h3 {
-  font-size: 1.1rem;
+  font-size: 16px;
   font-weight: 700;
-  margin: 10px 0;
+  margin-bottom: 6px;
 }
 
 .feature-box p {
-  font-size: 0.9rem;
-  color: #666;
+  color: #444;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
-/* Icon backgrounds */
-.feature-icon {
-  width: 40px;
-
-  height: 40px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-}
-
-.icon-1 { background-color: #f7a030; }
-.icon-2 { background-color: #ffc107; }
-.icon-3 { background-color: #ff9900; }
-.icon-4 { background-color: #6c757d; }
-.icon-5 { background-color: #3399ff; }
-.icon-6 { background-color: #f06292; }
 
 /* ==========================================================================
    5. SELLING PROCESS (Steps)
@@ -294,8 +322,7 @@ html {
   }
 
   .container1 {
-    flex-direction: column;
-    text-align: center;
+    
   }
 
   .why-dubilist-column {

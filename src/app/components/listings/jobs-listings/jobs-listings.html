@@ -100,7 +100,7 @@
       </div>
 
       <div class="details-hero">
-        <div class="hero-image-box">
+        <div class="">
              <img [src]="selectedJob.imageUrl" alt="Logo"> 
         </div>
         <div class="hero-info">
@@ -138,16 +138,11 @@
         </ul>
       </div>
 
-      <div class="content-section">
-        <h3>Benefits</h3>
-        <ul>
-            <li *ngFor="let item of selectedJob.benefits">{{ item }}</li>
-        </ul>
-      </div>
+   
 
-      <div class="content-section">
+      <div class="content-section" *ngIf="selectedJob.applicationEmail">
          <h3>Contact Information</h3>
-         <p class="contact-text">Please send your resume and cover letter to <a href="#">careers@techinnovators.com</a></p>
+         <p class="contact-text">Please send your resume and cover letter to <a href="#">{{selectedJob.applicationEmail}}</a></p>
       </div>
 
       <div class="details-actions">
@@ -179,7 +174,7 @@
 
             <div class="form-group">
                 <label>Date of Birth</label>
-                <input type="text" formControlName="dateOfBirth" placeholder="Enter your Date of Birth">
+                <input type="text" formControlName="dateOfBirth" placeholder="dd-mm-yyyy">
             </div>
 
             <div class="form-group">
@@ -212,7 +207,7 @@
                 <input type="tel" formControlName="mobile" placeholder="Enter your mobile number">
             </div>
 
-          ]<div class="form-group">
+          <div class="form-group">
   <label>Resume / CV</label>
 
   <div class="upload-box" (click)="fileInput.click()">

@@ -229,7 +229,7 @@
       </div>
       <div>
         <p class="mb-0">{{ item.title }}</p>
-        <p class="price mb-0">{{ item.price }}</p>
+        <p *ngIf="item.price && item.price !== '0'" class="price mb-0">{{ item.price }}</p>
         <p class="city mb-0">{{ item.city }}</p>
       </div>
     </div>

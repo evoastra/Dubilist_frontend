@@ -362,7 +362,7 @@
 
           <div class="seller-profile">
             <img
-              [src]="selectedListing.sellerImage"
+              [src]="selectedListing.sellerImage  || 'assets/images/avatarUrl.jpg'"
               class="seller-avatar" />
             <div class="seller-info">
               <h4 class="seller-name">{{ selectedListing.sellerName }}</h4>

@@ -39,7 +39,7 @@
         <!-- IMAGE -->
         <div class="position-relative">
           <img
-            [src]="item.image"
+            [src]="item.image || 'assets/images/noImage.jpg'"
             class="card-img-top"
             style="height: 200px; object-fit: cover;"
           />

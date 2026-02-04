@@ -113,13 +113,16 @@ export class AdminDashboardComponent implements OnInit {
   };
 
   /* ================= LISTINGS ================= */
-  async loadListings(page: number) {
-    this.listPage = page;
+  /* ================= LISTINGS ================= */
+async loadListings(page: number = 1) {
+  try {
+    this.loading = true;
 
+    // Fetch ALL listings at once (no pagination)
     const res: any = await this.adminService.getListings(
       this.statusMap[this.activeDashboardTab],
-      page,
-      this.limit
+      1,
+      99  // LARGE LIMIT to fetch everything
     );
 
     const raw = res?.data || [];
@@ -134,14 +137,27 @@ export class AdminDashboardComponent implements OnInit {
       displayImage: item.images?.[0]?.imageUrl || 'assets/images/no-image.png'
     }));
 
+    // Apply category filter
     this.listings =
       this.selectedCategory === 'All'
         ? mapped
         : mapped.filter(i => i.categoryName === this.selectedCategory);
 
-    const total = res.pagination?.total || 0;
-    this.listTotalPages = Math.max(1, Math.ceil(total / this.limit));
+    // Client-side pagination
+    this.listTotalPages = Math.max(1, Math.ceil(this.listings.length / this.limit));
+    this.listPage = Math.min(this.listPage, this.listTotalPages);
+
+    const start = (this.listPage - 1) * this.limit;
+    const end = start + this.limit;
+    this.listings = this.listings.slice(start, end);
+
+  } catch (err: any) {
+    alert(err?.error?.message || 'Failed to load listings.');
+  } finally {
+    this.loading = false;
   }
+}
+
 
   switchStatus(tab: DashboardTab) {
     this.activeDashboardTab = tab;
@@ -163,22 +179,21 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /* ================= APPROVE / REJECT ================= */
-  async approve(id: number) {
+ async approve(id: number) {
+  try {
     await this.adminService.updateListingStatus(id, 'approved');
     this.triggerToast('Listing approved');
     this.loadListings(this.listPage);
     this.updateCounts();
+  } catch (err: any) {
+    alert(err?.error?.message || 'Failed to approve listing.');
   }
+}
 
-  openReject(id: number) {
-    this.selectedListingId = id;
-    this.rejectReason = '';
-    this.showRejectModal = true;
-  }
+async submitReject() {
+  if (!this.selectedListingId) return;
 
-  async submitReject() {
-    if (!this.selectedListingId) return;
-
+  try {
     await this.adminService.updateListingStatus(
       this.selectedListingId,
       'rejected',
@@ -187,9 +202,23 @@ export class AdminDashboardComponent implements OnInit {
 
     this.showRejectModal = false;
     this.triggerToast('Listing rejected');
+
     this.loadListings(this.listPage);
     this.updateCounts();
+
+  } catch (err: any) {
+    alert(err?.error?.message || 'Failed to reject listing.');
   }
+}
+
+
+  openReject(id: number) {
+    this.selectedListingId = id;
+    this.rejectReason = '';
+    this.showRejectModal = true;
+  }
+
+
 
   /* ================= USER PROFILE ================= */
   viewProfile(user: any) {
@@ -204,82 +233,145 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /* ================= REVIEW MODAL (FULL REVIEW UI) ================= */
-  async openReview(listingId: number) {
+async openReview(listingId: number) {
+  try {
     this.loading = true;
-    try {
-      const res: any = await this.adminService.getListingById(listingId);
-      const listing = res.data;
+    const res: any = await this.adminService.getListingById(listingId);
 
-      this.reviewListing = listing;
-      this.reviewMainCatId = listing.category.id;
-      this.reviewMainCatName = listing.category.name;
+    const listing = res.data;
 
-      this.reviewImages = listing.images?.map((i: any) => i.imageUrl) || [];
-      this.reviewModel = this.mapApiListingToReviewModel(listing);
+    this.reviewListing = listing;
+    this.reviewMainCatId = listing.category.id;
+    this.reviewMainCatName = listing.category.name;
 
-      this.showReviewModal = true;
-    } finally {
-      this.loading = false;
-    }
+    this.reviewImages = listing.images?.map((i: any) => i.imageUrl) || [];
+    this.reviewModel = this.mapApiListingToReviewModel(listing);
+
+    this.showReviewModal = true;
+
+  } catch (err: any) {
+    alert(err?.error?.message || 'Failed to load listing details.');
+  } finally {
+    this.loading = false;
   }
+}
 
   /* ================= API → REVIEW MODEL (MATCHES Review Component) ================= */
-  mapApiListingToReviewModel(listing: any) {
-    const a = listing.attributes || {};
+mapApiListingToReviewModel(listing: any) {
 
-    return {
-      title: listing.title,
-      price: listing.price,
+  // Auto-pick correct details object
+  const details =
+    listing.motorDetails ||
+    listing.jobDetails ||
+    listing.propertyDetails ||
+    listing.classifiedDetails ||
+    listing.electronicDetails ||
+    listing.furnitureDetails ||
+    {};
 
-      /* MOTORS */
-      makeModel: `${a.make || ''} ${a.model || ''}`,
-      year: a.year,
-      fuelType: a.fuel_type,
-      transmission: a.transmission,
+  return {
+    /* BASIC */
+    title: listing.title,
+    description: listing.description,
+    price: listing.price,
+    currency: listing.currency || 'AED',
+    isNegotiable: listing.isNegotiable,
 
-      /* ELECTRONICS */
-      brand: a.brand,
-      electronicsModel: a.model,
-      electronicsCondition: a.item_condition,
+    city: listing.city,
+    country: listing.country || 'UAE',
+    address: listing.address,
 
-      /* PROPERTY */
-      saleType: a.listing_type,
-      bedrooms: a.bedrooms,
-      bathrooms: a.bathrooms,
-      area: a.area_sqft,
+    /* CONTACT */
+    contactName: listing.user?.name || '',
+    contactPhone: listing.contactPhone || '',
+    contactEmail: listing.contactEmail || '',
+    contactWhatsapp: listing.contactWhatsapp || '',
 
-      /* CLASSIFIEDS / FURNITURE */
-      itemCondition: a.item_condition,
-      material: a.material,
 
-      /* JOBS */
-      jobTitle: a.job_title,
-      companyName: a.company_name,
-      industry: a.industry,
-      jobType: a.job_type,
-      experience: a.experience,
-      salaryMin: a.salary_min,
-      salaryMax: a.salary_max,
-      jobDescription: a.job_description,
-      responsibilities: a.responsibilities,
-      requirements: a.requirements,
-      benefits: a.benefits,
+    /* =========== MOTORS =========== */
+    make: details.make || '',
+    model: details.model || '',
+    variant: details.variant || '',
+    motor_type: details.motorType || '',
 
-      /* CONTACT */
-      name: listing.user?.name,
-      phone: listing.contactPhone,
-      companyWebsite: a.company_website
-    };
-  }
+    year: details.year || null,
+    kilometres: details.kilometres || null,
+    transmission: details.transmission || '',
+    fuelType: details.fuelType || '',
+    bodyType: details.bodyType || '',
+    color: details.color || '',
+    serviceHistory: details.serviceHistory || false,
+
+
+    /* =========== ELECTRONICS / CLASSIFIEDS / FURNITURE =========== */
+    subCategory: details.subCategory || '',
+
+    brand: details.brand || '',
+    modelName: details.model || details.modelName || '',
+    condition: details.condition || '',
+    storage: details.storage || '',
+    material: details.material || '',
+
+
+    /* =========== PROPERTY =========== */
+    listingType: details.listingType || '',
+    propertyType: details.propertyType || '',
+    areaSqft: details.areaSqft || details.areaSqft || null,
+    bedrooms: details.bedrooms || 0,
+    bathrooms: details.bathrooms || 0,
+    halls: details.halls || 0,
+    furnishing: details.furnishing || '',
+    rentFrequency: details.rentFrequency || '',
+    amenities: details.amenities || [],
+
+
+    /* =========== JOBS =========== */
+    jobTitle: details.jobTitle || '',
+    companyName: details.companyName || '',
+    industry: details.industry || '',
+    jobType: details.jobType || '',
+    workplaceType: details.workplaceType || '',
+
+    experienceMin: details.experienceMin || null,
+    experienceMax: details.experienceMax || null,
+
+    salaryMin: details.salaryMin || null,
+    salaryMax: details.salaryMax || null,
+    salaryPeriod: details.salaryPeriod || 'Monthly',
+
+    skillsRequired: details.skillsRequired || [],
+    responsibilities: details.responsibilities || [],
+    applicationEmail: details.applicationEmail || ''
+  };
+}
+
+
 
   /* ================= USERS ================= */
-  async loadUsers(page: number) {
-    this.userPage = page;
-    const res: any = await this.adminService.getUsers(page, this.limit);
-    this.users = res?.data || [];
-    this.userTotalPages = Math.max(1, Math.ceil((res.pagination?.total || 0) / this.limit));
-    this.userCount = res.pagination?.total || 0;
+ /* ================= USERS ================= */
+async loadUsers(page: number = 1) {
+  try {
+    this.loading = true;
+
+    const res: any = await this.adminService.getUsers(1, 99);
+    const raw = res?.data || [];
+
+    this.userCount = raw.length;
+    this.userTotalPages = Math.max(1, Math.ceil(raw.length / this.limit));
+    this.userPage = Math.min(page, this.userTotalPages);
+
+    const start = (this.userPage - 1) * this.limit;
+    const end = start + this.limit;
+
+    this.users = raw.slice(start, end);
+
+  } catch (err: any) {
+    alert(err?.error?.message || 'Failed to load users.');
+  } finally {
+    this.loading = false;
   }
+}
+
 
   /* ================= REPORTS ================= */
   async loadReports(page: number) {
@@ -299,12 +391,17 @@ export class AdminDashboardComponent implements OnInit {
     this.reportTotalPages = Math.max(1, Math.ceil(this.reportCount / this.limit));
   }
 
-  async remove(listingId: number) {
+ async remove(listingId: number) {
+  try {
     await this.listingService.deleteListing(listingId);
     this.triggerToast('Listing removed');
     this.loadReports(this.reportPage);
     this.updateCounts();
+  } catch (err: any) {
+    alert(err?.error?.message || 'Failed to delete listing.');
   }
+}
+
 
   /* ================= COUNTS ================= */
   async updateCounts() {

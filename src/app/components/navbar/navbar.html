@@ -29,6 +29,12 @@
 
         <ng-container *ngIf="!isAdmin">
 
+          <li class="nav-item text-center px-2" routerLink="/home">
+  <i class="bi bi-house d-block nav-icon"></i>
+  <small class="nav-label">Home</small>
+</li>
+
+
           <li class="nav-item text-center px-2" *ngIf="user"
               (click)="navigateToFavourites()">
             <i class="bi bi-heart d-block"></i>
@@ -54,15 +60,13 @@
             </button>
           </li>
 
-          <li class="nav-item ms-lg-3 cursor-pointer" *ngIf="user" (click)="toggleOverlay()">
-            <div class="d-flex align-items-center gap-2">
-               <!-- <img [src]="user.avatarUrl || 'assets/default-avatar.png'" 
-                   alt="User" 
-                   class="rounded-circle border"
-                   style="width: 40px; height: 40px; object-fit: cover;"> -->
-              <span class="fw-bold text-dark">{{ user.name }}</span>
-            </div>
-          </li>
+    <li class="nav-item ms-lg-3 cursor-pointer" *ngIf="user" (click)="toggleOverlay()">
+  <div class="user-pill">
+    <i class="bi bi-person"></i>
+    <span>{{ user.name }}</span>
+  </div>
+</li>
+
 
           <li class="nav-item">
             <button class="btn btn-warning text-white fw-bold px-4"
@@ -153,7 +157,7 @@
 
       <div class="profile-header-card text-center mb-4">
         <div class="avatar-container mx-auto position-relative">
-          <img [src]="user?.avatarUrl || 'assets/default-avatar.png'" 
+          <img [src]="user?.avatarUrl || 'assets/images/avatarUrl.jpg'" 
                class="rounded-circle img-thumbnail shadow-sm mb-3" 
                style="width: 120px; height: 120px; object-fit: cover;">
         </div>
@@ -191,7 +195,7 @@
       <div class="text-center mb-4">
         <div class="avatar-edit-wrapper mx-auto mb-2 position-relative cursor-pointer" 
              (click)="!isUploading && triggerFileInput()">
-          <img [src]="user?.avatarUrl || 'assets/default-avatar.png'" 
+          <img [src]="user?.avatarUrl || 'assets/images/avatarUrl.jpg'" 
                class="rounded-circle img-thumbnail" 
                [style.opacity]="isUploading ? '0.5' : '1'"
                style="width: 110px; height: 110px; object-fit: cover;">
@@ -266,27 +270,32 @@
             <i class="bi bi-shield-lock text-warning"></i>
             <span>Privacy Settings</span>
           </div>
-          <i class="bi bi-chevron-down"></i>
+           <div class="form-check form-switch p-0 m-0">
+    <input class="form-check-input custom-toggle" 
+           type="checkbox" 
+           role="switch" 
+           id="notificationToggle">
+  </div>
         </div>
 
         <div class="settings-item">
           <div class="d-flex align-items-center gap-3">
             <i class="bi bi-info-circle text-warning"></i>
-            <span>About Us</span>
+            <span routerLink="/about-us">About Us</span>
           </div>
         </div>
 
         <div class="settings-item">
           <div class="d-flex align-items-center gap-3">
             <i class="bi bi-file-earmark-text text-warning"></i>
-            <span>Privacy Policy</span>
+            <span routerLink="/privacy-policy">Privacy Policy</span>
           </div>
         </div>
 
         <div class="settings-item">
           <div class="d-flex align-items-center gap-3">
             <i class="bi bi-exclamation-triangle text-warning"></i>
-            <span>Terms and Conditions</span>
+            <span routerLink="/terms-of-use">Terms and Conditions</span>
           </div>
         </div>
 

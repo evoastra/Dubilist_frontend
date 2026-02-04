@@ -316,6 +316,9 @@ export class AddPostComponent implements OnInit {
       user_details: {
         title: this.model.title,
         category: this.mainCategoryName,
+        brand: this.model.brand || '',
+        model: this.model.modelName || '',
+        colour: this.model.colour || '',
         price: this.model.price,
         city: this.model.city
       }
