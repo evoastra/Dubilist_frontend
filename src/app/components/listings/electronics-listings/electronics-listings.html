@@ -205,7 +205,7 @@
 
           <div class="main-image">
             <img
-              [src]="selectedListing.images[currentImageIndex]"
+              [src]="selectedListing.images[currentImageIndex].imageUrl || selectedListing.image"
               [alt]="selectedListing.title" />
           </div>
 

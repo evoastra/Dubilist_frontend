@@ -115,7 +115,6 @@
 
 /* Detail Content Layout */
 .detail-content {
-
   display: grid;
   grid-template-columns: 1fr 360px;
   gap: 24px;
@@ -131,9 +130,7 @@
 .image-carousel {
   position: relative;
   border-radius: 12px;
-  overflow: hidden;
   background: #f8f9fa;
-  aspect-ratio: 16/10;
 }
 
 .main-image {
@@ -142,9 +139,9 @@
 }
 
 .main-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+ width: 80%;
+  height: 80%;
+  object-fit: contain;
 }
 
 .carousel-btn {
@@ -564,7 +561,11 @@
 /* ================= FAVORITE BUTTON (LISTING CARD) ================= */
 
 .card-image {
-  position: relative; /* REQUIRED */
+  padding: 20px;
+  width: 70%;
+  height: 100%;
+  overflow: hidden;
+  background: #f8f9fa;
 }
 
 .favorite-btn {
@@ -888,6 +889,7 @@
 }
 
 /* Loading State */
+
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -1010,6 +1012,7 @@
   }
 
   .detail-container {
+    margin: 40px;
     padding: 20px;
   }
 
@@ -1057,7 +1060,6 @@
   }
 
   .detail-container {
-    padding: 15px;
   }
 
   .price-value {

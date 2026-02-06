@@ -11,6 +11,11 @@ import { ListingsService } from '../../../services/listing-service';
 import { AuthService } from '../../../services/auth-service';
 import { ChatService } from '../../../services/chat-service';
 
+
+interface ElectronicImage {
+  imageUrl: string;
+}
+
 export interface ElectronicsListing {
   id: number;
   title: string;
@@ -19,7 +24,7 @@ export interface ElectronicsListing {
   location: string;
 
   image: string;
-  images: string[];
+  images: ElectronicImage[];
 
   subCategory?: string;
   brand?: string;
@@ -270,6 +275,7 @@ export class ElectronicsListingsComponent implements OnInit {
     this.listingsService.getSingleListing(id).subscribe({
       next: (res: any) => {
         this.selectedListing = this.mapBackendElectronics(res.data);
+        console.log(this.selectedListing);
         this.currentImageIndex = 0;
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },error: (err:any) => {
@@ -408,7 +414,7 @@ export class ElectronicsListingsComponent implements OnInit {
   /* ================= MAPPER ================= */
   mapBackendElectronics(l: any): ElectronicsListing {
     const d = l.electronicDetails;
-    const images = d?.images || [];
+    const images = l?.images || [];
 
     return {
       id: l.id,
@@ -417,8 +423,8 @@ export class ElectronicsListingsComponent implements OnInit {
       currency: l.currency || 'AED',
       location: l.city || 'Dubai',
 
-      image: images[0] || 'assets/no-image.jpg',
-      images: images.length ? images : ['assets/no-image.jpg'],
+      image: images[0]?.imageUrl || 'assets/noImage.jpg',
+      images: images.length ? images : ['assets/noImage.jpg'],
 
       subCategory: d?.subCategory,
       brand: d?.brand,
