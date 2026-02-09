@@ -42,80 +42,136 @@ html {
 /* ==========================================================================
    3. HERO SECTION (Welcome & Emirates)
    ========================================================================== */
-.hero-section {
-  position: relative;
-  background-image: url("/assets/images/landingPage_bg.jpg");
-  background-size: cover;        /* Image always covers */
-  background-position: center;   /* Keep important center part visible */
-  background-repeat: no-repeat;
-  color: #ffffff;
+
+
+.main-wrapper {
+    width: 100%;
+    max-width: 1100px; /* Limits width to match the screenshot */
+    padding: 0 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.hero-section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45); /* Dark overlay for readability */
-  z-index: 0;
+/* --- Banner Styling --- */
+.banner-container {
+    width: 120%;
+    height: 450px;
+    /* Gradient + Image Blend */
+    background:linear-gradient(rgba(226, 196, 148, 0.6), rgba(198, 138, 41, 0.6)),
+                url('/assets/images/landingPage_bg.jpg');
+
+    background-size: cover;
+    background-position: bottom center;
+    border-radius: 16px;
+    padding: 70px 20px 120px 20px; /* Large bottom padding for the overlap */
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(255, 160, 40, 0.15);
 }
 
-.hero-wrapper {
-  min-height: 420px;
-  display: flex;
-  align-items: center;           /* Vertical center */
-  justify-content: center;
-  position: relative;
-  padding: 60px 15px 40px;
+.main-title {
+  margin-top: 60px;
+    color: #2c2c2c; /* Dark Grey */
+    font-size: 2.4rem;
+    font-weight: 750;
+    line-height: 1.25;
+    margin-bottom: 12px;
 }
 
-.hero-text-box {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 850px;
+.subtitle {
+    color: #333;
+    font-size: 1.25rem;
+    font-weight: 700;
 }
 
-/* Headline */
-.hd1,
-.hero-text-box h1 {
-  font-weight: 800;
-  font-size: calc(1.6rem + 1.2vw); /* Responsive font size */
+.description {
+  font-weight: 600;
+    color: #4a4a4a;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-bottom: 40px;
+    opacity: 0.9;
 }
 
-/* Emirate city cards */
+.cta-label {
+    color: #ffffff; /* White text for the question */
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+/* --- Grid Styling --- */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Strict 4 columns */
+    gap: 20px;
+    width: 60%; /* Grid is slightly narrower than banner */
+   
+    position: relative;
+    z-index: 10;
+}
+
 .city-card {
-  border-radius: 0.5rem;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.95);
+  padding: 25px 45px;
+    background-color: white;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+   justify-content: center;
+    color: #333;
+    font-weight: 500;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    border: 5px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
 .city-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.2);
+  color:#ffa500;
   border-color: #ffa500;
-  color:  #ffa500;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
-.city:hover {
-  color: #ffa500;
+/* --- Mobile Responsiveness --- */
+@media (max-width: 992px) {
+    
+.city-card {
+ 
+  padding: 25px 25px;
+}
+    .cards-grid {
+       
+        grid-template-columns: repeat(2, 1fr); /* 2 cols on tablet */
+    }
 }
 
+@media (max-width: 576px) {
+    .main-title { font-size: 1.8rem; }
+    .banner-container { padding-bottom: 120px; }
+    .cards-grid {
+        width: 100%;
+       
+        gap: 12px;
+    }
+}
 /* ==========================================================================
    4. WHY DUBILIST SECTION (Feature Grid)
  /* SECTION BACKGROUND */
 .dubilist-features-section {
   background-color: #f7f7f7;
-  padding: 80px 0;
+  padding: 30px;
 }
 
 /* MAIN WRAPPER: Controls side-by-side layout */
 .features-wrapper {
   max-width: 1300px;
   margin: auto;
-  padding: 20px;
+  padding: 0px;
   display: flex;
-  gap: 50px;
+  gap: 20px;
   align-items: flex-start;  /* IMPORTANT: aligns both top edges */
 }
 
@@ -215,6 +271,9 @@ html {
 /* ==========================================================================
    5. SELLING PROCESS (Steps)
    ========================================================================== */
+.selling-process {
+  background-color: #E6F3EC;
+}
 .steps-container {
   display: flex;
   justify-content: space-around;
@@ -387,4 +446,63 @@ html {
 .btn-warning {
   background-color: #ffa500 !important;
   border-color: #ffa500 !important;
+}
+
+
+
+.landing-section {
+  padding: 50px;
+    background-color: #f8eedc;
+}
+
+.logo-img {
+    width: 55px;
+}
+
+.subtitle {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #444;
+}
+
+.option-box {
+    background: white;
+    border-radius: 12px;
+    padding: 25px ;
+    font-size: 1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.option-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.start-btn {
+    background-color: #ffa500;
+    color: white;
+    padding: 10px 25px;
+    font-size: 1rem;
+    border-radius: 8px;
+}
+
+.start-btn:hover {
+    background-color: #e28e00;
+}
+
+/* RESPONSIVE EXTRA TOUCH */
+@media (max-width: 575px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    h2 {
+        font-size: 1.3rem;
+    }
+    .option-box {
+        padding: 14px 0;
+        font-size: 0.95rem;
+    }
 }

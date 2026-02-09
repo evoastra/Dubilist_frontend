@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from "@angular/router";
 @Component({
   selector: 'app-landing-page',
-  imports: [NgFor, RouterLink,CommonModule],
+  imports: [ RouterLink,CommonModule],
   templateUrl: './landing-page.html',
   styleUrl: './landing-page.css',
 })

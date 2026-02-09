@@ -18,6 +18,7 @@ export class ChatComponent implements OnInit {
 
   selectedRoom: any = null;
   messageText = '';
+  searchQuery = '';
 
   isLoadingRooms = false;
   isLoadingMessages = false;
@@ -39,6 +40,18 @@ export class ChatComponent implements OnInit {
     this.loadChatRooms();
   }
 
+
+  onSearch(): void {
+    if (!this.searchQuery.trim()) {
+      this.loadChatRooms();
+      return;
+    }
+    const query = this.searchQuery.toLowerCase();
+    this.rooms = this.rooms.filter(room => {
+      const otherUser = room.users.find((u: any) => u.id !== this.currentUserId);
+      return otherUser && otherUser.name.toLowerCase().includes(query);
+    }); 
+  }
   /* ======================
      LOAD CHAT ROOMS
      ====================== */
@@ -124,4 +137,9 @@ export class ChatComponent implements OnInit {
       el.scrollTop = el.scrollHeight;
     }
   }
+  closeChat(): void {
+    this.selectedRoom = null;
+    this.messages = []; // Optional: clear messages to avoid flash
+  }
+  
 }

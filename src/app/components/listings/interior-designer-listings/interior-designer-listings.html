@@ -127,7 +127,7 @@
 
       <div class="card-body p-4">
         <div class="d-flex align-items-center gap-4 mb-5">
-          <div class="position-relative">
+          <!-- <div class="position-relative">
             <div class="profile-upload-circle" (click)="profileFile.click()">
               <img *ngIf="profilePreview" [src]="profilePreview" class="profile-img-preview">
               <div *ngIf="!profilePreview" class="upload-placeholder">
@@ -136,7 +136,7 @@
             </div>
             <input type="file" #profileFile hidden (change)="onProfileImageSelected($event)" accept="image/*">
             <p class="text-center text-primary-custom small fw-bold mt-2" style="cursor: pointer;" (click)="profileFile.click()">Tap to Upload</p>
-          </div>
+          </div> -->
 
           <div class="flex-grow-1">
             <div class="row g-3">
@@ -158,8 +158,9 @@
         <div class="mb-4">
           <label class="form-label small fw-bold">Bio</label>
           <textarea class="form-control bg-light border-0" rows="3" 
-            placeholder="Tell Client about your designs, Philosophy and Background" [(ngModel)]="profileForm.bio"></textarea>
+            placeholder="Tell Client about your designs, Philosophy and Background(Min 60 characters)" [(ngModel)]="profileForm.bio"></textarea>
         </div>
+       
 
         <hr class="my-4 text-muted opacity-25">
 
@@ -169,7 +170,7 @@
           <label class="form-label small fw-bold text-muted">Specialization style</label>
           <div class="d-flex flex-wrap gap-2">
             <button *ngFor="let s of styles" 
-              class="btn btn-outline-dark rounded-pill px-4 py-1" 
+              class="btn btn-outline-warning rounded-pill px-4 py-1" 
               [class.active-pill]="profileForm.specializations.includes(s)"
               (click)="toggleStyle(s)">{{ s }}</button>
           </div>
@@ -359,19 +360,27 @@
             <div *ngIf="myRequests.length === 0" class="text-center py-3">No requests found.</div>
             <ul class="list-group">
               <li *ngFor="let r of myRequests" class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                  <strong>{{ r.designer.user.name }}</strong><br>
-                  <button
+
+                 <div class="d-flex">
+                    <img [src]="r.designer.user.avatarUrl || 'assets/images/avatarUrl.jpg'" alt="Designer Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                 <div class="d-flex flex-column">
+<strong>{{ r.designer.user.name }}</strong>
+              <button class="btn btn-sm btn-outline-secondary" (click)="openDesignerDetail(r.designer.id);showRequestsModal=false" >View Profile</button>
+
+                 </div>
+                 </div>
+                
+                  
+                
+                 <button
   class="btn"
   [ngClass]="{
     'btn-warning': r.status === 'pending',
-    'btn-success': r.status === 'approved',
+    'btn-success': r.status === 'confirmed',
     'btn-danger' : r.status === 'rejected'
   }">
   {{ r.status }}
 </button>
-                </div>
-                <button class="btn btn-sm btn-warning" (click)="openDesignerDetail(r.designer.id);showRequestsModal=false" >View Profile</button>
               </li>
             </ul>
           </div>
@@ -390,19 +399,30 @@
             <div *ngIf="myRequests.length === 0" class="text-center py-3">No requests found.</div>
             <ul class="list-group">
               <li *ngFor="let r of myConsultantions" class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                  <strong>{{ r.user.name }}</strong><br>
-                  <button
+                
+               
+
+
+                
+                 <div class="d-flex">
+                    <img [src]="r.user.avatarUrl || 'assets/images/avatarUrl.jpg'" alt="Client Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                 <div class="d-flex flex-column">
+<strong>{{ r.user.name }}</strong>
+ <button class="btn btn-sm btn-warning" (click)="showClientDetailModal=true;selectedRequest=r" >View Request</button>
+                 </div>
+                 </div>
+                
+                  
+                
+                 <button
   class="btn"
   [ngClass]="{
     'btn-warning': r.status === 'pending',
-    'btn-success': r.status === 'approved',
+    'btn-success': r.status === 'confirmed',
     'btn-danger' : r.status === 'rejected'
   }">
   {{ r.status }}
 </button>
-                </div>
-                <button class="btn btn-sm btn-warning" (click)="showClientDetailModal=true;selectedRequest=r" >View Profile</button>
               </li>
             </ul>
           </div>
@@ -460,8 +480,8 @@
 
             <div class="d-flex gap-2 mt-5">
               <button class="btn btn-light-orange fw-bold flex-grow-1" (click)="openChat()">Message Client</button>
-              <button class="btn btn-light fw-bold border flex-grow-1" (click)="updateRequestStatus(selectedRequest, 'rejected')">Reject</button>
-              <button class="btn btn-primary-custom fw-bold flex-grow-1" (click)="updateRequestStatus(selectedRequest, 'accepted')">Accept Consultation</button>
+              <button *ngIf="selectedRequest?.status === 'pending'" class="btn btn-light fw-bold border flex-grow-1" (click)="updateRequestStatus(selectedRequest, 'rejected')">Reject</button>
+              <button *ngIf="selectedRequest?.status === 'pending'" class="btn btn-primary-custom fw-bold flex-grow-1" (click)="updateRequestStatus(selectedRequest, 'accepted')">Accept Consultation</button>
             </div>
           </div>
         </div>
@@ -507,5 +527,19 @@
     <i class="bi" [ngClass]="alert.type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'"></i>
     <span class="ms-2">{{ alert.message }}</span>
     <button type="button" class="btn-close btn-close-white" (click)="removeAlert(alert)"></button>
+  </div>
+</div>
+
+<div class="modal-backdrop-custom d-flex align-items-center justify-content-center" *ngIf="showRejectModal">
+  <div class="bg-white p-4 rounded-4 shadow-lg animate-fade-in" style="width: 420px; z-index: 6000;">
+    <h5 class="fw-bold text-danger mb-3">Reject Consultation Request</h5>
+    <p class="small text-muted mb-3">Please specify the reason for rejecting this consultation request. This will be sent to the client.</p>
+    <textarea class="form-control mb-3 bg-light border-0" rows="4" [(ngModel)]="rejectionReason" placeholder="Reason (e.g., Unavailable, Not interested...)"></textarea>
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-light rounded-pill px-4" (click)="showRejectModal=false">Cancel</button>
+      <button class="btn btn-danger rounded-pill px-4" (click)="submitReject()" [disabled]="!rejectionReason.trim()">
+        Confirm Rejection
+      </button>
+    </div>
   </div>
 </div>

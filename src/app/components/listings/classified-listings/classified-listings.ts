@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 
 import { ListingsService } from '../../../services/listing-service';
 import { AuthService } from '../../../services/auth-service';
+import { ChatService } from '../../../services/chat-service';
 
 export interface ClassifiedsListing {
   id: number;
@@ -93,6 +94,7 @@ export class ClassifiedListingsComponent implements OnInit {
   constructor(
     private listingsService: ListingsService,
     private authService: AuthService,
+    private chatService: ChatService,
     private router: Router
   ) {}
 
@@ -256,6 +258,23 @@ export class ClassifiedListingsComponent implements OnInit {
   
   }
 
+  startChatWithSeller(listing: ClassifiedsListing): void {
+      if (!this.isLoggedIn) {
+        this.router.navigate(['/auth/login']);
+        return;
+      }
+  
+      this.chatService.createOrGetRoom(listing.id).subscribe({
+        next: (res: any) => {
+          const roomId = res?.data?.id;
+          if (roomId) {
+            this.router.navigate(['/my-chats'], {
+              queryParams: { roomId }
+            });
+          }
+        }
+      });
+    }
   closeDetail(): void {
     if (this.showReportModal) return;
     this.selectedListing = null;

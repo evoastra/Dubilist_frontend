@@ -134,8 +134,20 @@ isConditionSelected(_: string): boolean {
 
 // Apply / Search
 applyFilters(): void {}
-onSearch(): void {}
 
+
+  onSearch(): void {
+     let data = [...this.allListings];
+      if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      data = data.filter(
+        l =>
+          l.title.toLowerCase().includes(q)
+      );
+    }
+     this.filteredListings = data;
+    this.resetPagination();
+  }
 
   constructor(
     private listingsService: ListingsService,

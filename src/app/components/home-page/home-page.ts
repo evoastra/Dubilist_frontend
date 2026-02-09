@@ -34,6 +34,8 @@ export class HomePage {
     'Furniture'
   ];
 
+  showCmgSoon = false; 
+
   categoryMap: Record<string, number | null> = {
     All: null,
     Properties: 3,
@@ -115,6 +117,15 @@ export class HomePage {
   clearSearch(): void {
     this.hasSearched = false;
     this.searchResults = [];
+  }
+
+  openCmgSoon(): void {
+    this.showCmgSoon = true;
+    setTimeout(() => {    
+      this.showCmgSoon = false;
+    }, 3000);
+
+
   }
 
   /* ===================== HOME DATA ===================== */

@@ -140,7 +140,7 @@
 }
 
 /* PILL STYLING */
-.btn-outline-dark.active-pill {
+.btn-outline-warning.active-pill {
   background-color: #fff !important;
   border-color: #000 !important;
   color: #000 !important;

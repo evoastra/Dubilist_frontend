@@ -23,7 +23,6 @@ export interface PropertyListing {
 
   image: string;
   images: PropertyImage[];
-
   propertyType?: string;
   furnishing?: string;
   bedrooms?: number;
@@ -160,39 +159,7 @@ onWindowScroll(): void {
   }
 
   /* ===================== FILTERS ===================== */
-  applyFilters(): void {
-    let data = [...this.allListings];
-
-    if (this.searchQuery.trim()) {
-      const q = this.searchQuery.toLowerCase();
-      data = data.filter(l =>
-        l.title.toLowerCase().includes(q) ||
-        l.location.toLowerCase().includes(q)
-      );
-    }
-
-    if (this.selectedPropertyTypes.length) {
-      data = data.filter(
-        l => l.propertyType && this.selectedPropertyTypes.includes(l.propertyType)
-      );
-    }
-
-    if (this.selectedFurnishing !== 'any') {
-      data = data.filter(
-        l => l.furnishing?.toLowerCase() === this.selectedFurnishing
-      );
-    }
-
-    if (this.selectedAmenities.length) {
-      data = data.filter(l =>
-        this.selectedAmenities.every(a => l.amenities?.includes(a))
-      );
-    }
-
-    this.paginatedListings = data;
-    this.resetPagination();
-  }
-
+applyFilters(): void {}
   togglePropertyType(type: string): void {
     const i = this.selectedPropertyTypes.indexOf(type);
     i >= 0
@@ -259,7 +226,17 @@ submitReport(): void {
   }
 
   onSearch(): void {
-    this.applyFilters();
+     let data = [...this.allListings];
+     if (this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase();
+    data = data.filter(l =>
+      l.title?.toLowerCase().includes(q) ||
+    
+      l.description?.toLowerCase().includes(q)
+    );
+  }
+     this.filteredListings = data;
+    this.resetPagination();
   }
 
   /* ===================== PAGINATION ===================== */

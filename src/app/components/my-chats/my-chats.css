@@ -1,23 +1,39 @@
 /* ===== Layout ===== */
-.chat-wrapper {
-  min-height: calc(100vh - 80px);
+:host {
+  display: block;
+  /* Adjust 80px based on your navbar height */
+  height: calc(100vh - 80px); 
+  overflow: hidden; 
 }
 
 .cont {
-  padding-top: 80px;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding-top: 60px; /* Space from top navbar */
+  height: 100%;
 }
 
-/* ===== Chat List ===== */
-.chat-list {
+.chat-wrapper {
+  height: 100%;
+  background: #fff;
+  overflow: hidden; /* Prevents double scrollbars */
+  border: 1px solid #ddd; /* Optional border for the whole widget */
+}
+
+/* ===== Left Column (List) ===== */
+.chat-list-column {
   background: #f8f9fa;
   height: 100%;
-  overflow-y: auto;
+  /* Flex magic for independent scrolling */
+  display: flex;
+  flex-direction: column; 
 }
 
-.chat-users {
-  overflow-y: auto;
+.chat-list-header {
+  flex-shrink: 0; /* Header stays fixed size */
+}
+
+.chat-list-body {
+  flex-grow: 1; /* Takes up remaining space */
+  overflow-y: auto; /* Scrolls internally */
 }
 
 .chat-user {
@@ -27,43 +43,38 @@
   cursor: pointer;
   align-items: center;
   border-bottom: 1px solid #eee;
+  transition: background 0.2s;
 }
 
 .chat-user:hover,
 .chat-user.active {
-  background-color: #fff3cd;
+  background-color: #fff3cd; /* Your yellow highlight */
 }
 
-/* ===== Avatar ===== */
-.avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-/* ===== Chat Window ===== */
-.chat-window {
+/* ===== Right Column (Window) ===== */
+.chat-window-column {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
   background: #fff;
 }
 
 .chat-header {
-  display: flex;
-  align-items: center;
-  background: #fff;
+  height: 70px;
+  flex-shrink: 0;
 }
 
-/* ===== Messages ===== */
 .chat-messages {
-  flex: 1;
+  flex-grow: 1;
   overflow-y: auto;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  background-color: #fff;
 }
 
+.chat-input {
+  flex-shrink: 0;
+}
+
+/* ===== Message Bubbles ===== */
 .message {
   display: flex;
   margin-bottom: 10px;
@@ -75,37 +86,45 @@
 }
 
 .bubble {
-  max-width: 70%;
+  max-width: 75%;
   padding: 10px 14px;
   border-radius: 18px;
   background-color: #f1f0f0;
   position: relative;
+  word-wrap: break-word;
 }
 
 .message.me .bubble {
-  background-color: #fff3cd;
+  background-color: #fff3cd; /* Sent yellow */
   border: 1px solid #ffeeba;
   color: #856404;
 }
 
-.time {
-  display: block;
-  font-size: 0.7rem;
-  margin-top: 4px;
-  opacity: 0.6;
+.avatar {
+  width: 45px;
+  height: 45px;
+  min-width: 45px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
-/* ===== Input ===== */
-.chat-input {
-  display: flex;
-  align-items: center;
-  background: #fff;
+.small-time {
+  font-size: 0.75rem;
+  white-space: nowrap;
 }
 
-/* ===== Mobile ===== */
+/* ===== Mobile Tweaks ===== */
 @media (max-width: 768px) {
+  :host {
+    height: 100dvh; /* Dynamic Viewport Height for mobile browsers */
+  }
+  
+  .cont {
+    padding-top: 60px; /* Full screen on mobile */
+  }
+  
   .chat-wrapper {
-    min-height: calc(100vh - 60px);
+    border: none;
   }
 
   .bubble {

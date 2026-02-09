@@ -88,15 +88,15 @@
       </div>
 
       <!-- SEARCH -->
-      <div class="search-container">
+       <div class="search-container">
         <i class="bi bi-search"></i>
         <input
-          class="search-input"
-          placeholder="Search electronics..."
+          type="text"
           [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()" />
+          (keyup.enter)="onSearch()"
+          placeholder="Search electronics..."
+          class="search-input">
       </div>
-
       <!-- ===================== -->
       <!-- SKELETON LOADER -->
       <!-- ===================== -->

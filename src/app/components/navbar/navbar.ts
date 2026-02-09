@@ -24,14 +24,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   // --- Profile Overlay & UI States ---
   isOverlayOpen = false;
-  activeTab: 'profile' | 'settings' = 'profile';
+activeTab: 'profile' | 'settings' | 'edit' | 'changePassword' = 'profile';
+
   isEditingProfile = false;
   isUploading = false; // Loading spinner for image upload
 
   // --- Toast Notification State ---
   showToast = false;
   toastMessage = '';
-
+  activeTabTitle = 'My Profile';
   // Form model for editing profile
   editForm = {
     name: '',
@@ -64,12 +65,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     });
 
     // Initial sync check
-    const currentUser = this.authService.getCurrentUser();
-    this.user = currentUser;
-    this.isAdmin = currentUser?.role === 'admin';
-    if (currentUser) {
-      this.resetEditForm();
-    }
+   // Always fetch fresh user data from backend
+
+
 
     /* =========================
        ROUTE CHANGE DETECTION
@@ -101,17 +99,40 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   toggleOverlay(): void {
     this.isOverlayOpen = !this.isOverlayOpen;
+    this.authService.getMe().subscribe({
+  next: (res) => {
+    if (res.success) {
+      this.user = res.data;
+      this.isAdmin = res.data.role === 'admin';
+      this.resetEditForm();
+    }
+  },
+  error: () => {
+    this.user = null;
+    this.isAdmin = false;
+  }
+});
     if (!this.isOverlayOpen) {
       this.activeTab = 'profile';
       this.isEditingProfile = false;
     }
   }
+  
 
-  switchTab(tab: 'profile' | 'settings'): void {
-    this.activeTab = tab;
-    this.isEditingProfile = false;
-  }
+  // switchTab(tab: 'profile' | 'settings'): void {
+  //   this.activeTab = tab;
+  //   this.isEditingProfile = false;
+  // }
 
+  switchTab(tab: any) {
+  this.activeTab = tab;
+
+  this.activeTabTitle =
+    tab === 'profile' ? 'My Profile' :
+    tab === 'edit' ? 'Edit Profile' :
+    tab === 'settings' ? 'Account Settings' :
+    tab === 'changePassword' ? 'Change Password' : '';
+}
   enterEditMode(): void {
     this.isEditingProfile = true;
     this.resetEditForm();

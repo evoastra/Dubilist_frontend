@@ -136,20 +136,20 @@ async loadListings(page: number = 1) {
       createdDate: item.createdAt,
       displayImage: item.images?.[0]?.imageUrl || 'assets/images/no-image.png'
     }));
-
+   
     // Apply category filter
     this.listings =
       this.selectedCategory === 'All'
         ? mapped
         : mapped.filter(i => i.categoryName === this.selectedCategory);
-
-    // Client-side pagination
-    this.listTotalPages = Math.max(1, Math.ceil(this.listings.length / this.limit));
-    this.listPage = Math.min(this.listPage, this.listTotalPages);
-
+   
+    const total = this.listings.length;
+    this.listTotalPages = Math.max(1, Math.ceil(total / this.limit));
+    this.listPage = Math.min(page, this.listTotalPages);
     const start = (this.listPage - 1) * this.limit;
-    const end = start + this.limit;
-    this.listings = this.listings.slice(start, end);
+    this.listings = this.listings.slice(start, start + this.limit);
+
+    
 
   } catch (err: any) {
     alert(err?.error?.message || 'Failed to load listings.');

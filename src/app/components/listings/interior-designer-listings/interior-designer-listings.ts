@@ -54,7 +54,8 @@ minBookingDate = new Date().toISOString().split('T')[0];
     yearsExperience: 1,
     hourlyRate: 0,
     profileImage: '',
-    portfolio: []
+    portfolio: [],
+    photos: []
   };
 
   profilePreview: string | null = null;
@@ -69,6 +70,9 @@ minBookingDate = new Date().toISOString().split('T')[0];
     time: '',
      address: ''
   };
+
+  showRejectModal = false;
+  rejectionReason = '';
 
   constructor(
     private designerService: DesignerService,
@@ -276,14 +280,18 @@ minBookingDate = new Date().toISOString().split('T')[0];
         this.loadMyBookings();
       });
     } else {
-      const reason = prompt('Reason for rejection?');
-      if (!reason) return;
-      this.designerService.rejectBooking(req.id, { reason }).subscribe(() => {
+      this.selectedRequest = req;
+     this.showRejectModal = true;
+    }}
+   
+    submitReject() {
+       this.designerService.rejectBooking(this.selectedRequest.id, { reason: this.rejectionReason }).subscribe(() => {
         this.showAlert('Booking rejected', 'success');
         this.loadMyBookings();
       });
     }
-  }
+
+
 
   /* ================= PROFILE ================= */
 
@@ -352,7 +360,7 @@ onPortfolioSelected(event: any) {
   this.designerService.uploadMultipleImages(files, 'portfolio').subscribe({
     next: (res: any) => {
       const urls = (res?.data || []).map((i: any) => i.url);
-      this.profileForm.portfolio.push(...urls);
+      this.profileForm.photos.push(...urls);
       this.showAlert('Portfolio images uploaded', 'success');
     },
     error: (err) => {

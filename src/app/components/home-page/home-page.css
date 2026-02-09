@@ -1,7 +1,6 @@
 /* ===== Hero / search section ===== */
 
 .hero-section {
-  margin: 16px;
   background: url('/assets/images/homePage_bg.jpg');
   background-size: cover;
   background-position: center;
@@ -51,14 +50,13 @@
 /* ===== Post an ad banner ===== */
 
 .add-post {
-  margin-left: 0;
-  margin-right: 0;
+  padding: 25px;
   border-radius: 20px;
 }
 
 @media (min-width: 768px) {
   .search_section{
-    margin-top: 40px;
+    margin-top: 80px;
   }
   .add-post {
     margin-left: 40px;
@@ -69,7 +67,8 @@
 /* ===== Interior designer banner ===== */
 
 .designer-banner {
-  background-color: #fff;
+  background-color: rgba(255, 165, 0, 0.2); /* Semi-transparent orange background */
+
 }
 
 /* ===== Browse by category ===== */
@@ -105,6 +104,9 @@
 .category-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.int-img{
+  height: 120px;
 }
 
 .category-card img {
@@ -219,3 +221,47 @@
   background-color: #ffa500 !important;
   border-color: #ffa500 !important;
 }
+@media (max-width:767px) 
+{
+ .search_section{
+  margin-top: 80px;
+  padding: 10px;
+ } 
+
+  
+ 
+}
+
+.cmg-soon-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.cmg-soon-content {
+  background-color: #fff;
+  padding: 30px 50px;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+.cmg-close-btn {
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+}
+
+.cmg-close-btn:hover {
+  color: #ff0000;
+}
+.interior_design_section{
+  margin: 30px;
+}
+
