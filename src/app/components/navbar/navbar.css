@@ -369,6 +369,21 @@
   height: 1.25rem !important;
   cursor: pointer;
 }
+.styled-lang {
+  width: 150px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  background-color: #f8f9fa;
+  border: 1px solid #dcdcdc;
+  cursor: pointer;
+}
+
+.styled-lang option {
+  font-weight: 600;
+  padding: 8px;
+}
+
 
 .custom-toggle:checked {
   background-color: #ffa500;

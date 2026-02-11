@@ -2,8 +2,8 @@
   <!-- LEFT: Promo / Image -->
   <section class="promo">
     <div class="promo-inner">
-      <h2>Turn your clutter into cash.</h2>
-      <p>Join millions of people buying and selling locally on Dubilist today.</p>
+      <h2>{{ 'TURN_YOUR_CLUTTER_INTO_CASH_' | translate }}</h2>
+      <p>{{ 'JOIN_MILLIONS_OF_PEOPLE_BUYING_AND_SELLI' | translate }}</p>
 
       <div class="art" aria-hidden="true"></div>
     </div>
@@ -16,12 +16,12 @@
         <img src="assets/images/logo.png" alt="Dubilist Logo" class="logo" />
       </div>
 
-      <h1 class="title">Welcome Back</h1>
-      <p class="subtitle">Log in to manage your findings and discoveries</p>
+      <h1 class="title">{{ 'WELCOME_BACK' | translate }}</h1>
+      <p class="subtitle">{{ 'LOG_IN_TO_MANAGE_YOUR_FINDINGS_AND_DISCO' | translate }}</p>
 
       <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
         <div class="field">
-          <label>Email ID</label>
+          <label>{{ 'EMAIL_ID' | translate }}</label>
           <input
             type="email"
             name="email"
@@ -30,13 +30,11 @@
             required
             email
           />
-          <div class="error" *ngIf="f.submitted && !model.email.trim()">
-            Email is required.
-          </div>
+          <div class="error" *ngIf="f.submitted && !model.email.trim()">{{ 'EMAIL_IS_REQUIRED_' | translate }}</div>
         </div>
 
         <div class="field">
-          <label>Password</label>
+          <label>{{ 'PASSWORD' | translate }}</label>
           <div class="password">
             <input
               [type]="showPassword ? 'text' : 'password'"
@@ -52,9 +50,7 @@
           </div>
 
           <!-- <div class="row-actions">
-            <a class="forgot" routerLink="/forgot-password">
-              Forgot Password?
-            </a>
+            <a class="forgot" routerLink="/forgot-password">{{ 'FORGOT_PASSWORD_' | translate }}</a>
           </div> -->
 
           <div class="error" *ngIf="f.submitted && model.password.length < 6">
@@ -62,14 +58,12 @@
           </div>
         </div>
 
-        <div class="helper">
-          New to Dubilist?
-          <a routerLink="/auth/signUp">Sign Up</a>
+        <div class="helper">{{ 'NEW_TO_DUBILIST_' | translate }}<a routerLink="/auth/signUp">{{ 'SIGN_UP' | translate }}</a>
         </div>
 
         <button class="cta" type="submit" [disabled]="isLoading || !f.valid">
-          <span *ngIf="!isLoading">Log in</span>
-          <span *ngIf="isLoading">Logging in...</span>
+          <span *ngIf="!isLoading">{{ 'LOG_IN' | translate }}</span>
+          <span *ngIf="isLoading">{{ 'LOGGING_IN_' | translate }}</span>
         </button>
       </form>
     </div>
@@ -93,7 +87,7 @@
     <p class="modal-message">{{ modalMessage }}</p>
 
     <div class="modal-actions">
-      <button class="btn btn-secondary" (click)="closeModal()">OK</button>
+      <button class="btn btn-secondary" (click)="closeModal()">{{ 'OK' | translate }}</button>
     </div>
   </div>
 </div>

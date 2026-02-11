@@ -2,9 +2,9 @@
   <!-- Left promo panel -->
   <section class="promo">
     <div class="promo-overlay">
-      <div class="badge">MARKETPLACE</div>
-      <h2>Discover unique finds in your neighbourhood.</h2>
-      <p>Join millions of people buying and selling on Dubilist.</p>
+      <div class="badge">{{ 'MARKETPLACE' | translate }}</div>
+      <h2>{{ 'DISCOVER_UNIQUE_FINDS_IN_YOUR_NEIGHBOURH' | translate }}</h2>
+      <p>{{ 'JOIN_MILLIONS_OF_PEOPLE_BUYING_AND_SELLI' | translate }}</p>
     </div>
   </section>
 
@@ -17,13 +17,13 @@
         </a>
       </div>
 
-      <h1 class="title">Create your account</h1>
-      <p class="subtitle">Join the Dubilist community for free.</p>
+      <h1 class="title">{{ 'CREATE_YOUR_ACCOUNT' | translate }}</h1>
+      <p class="subtitle">{{ 'JOIN_THE_DUBILIST_COMMUNITY_FOR_FREE_' | translate }}</p>
 
       <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
         <div class="grid-2">
           <div class="field">
-            <label for="firstName">First Name</label>
+            <label for="firstName">{{ 'FIRST_NAME' | translate }}</label>
             <input
               id="firstName"
               name="firstName"
@@ -33,11 +33,11 @@
               required
               autocomplete="given-name"
             />
-            <div class="error" *ngIf="f.submitted && !model.firstName.trim()">First name is required.</div>
+            <div class="error" *ngIf="f.submitted && !model.firstName.trim()">{{ 'FIRST_NAME_IS_REQUIRED_' | translate }}</div>
           </div>
 
           <div class="field">
-            <label for="lastName">Last Name</label>
+            <label for="lastName">{{ 'LAST_NAME' | translate }}</label>
             <input
               id="lastName"
               name="lastName"
@@ -47,12 +47,12 @@
               required
               autocomplete="family-name"
             />
-            <div class="error" *ngIf="f.submitted && !model.lastName.trim()">Last name is required.</div>
+            <div class="error" *ngIf="f.submitted && !model.lastName.trim()">{{ 'LAST_NAME_IS_REQUIRED_' | translate }}</div>
           </div>
         </div>
 
         <div class="field">
-          <label for="email">Email ID</label>
+          <label for="email">{{ 'EMAIL_ID' | translate }}</label>
           <input
             id="email"
             name="email"
@@ -63,11 +63,11 @@
             email
             autocomplete="email"
           />
-          <div class="error" *ngIf="f.submitted && !model.email.trim()">Email is required.</div>
+          <div class="error" *ngIf="f.submitted && !model.email.trim()">{{ 'EMAIL_IS_REQUIRED_' | translate }}</div>
         </div>
 
         <div class="field">
-          <label for="phone">Mobile Number</label>
+          <label for="phone">{{ 'MOBILE_NUMBER' | translate }}</label>
           <input
             id="phone"
             name="phone"
@@ -77,12 +77,12 @@
             required
             autocomplete="tel"
           />
-          <div class="error" *ngIf="f.submitted && !model.phone.trim()">Mobile number is required.</div>
-          <div class="d-flex flex-row justify-content-end" style="font-size: smaller;">(WhatsApp Prefered)</div>
+          <div class="error" *ngIf="f.submitted && !model.phone.trim()">{{ 'MOBILE_NUMBER_IS_REQUIRED_' | translate }}</div>
+          <div class="d-flex flex-row justify-content-end" style="font-size: smaller;">{{ '_WHATSAPP_PREFERED_' | translate }}</div>
         </div>
 
         <div class="field">
-          <label for="password">Password</label>
+          <label for="password">{{ 'PASSWORD' | translate }}</label>
           <div class="password">
             <input
               id="password"
@@ -105,7 +105,7 @@
         </div>
 
         <div class="field">
-          <label for="confirmPassword">Confirm Password</label>
+          <label for="confirmPassword">{{ 'CONFIRM_PASSWORD' | translate }}</label>
           <div class="password">
             <input
               id="confirmPassword"
@@ -120,27 +120,22 @@
               {{ showConfirmPassword ? 'Hide' : 'Show' }}
             </button>
           </div>
-          <div class="error" *ngIf="(f.submitted || model.confirmPassword) && !passwordsMatch">
-            Passwords do not match.
-          </div>
+          <div class="error" *ngIf="(f.submitted || model.confirmPassword) && !passwordsMatch">{{ 'PASSWORDS_DO_NOT_MATCH_' | translate }}</div>
         </div>
 
         <label class="terms">
           <input type="checkbox" name="termsAccepted" [(ngModel)]="model.termsAccepted" required />
-          <span>
-            I agree to the <a routerLink="/terms-of-use">Terms of Service</a> and <a  routerLink="/privacy-policy" href="#">Privacy Policy</a>
+          <span>{{ 'I_AGREE_TO_THE' | translate }}<a routerLink="/terms-of-use">{{ 'TERMS_OF_SERVICE' | translate }}</a>{{ 'AND' | translate }}<a  routerLink="/privacy-policy" href="#">{{ 'PRIVACY_POLICY' | translate }}</a>
           </span>
         </label>
-        <div class="error" *ngIf="f.submitted && !model.termsAccepted">You must accept terms.</div>
+        <div class="error" *ngIf="f.submitted && !model.termsAccepted">{{ 'YOU_MUST_ACCEPT_TERMS_' | translate }}</div>
 
         <button class="cta" type="submit" [disabled]="!canSubmit">
-          <span *ngIf="!isLoading">Sign Up</span>
-          <span *ngIf="isLoading">Creating...</span>
+          <span *ngIf="!isLoading">{{ 'SIGN_UP' | translate }}</span>
+          <span *ngIf="isLoading">{{ 'CREATING_' | translate }}</span>
         </button>
 
-        <div class="bottom">
-          Already have account?
-          <a routerLink="/auth/login">Log in</a>
+        <div class="bottom">{{ 'ALREADY_HAVE_ACCOUNT_' | translate }}<a routerLink="/auth/login">{{ 'LOG_IN' | translate }}</a>
         </div>
       </form>
     </div>

@@ -6,12 +6,12 @@
       <div class="row">
         <div class="col-md-3 d-none d-md-block">
           <aside class="filters-sidebar">
-            <h5 class="filter-title">Filters</h5>
+            <h5 class="filter-title">{{ 'FILTERS' | translate }}</h5>
             <div class="mb-4">
-              <label class="text-muted small mb-2">Sort By</label><br>
-              <button class="pill active">Highest Rated</button>
+              <label class="text-muted small mb-2">{{ 'SORT_BY' | translate }}</label><br>
+              <button class="pill active">{{ 'HIGHEST_RATED' | translate }}</button>
             </div>
-            <button class="btn btn-dark w-100" (click)="applyFilters()">Apply Filters</button>
+            <button class="btn btn-dark w-100" (click)="applyFilters()">{{ 'APPLY_FILTERS' | translate }}</button>
           </aside>
         </div>
 
@@ -19,27 +19,21 @@
           
           <div class="welcome-section d-flex justify-content-between align-items-center mb-4" *ngIf="isUserLoggedin">
             <div>
-              <h2>👋 Welcome Back!</h2>
-              <p class="text-muted">Manage your bookings and profile</p>
+              <h2>{{ '_WELCOME_BACK_' | translate }}</h2>
+              <p class="text-muted">{{ 'MANAGE_YOUR_BOOKINGS_AND_PROFILE' | translate }}</p>
             </div>
             <div>
-              <button *ngIf="isDesigner" class="btn btn-outline-dark" (click)="openDashboard()">
-                My Dashboard
-              </button>
-              <button *ngIf="!isDesigner" class="btn btn-outline-dark" (click)="openRequests()">
-                My Bookings
-              </button>
+              <button *ngIf="isDesigner" class="btn btn-outline-dark" (click)="openDashboard()">{{ 'MY_DASHBOARD' | translate }}</button>
+              <button *ngIf="!isDesigner" class="btn btn-outline-dark" (click)="openRequests()">{{ 'MY_BOOKINGS' | translate }}</button>
             </div>
           </div>
 
         <div class="promo-box d-flex justify-content-between align-items-center" *ngIf="!isDesigner">
   <div>
-    <h3 class="mb-2">Are You an Interior Designer?</h3>
-    <p class="mb-3 opacity-75">Share your profile and connect with clients.</p>
+    <h3 class="mb-2">{{ 'ARE_YOU_AN_INTERIOR_DESIGNER_' | translate }}</h3>
+    <p class="mb-3 opacity-75">{{ 'SHARE_YOUR_PROFILE_AND_CONNECT_WITH_CLIE' | translate }}</p>
     
-    <button class="btn btn-light text-primary-custom fw-bold" (click)="openCreateProfile()">
-      Add your profile
-    </button>
+    <button class="btn btn-light text-primary-custom fw-bold" (click)="openCreateProfile()">{{ 'ADD_YOUR_PROFILE' | translate }}</button>
   </div>
   <i class="bi bi-palette" style="font-size: 4rem; opacity: 0.3;"></i>
 </div>
@@ -59,7 +53,7 @@
                   
                   <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
                     <small class="location-text"><i class="bi bi-geo-alt-fill text-primary-custom"></i> {{ d.city }}</small>
-                    <button class="btn btn-sm btn-primary-custom" >View Profile</button>
+                    <button class="btn btn-sm btn-primary-custom" >{{ 'VIEW_PROFILE' | translate }}</button>
                   </div>
                 </div>
               </div>
@@ -72,8 +66,7 @@
 
     <div *ngIf="viewMode === 'dashboard'" class="fade-in">
       <button class="btn-back" (click)="backToListings()">
-        <i class="bi bi-arrow-left"></i> Back to Listings
-      </button>
+        <i class="bi bi-arrow-left"></i>{{ 'BACK_TO_LISTINGS' | translate }}</button>
 
       <div class="row">
         <div class="col-md-4 mb-4">
@@ -84,27 +77,25 @@
             <p class="text-muted">{{ myProfile?.city }}</p>
             
             <div class="bg-light p-3 rounded mt-3">
-              <small class="text-muted">Consultation Rate</small>
+              <small class="text-muted">{{ 'CONSULTATION_RATE' | translate }}</small>
               <h4 class="text-primary-custom m-0">AED {{ myProfile?.hourlyRate }} / Hr</h4>
             </div>
 
-            <button class="btn btn-outline-dark w-100 mt-3" (click)="openConsultantions()">
-              View Consultation Requests
-            </button>
+            <button class="btn btn-outline-dark w-100 mt-3" (click)="openConsultantions()">{{ 'VIEW_CONSULTATION_REQUESTS' | translate }}</button>
             </div>
         </div>
 
         <div class="col-md-8">
           <div class="card border-0 shadow-sm p-4">
-            <h4 class="mb-3">Professional Details</h4>
+            <h4 class="mb-3">{{ 'PROFESSIONAL_DETAILS' | translate }}</h4>
             
-            <p><strong>Specializations:</strong> {{ myProfile?.specializations?.join(', ') }}</p>
-            <p><strong>Experience:</strong> {{ myProfile?.yearsExperience }} Years</p>
+            <p><strong>{{ 'SPECIALIZATIONS_' | translate }}</strong> {{ myProfile?.specializations?.join(', ') }}</p>
+            <p><strong>{{ 'EXPERIENCE_' | translate }}</strong> {{ myProfile?.yearsExperience }} Years</p>
             
-            <h5 class="mt-4">Bio</h5>
+            <h5 class="mt-4">{{ 'BIO' | translate }}</h5>
             <p class="text-muted">{{ myProfile?.bio }}</p>
 
-            <h5 class="mt-4">Portfolio</h5>
+            <h5 class="mt-4">{{ 'PORTFOLIO' | translate }}</h5>
             <div class="portfolio-grid">
              <img *ngFor="let p of myProfile?.portfolio" [src]="p" class="portfolio-img">
 
@@ -117,12 +108,11 @@
     <div *ngIf="viewMode === 'create'" class="fade-in bg-light py-5">
   <div class="container">
     <button class="btn-back mb-4" (click)="backToListings()">
-      <i class="bi bi-arrow-left"></i> Back
-    </button>
+      <i class="bi bi-arrow-left"></i>{{ 'BACK' | translate }}</button>
 
     <div class="card border-0 shadow-sm p-0 mx-auto" style="max-width: 850px; border-radius: 15px;">
       <div class="p-4 border-bottom">
-        <h4 class="fw-bold m-0">Personal Information</h4>
+        <h4 class="fw-bold m-0">{{ 'PERSONAL_INFORMATION' | translate }}</h4>
       </div>
 
       <div class="card-body p-4">
@@ -135,17 +125,17 @@
               </div>
             </div>
             <input type="file" #profileFile hidden (change)="onProfileImageSelected($event)" accept="image/*">
-            <p class="text-center text-primary-custom small fw-bold mt-2" style="cursor: pointer;" (click)="profileFile.click()">Tap to Upload</p>
+            <p class="text-center text-primary-custom small fw-bold mt-2" style="cursor: pointer;" (click)="profileFile.click()">{{ 'TAP_TO_UPLOAD' | translate }}</p>
           </div> -->
 
           <div class="flex-grow-1">
             <div class="row g-3">
               <div class="col-md-12">
-                <label class="form-label small fw-bold">Full Name</label>
+                <label class="form-label small fw-bold">{{ 'FULL_NAME' | translate }}</label>
                 <input class="form-control bg-light border-0 py-2" placeholder="Amelia Yusuf" [(ngModel)]="profileForm.name">
               </div>
               <div class="col-md-12">
-                <label class="form-label small fw-bold">Location / City</label>
+                <label class="form-label small fw-bold">{{ 'LOCATION_CITY' | translate }}</label>
                 <div class="input-group">
                   <input class="form-control bg-light border-0 py-2" placeholder="Dubai, UAE" [(ngModel)]="profileForm.city">
                   <span class="input-group-text bg-light border-0"><i class="bi bi-geo-alt"></i></span>
@@ -156,7 +146,7 @@
         </div>
 
         <div class="mb-4">
-          <label class="form-label small fw-bold">Bio</label>
+          <label class="form-label small fw-bold">{{ 'BIO' | translate }}</label>
           <textarea class="form-control bg-light border-0" rows="3" 
             placeholder="Tell Client about your designs, Philosophy and Background(Min 60 characters)" [(ngModel)]="profileForm.bio"></textarea>
         </div>
@@ -164,10 +154,10 @@
 
         <hr class="my-4 text-muted opacity-25">
 
-        <h5 class="fw-bold mb-3">Professional Details</h5>
+        <h5 class="fw-bold mb-3">{{ 'PROFESSIONAL_DETAILS' | translate }}</h5>
         
         <div class="mb-4">
-          <label class="form-label small fw-bold text-muted">Specialization style</label>
+          <label class="form-label small fw-bold text-muted">{{ 'SPECIALIZATION_STYLE' | translate }}</label>
           <div class="d-flex flex-wrap gap-2">
             <button *ngFor="let s of styles" 
               class="btn btn-outline-warning rounded-pill px-4 py-1" 
@@ -178,22 +168,22 @@
 
         <div class="row g-3 mb-4">
           <div class="col-md-6">
-            <label class="form-label small fw-bold">Years of Experience</label>
+            <label class="form-label small fw-bold">{{ 'YEARS_OF_EXPERIENCE' | translate }}</label>
             <input type="text" class="form-control bg-light border-0" placeholder="5 Years" [(ngModel)]="profileForm.yearsExperience">
           </div>
           <div class="col-md-6">
-            <label class="form-label small fw-bold">Price (AED)</label>
+            <label class="form-label small fw-bold">{{ 'PRICE_AED_' | translate }}</label>
             <input type="text" class="form-control bg-light border-0" placeholder="AED 150 / Hour" [(ngModel)]="profileForm.hourlyRate">
           </div>
         </div>
 
-        <h5 class="fw-bold mb-1">Portfolio Works</h5>
-        <p class="text-muted small mb-3">Showcase your best interior design projects</p>
+        <h5 class="fw-bold mb-1">{{ 'PORTFOLIO_WORKS' | translate }}</h5>
+        <p class="text-muted small mb-3">{{ 'SHOWCASE_YOUR_BEST_INTERIOR_DESIGN_PROJE' | translate }}</p>
         
         <div class="portfolio-upload-grid">
           <div class="portfolio-add-card" (click)="portfolioFile.click()">
             <div class="add-icon">+</div>
-            <span class="small fw-bold mt-2">Add Project</span>
+            <span class="small fw-bold mt-2">{{ 'ADD_PROJECT' | translate }}</span>
           </div>
           <input type="file" #portfolioFile hidden multiple (change)="onPortfolioSelected($event)" accept="image/*">
 
@@ -206,7 +196,7 @@
         </div>
 
         <div class="d-grid mt-5">
-          <button class="btn btn-primary-custom btn-lg fw-bold py-3" (click)="submitProfile()">Upload Profile</button>
+          <button class="btn btn-primary-custom btn-lg fw-bold py-3" (click)="submitProfile()">{{ 'UPLOAD_PROFILE' | translate }}</button>
         </div>
       </div>
     </div>
@@ -215,8 +205,7 @@
 
     <div *ngIf="viewMode === 'detail' && selectedDesigner" class="fade-in">
       <button class="btn-back" (click)="backToListings()">
-        <i class="bi bi-arrow-left"></i> Back to Listings
-      </button>
+        <i class="bi bi-arrow-left"></i>{{ 'BACK_TO_LISTINGS' | translate }}</button>
 
       <div class="row">
         <div class="col-lg-8">
@@ -224,7 +213,7 @@
             <div class="detail-header">
               <img [src]="selectedDesigner.user.avatarUrl  || 'assets/images/avatarUrl.jpg'" class="detail-avatar">
               <div>
-                <span class="badge bg-warning text-dark mb-2">Interior Designer</span>
+                <span class="badge bg-warning text-dark mb-2">{{ 'INTERIOR_DESIGNER' | translate }}</span>
                 <h2 class="m-0">{{ selectedDesigner.user.name }}</h2>
                 <p class="text-muted m-0">{{ selectedDesigner.tagline }}</p>
                 <small><i class="bi bi-geo-alt"></i> {{ selectedDesigner.city }}</small>
@@ -232,26 +221,26 @@
             </div>
 
             <div class="mb-4">
-              <h4>About Me</h4>
+              <h4>{{ 'ABOUT_ME' | translate }}</h4>
               <p class="bio-text">{{ selectedDesigner.bio }}</p>
             </div>
 
             <div class="mb-4">
-              <h4>Specializations</h4>
+              <h4>{{ 'SPECIALIZATIONS' | translate }}</h4>
               <div>
                 <span class="chip" *ngFor="let s of selectedDesigner.specializations">{{ s }}</span>
               </div>
             </div>
 
             <div>
-              <h4>Portfolio</h4>
+              <h4>{{ 'PORTFOLIO' | translate }}</h4>
               <div class="portfolio-grid" *ngIf="selectedDesigner.photos?.length; else noPortfolio">
                 <img *ngFor="let p of selectedDesigner.photos" 
                      [src]="p"
      class="portfolio-img">
               </div>
               <ng-template #noPortfolio>
-                <div class="alert alert-light">No portfolio items uploaded yet.</div>
+                <div class="alert alert-light">{{ 'NO_PORTFOLIO_ITEMS_UPLOADED_YET_' | translate }}</div>
               </ng-template>
             </div>
             
@@ -262,15 +251,15 @@
   <div class="booking-sidebar">
     
     <div class="card border-0 shadow-sm mb-4 p-3 bg-white rounded">
-      <h6 class="fw-bold mb-3">Contact Designer</h6>
+      <h6 class="fw-bold mb-3">{{ 'CONTACT_DESIGNER' | translate }}</h6>
       
       <div class="chat-option d-flex align-items-center p-3 border rounded mb-3" 
            (click)="openChat()" 
            style="cursor: pointer;">
         <i class="bi bi-chat-dots text-primary-custom fs-4 me-3"></i>
         <div>
-          <p class="mb-0 fw-bold small">Chat with Designer</p>
-          <p class="mb-0 x-small text-muted">Start a conversation in the app</p>
+          <p class="mb-0 fw-bold small">{{ 'CHAT_WITH_DESIGNER' | translate }}</p>
+          <p class="mb-0 x-small text-muted">{{ 'START_A_CONVERSATION_IN_THE_APP' | translate }}</p>
         </div>
       </div>
 
@@ -278,9 +267,9 @@
     </div>
 
     <div class="pricing-card p-3 border rounded mb-3">
-       <p class="text-muted mb-1 small">Consultation starts at</p>
-       <div class="price-tag mb-1">AED {{ selectedDesigner.hourlyRate }} <span class="fs-6 fw-normal text-muted">/ Hour</span></div>
-       <p class="x-small text-muted">Project based flat fees are available upon request.</p>
+       <p class="text-muted mb-1 small">{{ 'CONSULTATION_STARTS_AT' | translate }}</p>
+       <div class="price-tag mb-1">AED {{ selectedDesigner.hourlyRate }} <span class="fs-6 fw-normal text-muted">{{ '_HOUR' | translate }}</span></div>
+       <p class="x-small text-muted">{{ 'PROJECT_BASED_FLAT_FEES_ARE_AVAILABLE_UP' | translate }}</p>
     </div>
     
     <button class="btn w-100 btn-lg fw-bold mb-3" 
@@ -291,8 +280,7 @@
     </button>
     
     <div class="small text-muted text-center">
-      <i class="bi bi-shield-check text-success"></i> Verified Professional
-    </div>
+      <i class="bi bi-shield-check text-success"></i>{{ 'VERIFIED_PROFESSIONAL' | translate }}</div>
   </div>
 </div> 
 
@@ -301,33 +289,32 @@
 
     <div *ngIf="viewMode === 'booking'" class="fade-in">
       <button class="btn-back" (click)="viewMode='detail'">
-        <i class="bi bi-arrow-left"></i> Back to Profile
-      </button>
+        <i class="bi bi-arrow-left"></i>{{ 'BACK_TO_PROFILE' | translate }}</button>
 
       <div class="card border-0 shadow-sm p-4 mx-auto" style="max-width: 600px;">
         <h3 class="mb-4">Book Consultation with {{ selectedDesigner?.name }}</h3>
         
         <div class="mb-3">
-          <label class="form-label">Full Name</label>
+          <label class="form-label">{{ 'FULL_NAME' | translate }}</label>
           <input class="form-control" [(ngModel)]="bookingForm.fullName">
         </div>
         
         <div class="mb-3">
-          <label class="form-label">Phone Number</label>
+          <label class="form-label">{{ 'PHONE_NUMBER' | translate }}</label>
           <input class="form-control" [(ngModel)]="bookingForm.phone">
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Project Type</label>
+          <label class="form-label">{{ 'PROJECT_TYPE' | translate }}</label>
           <input class="form-control" placeholder="e.g. Residential, Office" [(ngModel)]="bookingForm.projectType">
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Project Description</label>
+          <label class="form-label">{{ 'PROJECT_DESCRIPTION' | translate }}</label>
           <textarea class="form-control" rows="3" [(ngModel)]="bookingForm.description"></textarea>
         </div>
         <div class="mb-3">
-  <label class="form-label">Address</label>
+  <label class="form-label">{{ 'ADDRESS' | translate }}</label>
   <input class="form-control"
          placeholder="Dubai, UAE"
          [(ngModel)]="bookingForm.address">
@@ -336,16 +323,16 @@
 
         <div class="row g-2 mb-4">
           <div class="col-6">
-            <label class="form-label">Date</label>
+            <label class="form-label">{{ 'DATE' | translate }}</label>
             <input type="date" class="form-control"  [min]="minBookingDate" [(ngModel)]="bookingForm.date">
           </div>
           <div class="col-6">
-            <label class="form-label">Time</label>
+            <label class="form-label">{{ 'TIME' | translate }}</label>
             <input type="time" class="form-control" [(ngModel)]="bookingForm.time">
           </div>
         </div>
 
-        <button class="btn btn-primary-custom w-100" (click)="confirmBooking()">Confirm Booking Request</button>
+        <button class="btn btn-primary-custom w-100" (click)="confirmBooking()">{{ 'CONFIRM_BOOKING_REQUEST' | translate }}</button>
       </div>
     </div>
 
@@ -353,11 +340,11 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Previous Bookings</h5>
+            <h5 class="modal-title">{{ 'PREVIOUS_BOOKINGS' | translate }}</h5>
             <button type="button" class="btn-close" (click)="showRequestsModal = false"></button>
           </div>
           <div class="modal-body">
-            <div *ngIf="myRequests.length === 0" class="text-center py-3">No requests found.</div>
+            <div *ngIf="myRequests.length === 0" class="text-center py-3">{{ 'NO_REQUESTS_FOUND_' | translate }}</div>
             <ul class="list-group">
               <li *ngFor="let r of myRequests" class="list-group-item d-flex justify-content-between align-items-center">
 
@@ -365,7 +352,7 @@
                     <img [src]="r.designer.user.avatarUrl || 'assets/images/avatarUrl.jpg'" alt="Designer Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
                  <div class="d-flex flex-column">
 <strong>{{ r.designer.user.name }}</strong>
-              <button class="btn btn-sm btn-outline-secondary" (click)="openDesignerDetail(r.designer.id);showRequestsModal=false" >View Profile</button>
+              <button class="btn btn-sm btn-outline-secondary" (click)="openDesignerDetail(r.designer.id);showRequestsModal=false" >{{ 'VIEW_PROFILE' | translate }}</button>
 
                  </div>
                  </div>
@@ -392,11 +379,11 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Consultantions Requests</h5>
+            <h5 class="modal-title">{{ 'CONSULTANTIONS_REQUESTS' | translate }}</h5>
             <button type="button" class="btn-close" (click)="viewConsultations = false"></button>
           </div>
           <div class="modal-body">
-            <div *ngIf="myRequests.length === 0" class="text-center py-3">No requests found.</div>
+            <div *ngIf="myRequests.length === 0" class="text-center py-3">{{ 'NO_REQUESTS_FOUND_' | translate }}</div>
             <ul class="list-group">
               <li *ngFor="let r of myConsultantions" class="list-group-item d-flex justify-content-between align-items-center">
                 
@@ -408,7 +395,7 @@
                     <img [src]="r.user.avatarUrl || 'assets/images/avatarUrl.jpg'" alt="Client Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
                  <div class="d-flex flex-column">
 <strong>{{ r.user.name }}</strong>
- <button class="btn btn-sm btn-warning" (click)="showClientDetailModal=true;selectedRequest=r" >View Request</button>
+ <button class="btn btn-sm btn-warning" (click)="showClientDetailModal=true;selectedRequest=r" >{{ 'VIEW_REQUEST' | translate }}</button>
                  </div>
                  </div>
                 
@@ -435,7 +422,7 @@
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
       <div class="modal-header border-0 pt-4 px-4">
-        <h2 class="fw-bold m-0">Client Details</h2>
+        <h2 class="fw-bold m-0">{{ 'CLIENT_DETAILS' | translate }}</h2>
         <button class="btn-close" (click)="showClientDetailModal = false"></button>
       </div>
 
@@ -452,26 +439,26 @@
           </div>
 
           <div class="col-md-8 ps-md-5">
-            <h5 class="fw-bold mb-4">Request Details</h5>
+            <h5 class="fw-bold mb-4">{{ 'REQUEST_DETAILS' | translate }}</h5>
             
             <div class="row mb-4">
               <div class="col-6">
-                <p class="text-primary-custom mb-0 small fw-bold">Preferred Date & Time</p>
+                <p class="text-primary-custom mb-0 small fw-bold">{{ 'PREFERRED_DATE_TIME' | translate }}</p>
                 <p class="fw-semibold">{{ selectedRequest?.dateTime | date:'MMM d, y, h:mm a' }}</p>
               </div>
               <div class="col-6">
-                <p class="text-primary-custom mb-0 small fw-bold">Budget Range</p>
+                <p class="text-primary-custom mb-0 small fw-bold">{{ 'BUDGET_RANGE' | translate }}</p>
                 <p class="fw-semibold">AED {{ selectedRequest?.budget || '5,000 - 10,000' }}</p>
               </div>
             </div>
 
             <div class="mb-4">
-              <p class="text-primary-custom mb-0 small fw-bold">Project Description</p>
+              <p class="text-primary-custom mb-0 small fw-bold">{{ 'PROJECT_DESCRIPTION' | translate }}</p>
               <p class="text-muted">{{ selectedRequest?.projectDescription || 'No description provided.' }}</p>
             </div>
 
             <div class="mb-4">
-              <p class="text-primary-custom mb-0 small fw-bold">Location / City</p>
+              <p class="text-primary-custom mb-0 small fw-bold">{{ 'LOCATION_CITY' | translate }}</p>
               <div class="d-flex align-items-center gap-2 border rounded p-2 bg-light">
                 <i class="bi bi-geo-alt-fill text-muted"></i>
                 <span class="small">{{ selectedRequest?.location || 'Downtown, Dubai, UAE' }}</span>
@@ -479,9 +466,9 @@
             </div>
 
             <div class="d-flex gap-2 mt-5">
-              <button class="btn btn-light-orange fw-bold flex-grow-1" (click)="openChat()">Message Client</button>
-              <button *ngIf="selectedRequest?.status === 'pending'" class="btn btn-light fw-bold border flex-grow-1" (click)="updateRequestStatus(selectedRequest, 'rejected')">Reject</button>
-              <button *ngIf="selectedRequest?.status === 'pending'" class="btn btn-primary-custom fw-bold flex-grow-1" (click)="updateRequestStatus(selectedRequest, 'accepted')">Accept Consultation</button>
+              <button class="btn btn-light-orange fw-bold flex-grow-1" (click)="openChat()">{{ 'MESSAGE_CLIENT' | translate }}</button>
+              <button *ngIf="selectedRequest?.status === 'pending'" class="btn btn-light fw-bold border flex-grow-1" (click)="updateRequestStatus(selectedRequest, 'rejected')">{{ 'REJECT' | translate }}</button>
+              <button *ngIf="selectedRequest?.status === 'pending'" class="btn btn-primary-custom fw-bold flex-grow-1" (click)="updateRequestStatus(selectedRequest, 'accepted')">{{ 'ACCEPT_CONSULTATION' | translate }}</button>
             </div>
           </div>
         </div>
@@ -501,18 +488,18 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
       <div class="modal-header bg-primary-custom text-white border-0">
-        <h5 class="modal-title fw-bold">Sign In Required</h5>
+        <h5 class="modal-title fw-bold">{{ 'SIGN_IN_REQUIRED' | translate }}</h5>
         <button type="button" class="btn-close btn-close-white" (click)="showLoginModal = false"></button>
       </div>
       <div class="modal-body p-4 text-center">
         <div class="mb-4">
           <i class="bi bi-person-lock text-primary-custom" style="font-size: 3.5rem;"></i>
         </div>
-        <p class="text-muted">You need to be logged in to access this feature and connect with our interior designers.</p>
+        <p class="text-muted">{{ 'YOU_NEED_TO_BE_LOGGED_IN_TO_ACCESS_THIS_' | translate }}</p>
         
         <div class="d-grid gap-2 mt-4">
-          <button class="btn btn-primary-custom btn-lg" (click)="navigateToLogin()">Go to Login</button>
-          <button class="btn btn-link text-muted" (click)="showLoginModal = false">Maybe Later</button>
+          <button class="btn btn-primary-custom btn-lg" (click)="navigateToLogin()">{{ 'GO_TO_LOGIN' | translate }}</button>
+          <button class="btn btn-link text-muted" (click)="showLoginModal = false">{{ 'MAYBE_LATER' | translate }}</button>
         </div>
       </div>
     </div>
@@ -532,14 +519,12 @@
 
 <div class="modal-backdrop-custom d-flex align-items-center justify-content-center" *ngIf="showRejectModal">
   <div class="bg-white p-4 rounded-4 shadow-lg animate-fade-in" style="width: 420px; z-index: 6000;">
-    <h5 class="fw-bold text-danger mb-3">Reject Consultation Request</h5>
-    <p class="small text-muted mb-3">Please specify the reason for rejecting this consultation request. This will be sent to the client.</p>
+    <h5 class="fw-bold text-danger mb-3">{{ 'REJECT_CONSULTATION_REQUEST' | translate }}</h5>
+    <p class="small text-muted mb-3">{{ 'PLEASE_SPECIFY_THE_REASON_FOR_REJECTING_' | translate }}</p>
     <textarea class="form-control mb-3 bg-light border-0" rows="4" [(ngModel)]="rejectionReason" placeholder="Reason (e.g., Unavailable, Not interested...)"></textarea>
     <div class="d-flex justify-content-end gap-2">
-      <button class="btn btn-light rounded-pill px-4" (click)="showRejectModal=false">Cancel</button>
-      <button class="btn btn-danger rounded-pill px-4" (click)="submitReject()" [disabled]="!rejectionReason.trim()">
-        Confirm Rejection
-      </button>
+      <button class="btn btn-light rounded-pill px-4" (click)="showRejectModal=false">{{ 'CANCEL' | translate }}</button>
+      <button class="btn btn-danger rounded-pill px-4" (click)="submitReject()" [disabled]="!rejectionReason.trim()">{{ 'CONFIRM_REJECTION' | translate }}</button>
     </div>
   </div>
 </div>

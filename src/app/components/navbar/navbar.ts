@@ -4,19 +4,25 @@ import { Subscription, filter } from 'rxjs';
 import { AuthService, User, ApiResponse } from '../../services/auth-service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink]
+  imports: [CommonModule, FormsModule, RouterLink,TranslateModule]
 })
 export class NavbarComponent implements OnInit, OnDestroy {
 
   // --- User State ---
   user: User | null = null;
   isAdmin = false;
+  currentLang = 'en';
+
 
   // --- Navbar & Modal Visibility ---
   hideNavbar = false;
@@ -44,10 +50,26 @@ activeTab: 'profile' | 'settings' | 'edit' | 'changePassword' = 'profile';
   private authSubscription?: Subscription;
   private routerSubscription?: Subscription;
 
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {}
+constructor(
+  private router: Router,
+  private authService: AuthService,
+  private translate: TranslateService,
+  @Inject(PLATFORM_ID) private platformId: Object
+) {
+  translate.addLangs(['en', 'hi', 'ar']);
+  translate.setDefaultLang('en');
+
+  if (isPlatformBrowser(this.platformId)) {
+    const savedLang = localStorage.getItem('app_lang') || 'en';
+    this.currentLang = savedLang;
+    this.translate.use(savedLang);
+
+    document.body.setAttribute('dir', savedLang === 'ar' ? 'rtl' : 'ltr');
+  }
+}
+
+
+  
 
   ngOnInit(): void {
     /* =========================
@@ -75,14 +97,10 @@ activeTab: 'profile' | 'settings' | 'edit' | 'changePassword' = 'profile';
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        const hiddenRoutes = ['/', '/auth/login', '/auth/signUp'];
+        const hiddenRoutes = [ '/auth/login', '/auth/signUp'];
+        this.hideNavbar = hiddenRoutes.includes(event.urlAfterRedirects);
 
-        this.hideNavbar = hiddenRoutes.some(route => {
-          if (route === '/') {
-            return event.urlAfterRedirects === '/' || event.urlAfterRedirects === '';
-          }
-          return event.urlAfterRedirects.startsWith(route);
-        });
+       
         
         this.isOverlayOpen = false; // Close overlay when navigating
       });
@@ -117,12 +135,27 @@ activeTab: 'profile' | 'settings' | 'edit' | 'changePassword' = 'profile';
       this.isEditingProfile = false;
     }
   }
+switchLang(event: Event) {
+  const lang = (event.target as HTMLSelectElement).value;
+  this.translate.use(lang);
+
+  if (isPlatformBrowser(this.platformId)) {
+    localStorage.setItem("app_lang", lang);
+    document.body.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  }
+
+  this.currentLang = lang;
+}
+
+
   
 
   // switchTab(tab: 'profile' | 'settings'): void {
   //   this.activeTab = tab;
   //   this.isEditingProfile = false;
   // }
+
+  
 
   switchTab(tab: any) {
   this.activeTab = tab;

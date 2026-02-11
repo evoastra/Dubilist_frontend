@@ -5,11 +5,12 @@ import { ChatService } from '../../../services/chat-service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-interior-designer-listings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,TranslateModule],
   templateUrl: './interior-designer-listings.html',
   styleUrls: ['./interior-designer-listings.css']
 })

@@ -7,7 +7,7 @@
            [class.d-md-flex]="true">
 
         <div class="chat-list-header p-3 bg-light border-bottom">
-          <h2 class="fw-bold mb-3 h4">Chats</h2>
+          <h2 class="fw-bold mb-3 h4">{{ 'CHATS' | translate }}</h2>
           <input type="text" class="form-control" [(ngModel)]="searchQuery" (keyup)="onSearch()" placeholder="Search by name" />
         </div>
 
@@ -64,14 +64,12 @@
             
             <div>
               <div class="fw-bold">{{ selectedRoom.otherParty.name }}</div>
-              <small class="text-success">Online</small>
+              <small class="text-success">{{ 'ONLINE' | translate }}</small>
             </div>
           </div>
 
           <div class="chat-messages p-3" id="chatMessages">
-             <div class="alert alert-warning small text-center mx-auto mb-4" style="max-width: 90%;">
-               Tip: Never share personal financial details. Meet in a public place.
-             </div>
+             <div class="alert alert-warning small text-center mx-auto mb-4" style="max-width: 90%;">{{ 'TIP_NEVER_SHARE_PERSONAL_FINANCIAL_DETAI' | translate }}</div>
 
              <div *ngFor="let msg of messages" class="message" [class.me]="msg.senderId === currentUserId">
                <div class="bubble">
@@ -87,16 +85,14 @@
             <div class="input-group">
               <input [(ngModel)]="messageText" (keyup.enter)="sendMessage()" 
                      placeholder="Type a message..." class="form-control" />
-              <button class="btn btn-warning" (click)="sendMessage()">
-                Send
-              </button>
+              <button class="btn btn-warning" (click)="sendMessage()">{{ 'SEND' | translate }}</button>
             </div>
           </div>
         </div>
 
         <div *ngIf="!selectedRoom" class="d-none d-md-flex flex-column align-items-center justify-content-center h-100 bg-light text-muted">
           <i class="bi bi-chat-square-text fs-1 mb-3"></i>
-          <h5>Select a chat to start messaging</h5>
+          <h5>{{ 'SELECT_A_CHAT_TO_START_MESSAGING' | translate }}</h5>
         </div>
 
       </div>

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService, LoginRequest } from '../../services/auth-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-auth-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule,TranslateModule],
   templateUrl: './auth-login.html',
   styleUrls: ['./auth-login.css'],
 })

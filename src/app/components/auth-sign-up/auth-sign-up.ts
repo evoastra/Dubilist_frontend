@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 type SignupModel = {
   firstName: string;
@@ -17,7 +18,7 @@ type SignupModel = {
 @Component({
   selector: 'app-auth-signup',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule,TranslateModule],
   templateUrl: './auth-sign-up.html',
   styleUrls: ['./auth-sign-up.css']
 })

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AddPostService } from '../../services/add-post.service';
 import { DraftListingService, DraftListingData } from '../../services/draft-listing.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-review-listing',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,TranslateModule],
   templateUrl: './review-listing.html',
   styleUrls: ['./review-listing.css']
 })

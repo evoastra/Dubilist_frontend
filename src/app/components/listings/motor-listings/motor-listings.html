@@ -6,11 +6,11 @@
     <!-- ================= FILTERS (DESKTOP) ================= -->
     <aside class="filters-sidebar d-none d-md-block">
       <div class="filters-container">
-        <h2 class="filters-title">Filters</h2>
+        <h2 class="filters-title">{{ 'FILTERS' | translate }}</h2>
 
         <!-- Fuel -->
         <section class="filter-section">
-          <h3 class="section-label">Fuel</h3>
+          <h3 class="section-label">{{ 'FUEL' | translate }}</h3>
           <div class="condition-buttons">
             <button
               *ngFor="let fuel of fuels"
@@ -24,7 +24,7 @@
 
         <!-- Transmission -->
         <section class="filter-section">
-          <h3 class="section-label">Transmission</h3>
+          <h3 class="section-label">{{ 'TRANSMISSION' | translate }}</h3>
           <div class="condition-buttons">
             <button
               *ngFor="let trans of transmissions"
@@ -38,7 +38,7 @@
 
         <!-- Condition -->
         <section class="filter-section">
-          <h3 class="section-label">Condition</h3>
+          <h3 class="section-label">{{ 'CONDITION' | translate }}</h3>
           <div class="condition-buttons">
             <button
               *ngFor="let cond of conditions"
@@ -50,9 +50,7 @@
           </div>
         </section>
 
-        <button class="apply-filters-btn" (click)="applyFilters()">
-          Apply Filters
-        </button>
+        <button class="apply-filters-btn" (click)="applyFilters()">{{ 'APPLY_FILTERS' | translate }}</button>
       </div>
     </aside>
 
@@ -61,7 +59,7 @@
 
       <!-- HEADER -->
       <div class="listings-header d-flex justify-content-between align-items-center">
-        <h1 class="page-title">Motors Listings</h1>
+        <h1 class="page-title">{{ 'MOTORS_LISTINGS' | translate }}</h1>
 
         <button
           class="btn btn-outline-secondary d-md-none"
@@ -84,7 +82,7 @@
       <!-- LOADING -->
       <div class="loading-state" *ngIf="isLoading">
         <div class="spinner"></div>
-        <p>Loading...</p>
+        <p>{{ 'LOADING_' | translate }}</p>
       </div>
 
       <!-- LISTINGS GRID -->
@@ -116,8 +114,8 @@
       <!-- EMPTY STATE -->
       <div class="empty-state" *ngIf="!isLoading && !paginatedListings.length">
         <i class="bi bi-car-front"></i>
-        <h3>No vehicles found</h3>
-        <p>Try adjusting your filters</p>
+        <h3>{{ 'NO_VEHICLES_FOUND' | translate }}</h3>
+        <p>{{ 'TRY_ADJUSTING_YOUR_FILTERS' | translate }}</p>
       </div>
 
       <!-- INFINITE LOADER -->
@@ -126,9 +124,7 @@
       </div>
 
       <!-- NO MORE -->
-      <div class="no-more-listings text-center" *ngIf="allLoaded && paginatedListings.length">
-        No more listings 🚗
-      </div>
+      <div class="no-more-listings text-center" *ngIf="allLoaded && paginatedListings.length">{{ 'NO_MORE_LISTINGS_' | translate }}</div>
 
     </main>
   </div>
@@ -144,7 +140,7 @@
 
     <!-- BREADCRUMB -->
     <div class="breadcrumb">
-      <span class="crumb" (click)="closeDetail()">Motors</span>
+      <span class="crumb" (click)="closeDetail()">{{ 'MOTORS' | translate }}</span>
       <span class="crumb-sep">/</span>
       <span class="crumb current">{{ selectedListing.title }}</span>
     </div>
@@ -195,42 +191,42 @@
 
         <!-- SPECIFICATIONS (FIXED & COMPLETE) -->
         <div class="detail-section specifications">
-          <h2 class="section-title">Specifications</h2>
+          <h2 class="section-title">{{ 'SPECIFICATIONS' | translate }}</h2>
 
           <div class="specs-grid">
             <div class="spec-item">
               <div class="spec-value">{{ selectedListing.year }}</div>
-              <div class="spec-label">Year</div>
+              <div class="spec-label">{{ 'YEAR' | translate }}</div>
             </div>
 
             <div class="spec-item">
               <div class="spec-value">{{ selectedListing.make }}</div>
-              <div class="spec-label">Make</div>
+              <div class="spec-label">{{ 'MAKE' | translate }}</div>
             </div>
 
             <div class="spec-item">
               <div class="spec-value">{{ selectedListing.model }}</div>
-              <div class="spec-label">Model</div>
+              <div class="spec-label">{{ 'MODEL' | translate }}</div>
             </div>
 
             <div class="spec-item">
               <div class="spec-value">{{ selectedListing.mileage }}</div>
-              <div class="spec-label">Mileage</div>
+              <div class="spec-label">{{ 'MILEAGE' | translate }}</div>
             </div>
 
             <div class="spec-item">
               <div class="spec-value">{{ selectedListing.fuel }}</div>
-              <div class="spec-label">Fuel</div>
+              <div class="spec-label">{{ 'FUEL' | translate }}</div>
             </div>
 
             <div class="spec-item">
               <div class="spec-value">{{ selectedListing.transmission }}</div>
-              <div class="spec-label">Transmission</div>
+              <div class="spec-label">{{ 'TRANSMISSION' | translate }}</div>
             </div>
 
             <div class="spec-item">
               <div class="spec-value">{{ selectedListing.condition }}</div>
-              <div class="spec-label">Condition</div>
+              <div class="spec-label">{{ 'CONDITION' | translate }}</div>
             </div>
           </div>
         </div>
@@ -242,7 +238,7 @@
 
         <!-- PRICE -->
         <div class="price-card">
-          <h3 class="price-label">Price</h3>
+          <h3 class="price-label">{{ 'PRICE' | translate }}</h3>
           <p class="price-value">
             {{ selectedListing.currency }} {{ selectedListing.price | number }}
           </p>
@@ -250,13 +246,13 @@
 
         <!-- LOCATION (EXPLICIT FIX) -->
         <div class="info-card">
-          <h3 class="card-title">Location</h3>
+          <h3 class="card-title">{{ 'LOCATION' | translate }}</h3>
           <p class="location-text">{{ selectedListing.location }}</p>
         </div>
 
         <!-- SELLER -->
         <div class="seller-card">
-          <h3 class="card-title">Seller Information</h3>
+          <h3 class="card-title">{{ 'SELLER_INFORMATION' | translate }}</h3>
 
           <div class="seller-profile">
             <img [src]="selectedListing.sellerImage  || 'assets/images/avatarUrl.jpg'" class="seller-avatar">
@@ -266,29 +262,24 @@
             </div>
           </div>
 
-          <button class="contact-btn call-btn" (click)="callSeller()">Call Now</button>
+          <button class="contact-btn call-btn" (click)="callSeller()">{{ 'CALL_NOW' | translate }}</button>
 
           <button class="contact-btn whatsapp-btn" (click)="chatWhatsApp()">
-            <i class="bi bi-whatsapp"></i> WhatsApp
-          </button>
+            <i class="bi bi-whatsapp"></i>{{ 'WHATSAPP' | translate }}</button>
 
           <button
             *ngIf="isLoggedIn"
             class="contact-btn chat-btn"
             (click)="startChatWithSeller(selectedListing)">
-            <i class="bi bi-chat-dots"></i> Chat on Dubilist
-          </button>
+            <i class="bi bi-chat-dots"></i>{{ 'CHAT_ON_DUBILIST' | translate }}</button>
 
-          <p *ngIf="!isLoggedIn" class="login-hint">
-            Login to chat with seller
-          </p>
+          <p *ngIf="!isLoggedIn" class="login-hint">{{ 'LOGIN_TO_CHAT_WITH_SELLER' | translate }}</p>
         </div>
 
         <!-- REPORT -->
         <button
           class="action-btn report-btn"
-          (click)="reportAd(selectedListing.id)">
-          Report this Ad <i class="bi bi-flag"></i>
+          (click)="reportAd(selectedListing.id)">{{ 'REPORT_THIS_AD' | translate }}<i class="bi bi-flag"></i>
         </button>
 
       </div>
@@ -299,14 +290,14 @@
 <!-- ================= MOBILE FILTERS ================= -->
 <div class="offcanvas offcanvas-start" id="mobileFilters">
   <div class="offcanvas-header">
-    <h5>Filters</h5>
+    <h5>{{ 'FILTERS' | translate }}</h5>
     <button class="btn-close" data-bs-dismiss="offcanvas"></button>
   </div>
 
   <div class="offcanvas-body">
     <!-- Same filters as desktop -->
     <section class="filter-section">
-      <h3 class="section-label">Fuel</h3>
+      <h3 class="section-label">{{ 'FUEL' | translate }}</h3>
       <div class="condition-buttons">
         <button *ngFor="let fuel of fuels"
                 class="condition-btn"
@@ -318,7 +309,7 @@
     </section>
 
     <section class="filter-section">
-      <h3 class="section-label">Transmission</h3>
+      <h3 class="section-label">{{ 'TRANSMISSION' | translate }}</h3>
       <div class="condition-buttons">
         <button *ngFor="let trans of transmissions"
                 class="condition-btn"
@@ -330,7 +321,7 @@
     </section>
 
     <section class="filter-section">
-      <h3 class="section-label">Condition</h3>
+      <h3 class="section-label">{{ 'CONDITION' | translate }}</h3>
       <div class="condition-buttons">
         <button *ngFor="let cond of conditions"
                 class="condition-btn"
@@ -344,24 +335,22 @@
     <button
       class="apply-filters-btn w-100"
       data-bs-dismiss="offcanvas"
-      (click)="applyFilters()">
-      Apply Filters
-    </button>
+      (click)="applyFilters()">{{ 'APPLY_FILTERS' | translate }}</button>
   </div>
 </div>
 
 <!-- ================= REPORT MODAL ================= -->
 <div class="modal-backdrop" *ngIf="showReportModal">
   <div class="modal-container">
-    <h3>Report this Listing</h3>
+    <h3>{{ 'REPORT_THIS_LISTING' | translate }}</h3>
 
-    <label>Reason</label>
+    <label>{{ 'REASON' | translate }}</label>
     <select [(ngModel)]="reportReason">
-      <option value="">Select reason</option>
+      <option value="">{{ 'SELECT_REASON' | translate }}</option>
       <option *ngFor="let r of reportReasons" [value]="r">{{ r }}</option>
     </select>
 
-    <label>Details (optional)</label>
+    <label>{{ 'DETAILS_OPTIONAL_' | translate }}</label>
     <textarea
       rows="4"
       [(ngModel)]="reportDetails"
@@ -369,7 +358,7 @@
     </textarea>
 
     <div class="modal-actions">
-      <button class="btn cancel" (click)="closeReportModal()">Cancel</button>
+      <button class="btn cancel" (click)="closeReportModal()">{{ 'CANCEL' | translate }}</button>
       <button
         class="btn danger"
         [disabled]="isReporting"

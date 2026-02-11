@@ -7,6 +7,7 @@ import * as CryptoJS from 'crypto-js';
 
 import { DraftListingService, DraftListingData } from '../../services/draft-listing.service';
 import { AiDescriptionService } from '../../services/ai-description-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 /* -------------------------------- INTERFACES -------------------------------- */
 
@@ -26,7 +27,7 @@ interface SubCategory {
 @Component({
   selector: 'app-add-post',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,TranslateModule],
   templateUrl: './add-post.html',
   styleUrls: ['./add-post.css']
 })

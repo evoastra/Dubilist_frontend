@@ -4,56 +4,56 @@
     
     <aside class="sidebar">
       <div class="sidebar-header">
-        <h3>Filters</h3>
-        <button type="button" class="btn-reset" (click)="resetFilters()">Reset</button>
+        <h3>{{ 'FILTERS' | translate }}</h3>
+        <button type="button" class="btn-reset" (click)="resetFilters()">{{ 'RESET' | translate }}</button>
       </div>
 
       
 
       <div class="filter-group">
-        <label>Experience Level</label>
+        <label>{{ 'EXPERIENCE_LEVEL' | translate }}</label>
         <div class="chip-row">
-          <button class="chip" [class.active]="experienceFilter === 'Entry'" (click)="toggleExperience('Entry')">Entry Level</button>
-          <button class="chip" [class.active]="experienceFilter === 'Mid'" (click)="toggleExperience('Mid')">Mid Level</button>
-          <button class="chip" [class.active]="experienceFilter === 'Senior'" (click)="toggleExperience('Senior')">Senior</button>
+          <button class="chip" [class.active]="experienceFilter === 'Entry'" (click)="toggleExperience('Entry')">{{ 'ENTRY_LEVEL' | translate }}</button>
+          <button class="chip" [class.active]="experienceFilter === 'Mid'" (click)="toggleExperience('Mid')">{{ 'MID_LEVEL' | translate }}</button>
+          <button class="chip" [class.active]="experienceFilter === 'Senior'" (click)="toggleExperience('Senior')">{{ 'SENIOR' | translate }}</button>
         </div>
       </div>
 
       <div class="filter-group">
-        <label>Employment Type</label>
+        <label>{{ 'EMPLOYMENT_TYPE' | translate }}</label>
         <div class="chip-row">
-          <button class="chip" [class.active]="employmentFilter === 'Full Time'" (click)="toggleEmployment('Full Time')">Full Time</button>
-          <button class="chip" [class.active]="employmentFilter === 'Part Time'" (click)="toggleEmployment('Part Time')">Part Time</button>
-          <button class="chip" [class.active]="employmentFilter === 'Contract'" (click)="toggleEmployment('Contract')">Contract</button>
+          <button class="chip" [class.active]="employmentFilter === 'Full Time'" (click)="toggleEmployment('Full Time')">{{ 'FULL_TIME' | translate }}</button>
+          <button class="chip" [class.active]="employmentFilter === 'Part Time'" (click)="toggleEmployment('Part Time')">{{ 'PART_TIME' | translate }}</button>
+          <button class="chip" [class.active]="employmentFilter === 'Contract'" (click)="toggleEmployment('Contract')">{{ 'CONTRACT' | translate }}</button>
         </div>
         <div class="chip-row mt-2">
-            <button class="chip" [class.active]="employmentFilter === 'Internship'" (click)="toggleEmployment('Internship')">Internship</button>
+            <button class="chip" [class.active]="employmentFilter === 'Internship'" (click)="toggleEmployment('Internship')">{{ 'INTERNSHIP' | translate }}</button>
         </div>
       </div>
 
      
     
-      <button class="btn-orange-block" (click)="applyFilters()">Apply Filters</button>
+      <button class="btn-orange-block" (click)="applyFilters()">{{ 'APPLY_FILTERS' | translate }}</button>
     </aside>
 
     <main class="main-content">
       <div class="main-header">
-        <h1>Job Listings</h1>
-        <p class="subtitle">Explore opportunities that match your skills and experience.</p>
+        <h1>{{ 'JOB_LISTINGS' | translate }}</h1>
+        <p class="subtitle">{{ 'EXPLORE_OPPORTUNITIES_THAT_MATCH_YOUR_SK' | translate }}</p>
         <div class="search-bar">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon">{{ '_' | translate }}</span>
           <input type="text" [(ngModel)]="searchTerm" placeholder="Search title or keyword...">
         </div>
       </div>
 
       <div class="results-header">
-        <h2>Results</h2>
+        <h2>{{ 'RESULTS' | translate }}</h2>
       </div>
 
       <div class="jobs-list">
         <div *ngFor="let job of paginatedJobs" class="job-card" (click)="viewJobDetails(job.id)">
           <div class="job-card-left">
-            <span *ngIf="job.isFeatured" class="badge-featured">Featured</span>
+            <span *ngIf="job.isFeatured" class="badge-featured">{{ 'FEATURED' | translate }}</span>
             <h3 class="job-title">{{ job.title }}</h3>
             <p class="company-name">{{ job.company }}</p>
             
@@ -96,7 +96,7 @@
          <div class="breadcrumbs">
             Jobs / {{ selectedJob.category }} / <span class="current">{{ selectedJob.title }}</span>
          </div>
-         <button class="btn-back" (click)="goBack()">← Back</button>
+         <button class="btn-back" (click)="goBack()">{{ '_BACK' | translate }}</button>
       </div>
 
       <div class="details-hero">
@@ -109,7 +109,7 @@
             <div class="hero-meta">
                 <span>{{ selectedJob.type }}</span>
                 <span class="text-green">{{ selectedJob.currency }} {{ selectedJob.minSalary | number }} - {{ selectedJob.currency }} {{ selectedJob.maxSalary | number }}</span>
-                <span>Remote</span>
+                <span>{{ 'REMOTE' | translate }}</span>
                 <span>📍 {{ selectedJob.location }}</span>
             </div>
         </div>
@@ -120,19 +120,19 @@
       </p>
 
       <div class="content-section">
-        <h3>Job Description</h3>
+        <h3>{{ 'JOB_DESCRIPTION' | translate }}</h3>
         <p>{{ selectedJob.longDescription }}</p>
       </div>
 
       <div class="content-section">
-        <h3>Responsibilities</h3>
+        <h3>{{ 'RESPONSIBILITIES' | translate }}</h3>
         <ul>
             <li *ngFor="let item of selectedJob.responsibilities">{{ item }}</li>
         </ul>
       </div>
 
       <div class="content-section">
-        <h3>Requirements</h3>
+        <h3>{{ 'REQUIREMENTS' | translate }}</h3>
         <ul>
             <li *ngFor="let item of selectedJob.requirements">{{ item }}</li>
         </ul>
@@ -141,18 +141,16 @@
    
 
       <div class="content-section" *ngIf="selectedJob.applicationEmail">
-         <h3>Contact Information</h3>
-         <p class="contact-text">Please send your resume and cover letter to <a href="#">{{selectedJob.applicationEmail}}</a></p>
+         <h3>{{ 'CONTACT_INFORMATION' | translate }}</h3>
+         <p class="contact-text">{{ 'PLEASE_SEND_YOUR_RESUME_AND_COVER_LETTER' | translate }}<a href="#">{{selectedJob.applicationEmail}}</a></p>
       </div>
 
       <div class="details-actions">
-         <button class="btn-save">Save Job</button>
-         <button class="btn-orange-wide" (click)="goToApply()">Apply Now</button>
+         <button class="btn-save">{{ 'SAVE_JOB' | translate }}</button>
+         <button class="btn-orange-wide" (click)="goToApply()">{{ 'APPLY_NOW' | translate }}</button>
       </div>
        
-       <div class="report-ad">
-           Report this Ad ⚠
-       </div>
+       <div class="report-ad">{{ 'REPORT_THIS_AD_' | translate }}</div>
 
     </div>
   </div>
@@ -161,54 +159,54 @@
   <div *ngIf="currentView() === 'apply'" class="apply-layout">
      <div class="apply-container">
         <div class="apply-header">
-            <h2>Apply Now</h2>
+            <h2>{{ 'APPLY_NOW' | translate }}</h2>
             <p>{{ selectedJob?.title }} at {{ selectedJob?.company }}</p>
         </div>
 
         <form [formGroup]="applyForm" (ngSubmit)="submitApplication()">
             
             <div class="form-group">
-                <label>Full Name</label>
+                <label>{{ 'FULL_NAME' | translate }}</label>
                 <input type="text" formControlName="fullName" placeholder="Enter your full name">
             </div>
 
             <div class="form-group">
-                <label>Date of Birth</label>
+                <label>{{ 'DATE_OF_BIRTH' | translate }}</label>
                 <input type="text" formControlName="dateOfBirth" placeholder="dd-mm-yyyy">
             </div>
 
             <div class="form-group">
-                <label>Qualification</label>
+                <label>{{ 'QUALIFICATION' | translate }}</label>
                 <select formControlName="qualification">
-                    <option value="" disabled selected>Select your highest qualification</option>
-                    <option value="Bachelor">Bachelor's Degree</option>
-                    <option value="Master">Master's Degree</option>
-                    <option value="PhD">PhD</option>
+                    <option value="" disabled selected>{{ 'SELECT_YOUR_HIGHEST_QUALIFICATION' | translate }}</option>
+                    <option value="Bachelor">{{ 'BACHELOR_S_DEGREE' | translate }}</option>
+                    <option value="Master">{{ 'MASTER_S_DEGREE' | translate }}</option>
+                    <option value="PhD">{{ 'PHD' | translate }}</option>
                 </select>
             </div>
            
            <div class="form-group">
-  <label>Job Status</label>
+  <label>{{ 'JOB_STATUS' | translate }}</label>
   <select formControlName="jobStatus">
-    <option value="" disabled>Select job status</option>
-    <option value="fresher">Fresher</option>
-    <option value="experienced">Experienced</option>
+    <option value="" disabled>{{ 'SELECT_JOB_STATUS' | translate }}</option>
+    <option value="fresher">{{ 'FRESHER' | translate }}</option>
+    <option value="experienced">{{ 'EXPERIENCED' | translate }}</option>
   </select>
 </div>
 
 
             <div class="form-group">
-                <label>Email Address</label>
+                <label>{{ 'EMAIL_ADDRESS' | translate }}</label>
                 <input type="email" formControlName="email" placeholder="Enter your email address">
             </div>
 
             <div class="form-group">
-                <label>Mobile Number</label>
+                <label>{{ 'MOBILE_NUMBER' | translate }}</label>
                 <input type="tel" formControlName="mobile" placeholder="Enter your mobile number">
             </div>
 
           <div class="form-group">
-  <label>Resume / CV</label>
+  <label>{{ 'RESUME_CV' | translate }}</label>
 
   <div class="upload-box" (click)="fileInput.click()">
     <input #fileInput type="file"
@@ -216,7 +214,7 @@
       accept=".pdf,.doc,.docx"
       (change)="onFileSelected($event)">
 
-    <strong>Upload Resume</strong>
+    <strong>{{ 'UPLOAD_RESUME' | translate }}</strong>
     <p *ngIf="uploadedFileName">Selected: {{ uploadedFileName }}</p>
     <small>PDF / DOC / DOCX (Max 5MB)</small>
   </div>
@@ -224,18 +222,18 @@
 
 
             <div class="form-group">
-                <label>Cover Letter (Optional)</label>
+                <label>{{ 'COVER_LETTER_OPTIONAL_' | translate }}</label>
                 <textarea formControlName="coverLetter" rows="4"></textarea>
             </div>
 
             <div class="form-group">
-                <label>Salary Expectation (in AED)</label>
+                <label>{{ 'SALARY_EXPECTATION_IN_AED_' | translate }}</label>
                 <input type="number" formControlName="salaryExpectation">
             </div>
 
             <div class="form-actions-row">
-                <button type="button" class="btn-cancel" (click)="goBack()">Cancel</button>
-                <button type="submit" class="btn-orange-wide" [disabled]="applyForm.invalid" (click)="submitApplication()">Submit Application</button>
+                <button type="button" class="btn-cancel" (click)="goBack()">{{ 'CANCEL' | translate }}</button>
+                <button type="submit" class="btn-orange-wide" [disabled]="applyForm.invalid" (click)="submitApplication()">{{ 'SUBMIT_APPLICATION' | translate }}</button>
             </div>
 
         </form>

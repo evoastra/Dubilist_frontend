@@ -5,9 +5,9 @@
       <nav class="breadcrumb mb-1">
         <span class="text-muted">{{ mainCatName }}</span>
         <span class="mx-2">/</span>
-        <span class="fw-bold text-primary">Review</span>
+        <span class="fw-bold text-primary">{{ 'REVIEW' | translate }}</span>
       </nav>
-      <h2 class="fw-bold">Review your advertisement</h2>
+      <h2 class="fw-bold">{{ 'REVIEW_YOUR_ADVERTISEMENT' | translate }}</h2>
     </div>
   </div>
 
@@ -20,61 +20,61 @@
       <div class="d-flex flex-wrap gap-2" *ngIf="imagePreviews.length; else noMedia">
         <div *ngFor="let img of imagePreviews" class="preview-wrapper">
           <img [src]="img" class="rounded border shadow-sm" style="width: 150px; height: 150px; object-fit: cover;">
-          <span *ngIf="mainCatId === 2" class="badge bg-dark d-block mt-1">Official Logo</span>
+          <span *ngIf="mainCatId === 2" class="badge bg-dark d-block mt-1">{{ 'OFFICIAL_LOGO' | translate }}</span>
         </div>
       </div>
-      <ng-template #noMedia><p class="text-warning small">No images attached.</p></ng-template>
+      <ng-template #noMedia><p class="text-warning small">{{ 'NO_IMAGES_ATTACHED_' | translate }}</p></ng-template>
     </div>
   </div>
 
   <div class="card border-0 shadow-sm mb-4">
     <div class="card-body p-4">
-      <h5 class="border-bottom pb-2 mb-4"><i class="bi bi-list-stars me-2"></i>Specifications</h5>
+      <h5 class="border-bottom pb-2 mb-4"><i class="bi bi-list-stars me-2"></i>{{ 'SPECIFICATIONS' | translate }}</h5>
       
       <div class="row g-4">
         
         <ng-container *ngIf="mainCatId === 1">
-          <div class="col-md-4"><strong>Make:</strong><br>{{ model.make }}</div>
-          <div class="col-md-4"><strong>Model:</strong><br>{{ model.model }}</div>
-          <div class="col-md-4"><strong>Year:</strong><br>{{ model.year }}</div>
-          <div class="col-md-4"><strong>KM:</strong><br>{{ model.kilometres }}</div>
-          <div class="col-md-4"><strong>Fuel:</strong><br>{{ model.fuelType }}</div>
-          <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
+          <div class="col-md-4"><strong>{{ 'MAKE_' | translate }}</strong><br>{{ model.make }}</div>
+          <div class="col-md-4"><strong>{{ 'MODEL_' | translate }}</strong><br>{{ model.model }}</div>
+          <div class="col-md-4"><strong>{{ 'YEAR_' | translate }}</strong><br>{{ model.year }}</div>
+          <div class="col-md-4"><strong>{{ 'KM_' | translate }}</strong><br>{{ model.kilometres }}</div>
+          <div class="col-md-4"><strong>{{ 'FUEL_' | translate }}</strong><br>{{ model.fuelType }}</div>
+          <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
 
         <ng-container *ngIf="mainCatId === 2">
-          <div class="col-md-4"><strong>Company:</strong><br>{{ model.companyName }}</div>
-          <div class="col-md-4"><strong>Role:</strong><br>{{ model.jobTitle }}</div>
-          <div class="col-md-4"><strong>Type:</strong><br>{{ model.jobType }}</div>
-          <div class="col-md-4"><strong>Salary:</strong><br>{{ model.salaryMin }} - {{ model.salaryMax }} AED</div>
+          <div class="col-md-4"><strong>{{ 'COMPANY_' | translate }}</strong><br>{{ model.companyName }}</div>
+          <div class="col-md-4"><strong>{{ 'ROLE_' | translate }}</strong><br>{{ model.jobTitle }}</div>
+          <div class="col-md-4"><strong>{{ 'TYPE_' | translate }}</strong><br>{{ model.jobType }}</div>
+          <div class="col-md-4"><strong>{{ 'SALARY_' | translate }}</strong><br>{{ model.salaryMin }} - {{ model.salaryMax }} AED</div>
         </ng-container>
 
         <ng-container *ngIf="mainCatId === 3">
-          <div class="col-md-4"><strong>Type:</strong><br>{{ model.propertyType }}</div>
-          <div class="col-md-4"><strong>Area:</strong><br>{{ model.areaSqft }} sq.ft</div>
-          <div class="col-md-4"><strong>Bed/Bath:</strong><br>{{ model.bedrooms }} Bed / {{ model.bedrooms }} Bath / {{ model.bathrooms }}</div>
-          <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
+          <div class="col-md-4"><strong>{{ 'TYPE_' | translate }}</strong><br>{{ model.propertyType }}</div>
+          <div class="col-md-4"><strong>{{ 'AREA_' | translate }}</strong><br>{{ model.areaSqft }} sq.ft</div>
+          <div class="col-md-4"><strong>{{ 'BED_BATH_' | translate }}</strong><br>{{ model.bedrooms }} Bed / {{ model.bedrooms }} Bath / {{ model.bathrooms }}</div>
+          <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
 
         <ng-container *ngIf="mainCatId === 5">
-          <div class="col-md-4"><strong>Brand:</strong><br>{{ model.brand }}</div>
-          <div class="col-md-4"><strong>Model:</strong><br>{{ model.electronicsModel }}</div>
-          <div class="col-md-4"><strong>Condition:</strong><br>{{ model.condition }}</div>
-          <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
+          <div class="col-md-4"><strong>{{ 'BRAND_' | translate }}</strong><br>{{ model.brand }}</div>
+          <div class="col-md-4"><strong>{{ 'MODEL_' | translate }}</strong><br>{{ model.electronicsModel }}</div>
+          <div class="col-md-4"><strong>{{ 'CONDITION_' | translate }}</strong><br>{{ model.condition }}</div>
+          <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
 
          <ng-container *ngIf="mainCatId === 4">
-          <div class="col-md-4"><strong>Brand:</strong><br>{{ model.brand }}</div>
-          <div class="col-md-4"><strong>Material:</strong><br>{{ model.material }}</div>
-          <div class="col-md-4"><strong>Condition:</strong><br>{{ model.condition }}</div>
-          <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
+          <div class="col-md-4"><strong>{{ 'BRAND_' | translate }}</strong><br>{{ model.brand }}</div>
+          <div class="col-md-4"><strong>{{ 'MATERIAL_' | translate }}</strong><br>{{ model.material }}</div>
+          <div class="col-md-4"><strong>{{ 'CONDITION_' | translate }}</strong><br>{{ model.condition }}</div>
+          <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
 
         <ng-container *ngIf="mainCatId === 6">
-          <div class="col-md-4"><strong>Brand:</strong><br>{{ model.brand }}</div>
-          <div class="col-md-4"><strong>Material:</strong><br>{{ model.material }}</div>
-          <div class="col-md-4"><strong>Condition:</strong><br>{{ model.condition }}</div>
-          <div class="col-md-4"><strong>Price:</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
+          <div class="col-md-4"><strong>{{ 'BRAND_' | translate }}</strong><br>{{ model.brand }}</div>
+          <div class="col-md-4"><strong>{{ 'MATERIAL_' | translate }}</strong><br>{{ model.material }}</div>
+          <div class="col-md-4"><strong>{{ 'CONDITION_' | translate }}</strong><br>{{ model.condition }}</div>
+          <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
       </div>
     </div>
@@ -82,32 +82,31 @@
 
   <div class="card border-0 shadow-sm mb-4">
     <div class="card-body p-4">
-      <h5>Additional Information</h5>
+      <h5>{{ 'ADDITIONAL_INFORMATION' | translate }}</h5>
       
       <p class="text-secondary" style="white-space: pre-line;" *ngIf="mainCatId !== 2">{{ model.description }}</p>
 
       <div *ngIf="mainCatId === 2">
-        <strong class="d-block mt-3">Job Description:</strong>
+        <strong class="d-block mt-3">{{ 'JOB_DESCRIPTION_' | translate }}</strong>
         <p class="text-secondary small" style="white-space: pre-line;">{{ model.description }}</p>
         
-        <strong class="d-block mt-3">Requirements:</strong>
+        <strong class="d-block mt-3">{{ 'REQUIREMENTS_' | translate }}</strong>
         <p class="text-secondary small" style="white-space: pre-line;">{{ model.responsibilities
  }}</p>
       </div>
       
       <div class="mt-4 p-3 bg-light rounded border-start border-primary border-4">
-        <h6 class="mb-2">Contact Details</h6>
-        <div><strong>Posted By:</strong> {{ model.contactName }}</div>
-        <div *ngIf="model.contactPhone"><strong>Phone:</strong> +971 {{ model.contactPhone }}</div>
-        <div *ngIf="model.city"><strong>Location:</strong> {{ model.city }}</div>
+        <h6 class="mb-2">{{ 'CONTACT_DETAILS' | translate }}</h6>
+        <div><strong>{{ 'POSTED_BY_' | translate }}</strong> {{ model.contactName }}</div>
+        <div *ngIf="model.contactPhone"><strong>{{ 'PHONE_' | translate }}</strong> +971 {{ model.contactPhone }}</div>
+        <div *ngIf="model.city"><strong>{{ 'LOCATION_' | translate }}</strong> {{ model.city }}</div>
       </div>
     </div>
   </div>
 
   <div class="d-flex gap-3 mt-4">
     <button class="btn btn-outline-secondary px-5 py-2" (click)="editAd()" [disabled]="isSubmitting">
-      <i class="bi bi-arrow-left me-2"></i> Back to Edit
-    </button>
+      <i class="bi bi-arrow-left me-2"></i>{{ 'BACK_TO_EDIT' | translate }}</button>
     <button class="btn btn-warning flex-grow-1 fw-bold py-2 shadow-sm" (click)="publishAd()" [disabled]="isSubmitting">
       <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
       {{ isSubmitting ? 'Uploading & Publishing...' : 'Confirm & Publish Ad' }}
@@ -123,12 +122,12 @@
         <div class="success-icon mb-4">
           <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
         </div>
-        <h2 class="fw-bold">Ad Published! and Submitted for Review</h2>
-        <p class="text-muted mb-4">Your advertisement for <strong>{{ model.title }}</strong>will be live when approved.</p>
+        <h2 class="fw-bold">{{ 'AD_PUBLISHED_AND_SUBMITTED_FOR_REVIEW' | translate }}</h2>
+        <p class="text-muted mb-4">{{ 'YOUR_ADVERTISEMENT_FOR' | translate }}<strong>{{ model.title }}</strong>{{ 'WILL_BE_LIVE_WHEN_APPROVED_' | translate }}</p>
         
         <div class="d-grid gap-2">
-          <button class="btn btn-warning btn-lg rounded-pill" (click)="goToMyAds()">Manage My Listings</button>
-          <button class="btn btn-link text-decoration-none" (click)="router.navigate(['/home'])">Back to Homepage</button>
+          <button class="btn btn-warning btn-lg rounded-pill" (click)="goToMyAds()">{{ 'MANAGE_MY_LISTINGS' | translate }}</button>
+          <button class="btn btn-link text-decoration-none" (click)="router.navigate(['/home'])">{{ 'BACK_TO_HOMEPAGE' | translate }}</button>
         </div>
       </div>
     </div>
@@ -137,8 +136,8 @@
 
 <ng-template #noDraft>
   <div class="text-center mt-5 py-5 card shadow-sm mx-auto" style="max-width: 500px;">
-    <h3 class="text-muted">No draft found</h3>
-    <p>Please go back and fill in the details.</p>
-    <button class="btn btn-primary mx-auto px-4" (click)="editAd()">Create New Ad</button>
+    <h3 class="text-muted">{{ 'NO_DRAFT_FOUND' | translate }}</h3>
+    <p>{{ 'PLEASE_GO_BACK_AND_FILL_IN_THE_DETAILS_' | translate }}</p>
+    <button class="btn btn-primary mx-auto px-4" (click)="editAd()">{{ 'CREATE_NEW_AD' | translate }}</button>
   </div>
 </ng-template>

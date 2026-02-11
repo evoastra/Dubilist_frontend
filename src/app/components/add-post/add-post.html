@@ -1,6 +1,6 @@
 <div class="m-3 pt-0 mt-5">
   <div class="add-post-wrapper">
-    <h3 class="text-center fw-bold form-title" style="color: #ffa500;">Post Your Ad</h3>
+    <h3 class="text-center fw-bold form-title" style="color: #ffa500;">{{ 'POST_YOUR_AD' | translate }}</h3>
    
 
       
@@ -11,13 +11,13 @@
 
           <!-- MAIN CATEGORY -->
           <div class="form-group mb-3">
-            <label class="form-label">Category</label>
+            <label class="form-label">{{ 'CATEGORY' | translate }}</label>
             <select class="form-select"
                     [ngModel]="selectedMainCategoryId"
                     (ngModelChange)="onMainCategoryChange($event)"
                     name="mainCategory"
                     required>
-              <option [ngValue]="null" disabled>Select Category</option>
+              <option [ngValue]="null" disabled>{{ 'SELECT_CATEGORY' | translate }}</option>
               <option *ngFor="let c of mainCategories" [ngValue]="c.id">
                 {{ c.name }}
               </option>
@@ -26,12 +26,12 @@
 
           <!-- SUB CATEGORY -->
           <div class="form-group mb-3" *ngIf="selectedMainCategoryId && filteredSubCategories.length">
-            <label class="form-label">Sub Category</label>
+            <label class="form-label">{{ 'SUB_CATEGORY' | translate }}</label>
             <select class="form-select"
                     [(ngModel)]="selectedSubCategoryId"
                       (ngModelChange)="onSubCategoryChange($event)"
                     name="subCategory">
-              <option [ngValue]="null" disabled>Select sub category</option>
+              <option [ngValue]="null" disabled>{{ 'SELECT_SUB_CATEGORY' | translate }}</option>
               <option *ngFor="let sc of filteredSubCategories" [ngValue]="sc.id">
                 {{ sc.name }}
               </option>
@@ -40,7 +40,7 @@
 
           <!-- TITLE -->
           <div class="form-group mb-3">
-            <label class="form-label">Ad Title</label>
+            <label class="form-label">{{ 'AD_TITLE' | translate }}</label>
             <input class="form-control"
                    placeholder="Title"
                    (focus)="onFieldAttemptFocus($event)"
@@ -51,15 +51,15 @@
 
           <!-- ------------------------ MOTORS ------------------------- -->
           <ng-container *ngIf="selectedMainCategoryId === 1">
-            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">Vehicle Details</label>
+            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">{{ 'VEHICLE_DETAILS' | translate }}</label>
 
             <div class="row">
               <div class="col-6 mb-2">
-                <label class="form-label">Make</label>
+                <label class="form-label">{{ 'MAKE' | translate }}</label>
                 <input class="form-control" [(ngModel)]="model.make" name="make" placeholder="Tesla" />
               </div>
               <div class="col-6 mb-2">
-                <label class="form-label">Model</label>
+                <label class="form-label">{{ 'MODEL' | translate }}</label>
                 <input class="form-control" [(ngModel)]="model.model" name="model" placeholder="GLX">
 
               </div>
@@ -67,74 +67,74 @@
 
             <div class="row">
               <div class="col-6 mb-2">
-                <label class="form-label">Variant / Trim</label>
+                <label class="form-label">{{ 'VARIANT_TRIM' | translate }}</label>
                 <input class="form-control" [(ngModel)]="model.variant" name="variant" placeholder="GLX, Sport" />
               </div>
               <div class="col-6 mb-2">
-                <label class="form-label">Color</label>
+                <label class="form-label">{{ 'COLOR' | translate }}</label>
                 <input class="form-control" [(ngModel)]="model.color" name="color" placeholder="White" />
               </div>
             </div>
 
             <div class="row">
               <div class="col-6 mb-2">
-                <label class="form-label">Year</label>
+                <label class="form-label">{{ 'YEAR' | translate }}</label>
                 <input type="number" class="form-control" [(ngModel)]="model.year" name="year" placeholder="2022" />
               </div>
               <div class="col-6 mb-2">
-                <label class="form-label">Kilometres</label>
+                <label class="form-label">{{ 'KILOMETRES' | translate }}</label>
                 <input type="number" class="form-control" [(ngModel)]="model.kilometres" name="kilometres" placeholder="35000" />
               </div>
             </div>
 
             <div class="mb-2">
-              <label class="form-label">Body Type</label>
+              <label class="form-label">{{ 'BODY_TYPE' | translate }}</label>
               <select class="form-select" [(ngModel)]="model.bodyType" name="bodyType">
-                <option value="Sedan">Sedan</option>
-                <option value="SUV">SUV</option>
-                <option value="Coupe">Coupe</option>
-                <option value="Truck">Truck</option>
-                <option value="Van">Van</option>
+                <option value="Sedan">{{ 'SEDAN' | translate }}</option>
+                <option value="SUV">{{ 'SUV' | translate }}</option>
+                <option value="Coupe">{{ 'COUPE' | translate }}</option>
+                <option value="Truck">{{ 'TRUCK' | translate }}</option>
+                <option value="Van">{{ 'VAN' | translate }}</option>
               </select>
             </div>
 
             <div class="form-check mb-3">
               <input class="form-check-input" type="checkbox" [(ngModel)]="model.serviceHistory" name="serviceHistory">
-              <label class="form-check-label">Full Service History Available</label>
+              <label class="form-check-label">{{ 'FULL_SERVICE_HISTORY_AVAILABLE' | translate }}</label>
             </div>
           
             <div class="mb-2">
-  <label class="form-label">Condition</label>
+  <label class="form-label">{{ 'CONDITION' | translate }}</label>
   <select class="form-select"
           [(ngModel)]="model.condition"
           name="condition"
           required>
-    <option [ngValue]="null" disabled>Select condition</option>
-    <option value="New">New</option>
-    <option value="Used">Used</option>
+    <option [ngValue]="null" disabled>{{ 'SELECT_CONDITION' | translate }}</option>
+    <option value="New">{{ 'NEW' | translate }}</option>
+    <option value="Used">{{ 'USED' | translate }}</option>
   </select>
 </div>
 
              
             <!-- FUEL TYPE -->
             <div class="mb-3 price-box">
-              <label class="form-label d-block">Fuel Type</label>
+              <label class="form-label d-block">{{ 'FUEL_TYPE' | translate }}</label>
               <div class="btn-group w-100">
                 <button type="button" class="btn btn-outline-light"
                         [class.active]="model.fuelType === 'Petrol'"
-                        (click)="model.fuelType = 'Petrol'">Petrol</button>
+                        (click)="model.fuelType = 'Petrol'">{{ 'PETROL' | translate }}</button>
 
                 <button type="button" class="btn btn-outline-light"
                         [class.active]="model.fuelType === 'Diesel'"
-                        (click)="model.fuelType = 'Diesel'">Diesel</button>
+                        (click)="model.fuelType = 'Diesel'">{{ 'DIESEL' | translate }}</button>
 
                 <button type="button" class="btn btn-outline-light"
                         [class.active]="model.fuelType === 'Electric'"
-                        (click)="model.fuelType = 'Electric'">Electric</button>
+                        (click)="model.fuelType = 'Electric'">{{ 'ELECTRIC' | translate }}</button>
 
                 <button type="button" class="btn btn-outline-light"
                         [class.active]="model.fuelType === 'Hybrid'"
-                        (click)="model.fuelType = 'Hybrid'">Hybrid</button>
+                        (click)="model.fuelType = 'Hybrid'">{{ 'HYBRID' | translate }}</button>
               </div>
             </div>
           </ng-container>
@@ -142,45 +142,45 @@
 
           <!-- ------------------------ JOBS ------------------------- -->
           <ng-container *ngIf="selectedMainCategoryId === 2">
-            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">Job Details</label>
+            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">{{ 'JOB_DETAILS' | translate }}</label>
 
             <div class="mb-2">
-              <label class="form-label">Job Title</label>
+              <label class="form-label">{{ 'JOB_TITLE' | translate }}</label>
               <input class="form-control" [(ngModel)]="model.jobTitle" name="jobTitle" placeholder="Sales Manager">
             </div>
 
             <div class="row">
               <div class="col-6 mb-2">
-                <label class="form-label">Company Name</label>
+                <label class="form-label">{{ 'COMPANY_NAME' | translate }}</label>
                 <input class="form-control" [(ngModel)]="model.companyName" name="companyName">
               </div>
               <div class="col-6 mb-2">
-                <label class="form-label">Industry</label>
+                <label class="form-label">{{ 'INDUSTRY' | translate }}</label>
                 <input class="form-control" [(ngModel)]="model.industry" name="industry">
               </div>
             </div>
 
             <div class="row">
               <div class="col-6 mb-2">
-                <label class="form-label">Job Type</label>
+                <label class="form-label">{{ 'JOB_TYPE' | translate }}</label>
                 <select class="form-select" [(ngModel)]="model.jobType" name="jobType">
-                  <option value="Full-time">Full-time</option>
-                  <option value="Part-time">Part-time</option>
-                  <option value="Contract">Contract</option>
-                  <option value="Internship">Internship</option>
+                  <option value="Full-time">{{ 'FULL_TIME' | translate }}</option>
+                  <option value="Part-time">{{ 'PART_TIME' | translate }}</option>
+                  <option value="Contract">{{ 'CONTRACT' | translate }}</option>
+                  <option value="Internship">{{ 'INTERNSHIP' | translate }}</option>
                 </select>
               </div>
               <div class="col-6 mb-2">
-                <label class="form-label">Workplace</label>
+                <label class="form-label">{{ 'WORKPLACE' | translate }}</label>
                 <select class="form-select" [(ngModel)]="model.workplaceType" name="workplaceType">
-                  <option value="On-site">On-site</option>
-                  <option value="Remote">Remote</option>
-                  <option value="Hybrid">Hybrid</option>
+                  <option value="On-site">{{ 'ON_SITE' | translate }}</option>
+                  <option value="Remote">{{ 'REMOTE' | translate }}</option>
+                  <option value="Hybrid">{{ 'HYBRID' | translate }}</option>
                 </select>
               </div>
             </div>
 
-            <label class="form-label">Experience (Years)</label>
+            <label class="form-label">{{ 'EXPERIENCE_YEARS_' | translate }}</label>
             <div class="row">
               <div class="col-6">
                 <input class="form-control" type="number"
@@ -194,7 +194,7 @@
               </div>
             </div>
 
-            <label class="form-label">Salary Range</label>
+            <label class="form-label">{{ 'SALARY_RANGE' | translate }}</label>
             <div class="row">
               <div class="col-4">
                 <input class="form-control" type="number"
@@ -208,26 +208,26 @@
               </div>
               <div class="col-4">
                 <select class="form-select" [(ngModel)]="model.salaryPeriod" name="salaryPeriod">
-                  <option value="Monthly">Monthly</option>
-                  <option value="Yearly">Yearly</option>
+                  <option value="Monthly">{{ 'MONTHLY' | translate }}</option>
+                  <option value="Yearly">{{ 'YEARLY' | translate }}</option>
                 </select>
               </div>
             </div>
 
             <div class="mb-2">
-              <label class="form-label">Application Email</label>
+              <label class="form-label">{{ 'APPLICATION_EMAIL' | translate }}</label>
               <input type="email" class="form-control"
                      [(ngModel)]="model.applicationEmail" name="applicationEmail">
             </div>
 
             <div class="mb-2">
-              <label class="form-label">Responsibilities</label>
+              <label class="form-label">{{ 'RESPONSIBILITIES' | translate }}</label>
               <textarea class="form-control" rows="3"
                         [(ngModel)]="model.responsibilities" name="responsibilities"></textarea>
             </div>
 
             <div class="mb-2">
-              <label class="form-label">Skills / Requirements</label>
+              <label class="form-label">{{ 'SKILLS_REQUIREMENTS' | translate }}</label>
               <textarea class="form-control" rows="3"
                         [(ngModel)]="model.skillsRequired" name="skillsRequired"></textarea>
             </div>
@@ -238,34 +238,34 @@
           <!-- ------------------------ PROPERTY ------------------------- -->
           <ng-container *ngIf="selectedMainCategoryId === 3">
 
-            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">Property Details</label>
+            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">{{ 'PROPERTY_DETAILS' | translate }}</label>
 
             <!-- Listing Type -->
             <div class="price-box mb-3">
-              <label class="form-label d-block">Listing Type</label>
+              <label class="form-label d-block">{{ 'LISTING_TYPE' | translate }}</label>
               <div class="btn-group bg-white w-100">
                 <button type="button" class="btn btn-light"
                         [class.active]="model.listingType === 'For Sale'"
-                        (click)="model.listingType = 'For Sale'">For Sale</button>
+                        (click)="model.listingType = 'For Sale'">{{ 'FOR_SALE' | translate }}</button>
 
                 <button type="button" class="btn btn-light"
                         [class.active]="model.listingType === 'For Rent'"
-                        (click)="model.listingType = 'For Rent'">For Rent</button>
+                        (click)="model.listingType = 'For Rent'">{{ 'FOR_RENT' | translate }}</button>
               </div>
             </div>
 
             <div class="row">
               <div class="col-6 mb-2">
-                <label class="form-label">Property Type</label>
+                <label class="form-label">{{ 'PROPERTY_TYPE' | translate }}</label>
                 <select class="form-select" [(ngModel)]="model.propertyType" name="propertyType">
-                  <option value="Apartment">Apartment</option>
-                  <option value="Villa">Villa</option>
-                  <option value="Office">Office</option>
-                  <option value="Townhouse">Townhouse</option>
+                  <option value="Apartment">{{ 'APARTMENT' | translate }}</option>
+                  <option value="Villa">{{ 'VILLA' | translate }}</option>
+                  <option value="Office">{{ 'OFFICE' | translate }}</option>
+                  <option value="Townhouse">{{ 'TOWNHOUSE' | translate }}</option>
                 </select>
               </div>
               <div class="col-6 mb-2">
-                <label class="form-label">Area (Sqft)</label>
+                <label class="form-label">{{ 'AREA_SQFT_' | translate }}</label>
                 <input class="form-control" type="number"
                        [(ngModel)]="model.areaSqft" name="areaSqft"
                        placeholder="1200">
@@ -274,47 +274,47 @@
 
             <div class="row">
               <div class="col-4 mb-2">
-                <label>Bedrooms</label>
+                <label>{{ 'BEDROOMS' | translate }}</label>
                 <input class="form-control" type="number" [(ngModel)]="model.bedrooms" name="bedrooms">
               </div>
               <div class="col-4 mb-2">
-                <label>Bathrooms</label>
+                <label>{{ 'BATHROOMS' | translate }}</label>
                 <input class="form-control" type="number" [(ngModel)]="model.bathrooms" name="bathrooms">
               </div>
               <div class="col-4 mb-2">
-                <label>Halls</label>
+                <label>{{ 'HALLS' | translate }}</label>
                 <input class="form-control" type="number" [(ngModel)]="model.halls" name="halls">
               </div>
             </div>
 
             <div class="mb-3" *ngIf="model.listingType === 'For Rent'">
-              <label class="form-label">Rent Frequency</label>
+              <label class="form-label">{{ 'RENT_FREQUENCY' | translate }}</label>
               <select class="form-select" [(ngModel)]="model.rentFrequency" name="rentFrequency">
-                <option value="Monthly">Monthly</option>
-                <option value="Yearly">Yearly</option>
-                <option value="Weekly">Weekly</option>
+                <option value="Monthly">{{ 'MONTHLY' | translate }}</option>
+                <option value="Yearly">{{ 'YEARLY' | translate }}</option>
+                <option value="Weekly">{{ 'WEEKLY' | translate }}</option>
               </select>
             </div>
 
             <div class="price-box mb-3">
-               <label class="form-label d-block">Furnishing</label>
+               <label class="form-label d-block">{{ 'FURNISHING' | translate }}</label>
                <div class="btn-group bg-white w-100">
                  <button type="button" class="btn btn-light"
                          [class.active]="model.furnishing === 'Furnished'"
-                         (click)="model.furnishing = 'Furnished'">Furnished</button>
+                         (click)="model.furnishing = 'Furnished'">{{ 'FURNISHED' | translate }}</button>
 
                  <button type="button" class="btn btn-light"
                          [class.active]="model.furnishing === 'Unfurnished'"
-                         (click)="model.furnishing = 'Unfurnished'">Unfurnished</button>
+                         (click)="model.furnishing = 'Unfurnished'">{{ 'UNFURNISHED' | translate }}</button>
 
                  <button type="button" class="btn btn-light"
                          [class.active]="model.furnishing === 'Partly'"
-                         (click)="model.furnishing = 'Partly'">Partly</button>
+                         (click)="model.furnishing = 'Partly'">{{ 'PARTLY' | translate }}</button>
                </div>
             </div>
 
             <div class="p-2 form-group bg-white rounded">
-              <label class="form-label d-block">Amenities</label>
+              <label class="form-label d-block">{{ 'AMENITIES' | translate }}</label>
               <div class="amenities-wrapper">
                 <button type="button"
                         *ngFor="let a of amenitiesOptions"
@@ -332,45 +332,45 @@
           <!-- ------------------------ ELECTRONICS ------------------------- -->
           <ng-container *ngIf="selectedMainCategoryId === 5">
 
-            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">Device Details</label>
+            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">{{ 'DEVICE_DETAILS' | translate }}</label>
 
             <div class="row">
               <div class="col-6 mb-2">
-                <label class="form-label">Brand</label>
+                <label class="form-label">{{ 'BRAND' | translate }}</label>
                 <input class="form-control" [(ngModel)]="model.brand" name="electronicBrand">
               </div>
               <div class="col-6 mb-2">
-                <label class="form-label">Model</label>
+                <label class="form-label">{{ 'MODEL' | translate }}</label>
                 <input class="form-control" [(ngModel)]="model.model" name="electronicModel">
               </div>
             </div>
 
             <div class="row">
               <div class="col-6 mb-2">
-                <label class="form-label">Storage</label>
+                <label class="form-label">{{ 'STORAGE' | translate }}</label>
                 <input class="form-control" [(ngModel)]="model.storage" name="storage" placeholder="256GB">
               </div>
               <div class="col-6 mb-2">
-                <label class="form-label">Color</label>
+                <label class="form-label">{{ 'COLOR' | translate }}</label>
                 <input class="form-control" [(ngModel)]="model.color" name="color">
               </div>
             </div>
 
             <div class="row">
               <div class="col-6 mb-2">
-                <label>Warranty Status</label>
+                <label>{{ 'WARRANTY_STATUS' | translate }}</label>
                 <select class="form-select" [(ngModel)]="model.warrantyStatus" name="warrantyStatus">
-                  <option value="Active">Active</option>
-                  <option value="Expired">Expired</option>
-                  <option value="None">None</option>
+                  <option value="Active">{{ 'ACTIVE' | translate }}</option>
+                  <option value="Expired">{{ 'EXPIRED' | translate }}</option>
+                  <option value="None">{{ 'NONE' | translate }}</option>
                 </select>
               </div>
               <div class="col-6 mb-2">
-                <label>Condition</label>
+                <label>{{ 'CONDITION' | translate }}</label>
                 <select class="form-select" [(ngModel)]="model.condition" name="condition">
-                  <option value="New">New</option>
-                  <option value="Like New">Like New</option>
-                  <option value="Used">Used</option>
+                  <option value="New">{{ 'NEW' | translate }}</option>
+                  <option value="Like New">{{ 'LIKE_NEW' | translate }}</option>
+                  <option value="Used">{{ 'USED' | translate }}</option>
                 </select>
               </div>
             </div>
@@ -379,12 +379,12 @@
               <div class="form-check">
                 <input class="form-check-input" type="checkbox"
                        [(ngModel)]="model.hasOriginalBox" name="hasOriginalBox">
-                <label class="form-check-label">Has Original Box</label>
+                <label class="form-check-label">{{ 'HAS_ORIGINAL_BOX' | translate }}</label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox"
                        [(ngModel)]="model.hasCharger" name="hasCharger">
-                <label class="form-check-label">Has Charger</label>
+                <label class="form-check-label">{{ 'HAS_CHARGER' | translate }}</label>
               </div>
             </div>
 
@@ -394,30 +394,30 @@
           <!-- ------------------------ CLASSIFIEDS / FURNITURE ------------------------- -->
           <ng-container *ngIf="selectedMainCategoryId === 4 || selectedMainCategoryId === 6">
 
-            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">Item Details</label>
+            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">{{ 'ITEM_DETAILS' | translate }}</label>
 
             <div class="mb-2">
-              <label>Brand</label>
+              <label>{{ 'BRAND' | translate }}</label>
               <input class="form-control" [(ngModel)]="model.brand" name="brand">
             </div>
 
             <div class="row">
               <div class="col-6 mb-2">
-                <label>Material</label>
+                <label>{{ 'MATERIAL' | translate }}</label>
                 <input class="form-control" [(ngModel)]="model.material" name="material">
               </div>
               <div class="col-6 mb-2">
-                <label>Condition</label>
+                <label>{{ 'CONDITION' | translate }}</label>
                 <select class="form-select" [(ngModel)]="model.condition" name="condition">
-                  <option value="New">New</option>
-                  <option value="Good">Good</option>
-                  <option value="Fair">Fair</option>
+                  <option value="New">{{ 'NEW' | translate }}</option>
+                  <option value="Good">{{ 'GOOD' | translate }}</option>
+                  <option value="Fair">{{ 'FAIR' | translate }}</option>
                 </select>
               </div>
             </div>
 
             <div class="mb-3">
-              <label>Dimensions</label>
+              <label>{{ 'DIMENSIONS' | translate }}</label>
               <input class="form-control"
                      [(ngModel)]="model.dimensions" name="dimensions"
                      placeholder="200x150x90 cm">
@@ -435,24 +435,24 @@
           <!-- Transmission (Motors) -->
           <ng-container *ngIf="selectedMainCategoryId === 1">
             <div class="mb-3 price-box p-3">
-              <label class="form-label d-block">Transmission</label>
+              <label class="form-label d-block">{{ 'TRANSMISSION' | translate }}</label>
               <div class="btn-group w-100">
                 <button type="button" class="btn btn-outline-light"
                         [class.active]="model.transmission === 'Automatic'"
-                        (click)="model.transmission = 'Automatic'">Automatic</button>
+                        (click)="model.transmission = 'Automatic'">{{ 'AUTOMATIC' | translate }}</button>
 
                 <button type="button" class="btn btn-outline-light"
                         [class.active]="model.transmission === 'Manual'"
-                        (click)="model.transmission = 'Manual'">Manual</button>
+                        (click)="model.transmission = 'Manual'">{{ 'MANUAL' | translate }}</button>
               </div>
             </div>
           </ng-container>
 
           <!-- PRICE -->
           <div class="price-box mb-3 form-group" *ngIf="selectedMainCategoryId !== 2">
-            <label class="form-label d-block">Price</label>
+            <label class="form-label d-block">{{ 'PRICE' | translate }}</label>
             <div class="input-group mb-2">
-              <span class="input-group-text">AED</span>
+              <span class="input-group-text">{{ 'AED' | translate }}</span>
               <input class="form-control"
                      type="number"
                      [(ngModel)]="model.price"
@@ -462,13 +462,13 @@
             <div class="form-check small">
               <input type="checkbox" class="form-check-input"
                      [(ngModel)]="model.isNegotiable" name="isNegotiable">
-              <label class="form-check-label">Price is negotiable</label>
+              <label class="form-check-label">{{ 'PRICE_IS_NEGOTIABLE' | translate }}</label>
             </div>
           </div>
 
           <!-- LOCATION -->
           <div class="price-box mb-3 form-group">
-            <label class="form-label">Location</label>
+            <label class="form-label">{{ 'LOCATION' | translate }}</label>
             <input class="form-control mb-2"
                    placeholder="City"
                    [(ngModel)]="model.city"
@@ -482,7 +482,7 @@
 
           <!-- CONTACT -->
           <div class="price-box mb-3 form-group">
-            <label class="form-label">Contact Information</label>
+            <label class="form-label">{{ 'CONTACT_INFORMATION' | translate }}</label>
             <input class="form-control mb-2" placeholder="Name"
                    [(ngModel)]="model.contactName" name="contactName">
 
@@ -500,7 +500,7 @@
                      name="contactWhatsapp"
                      [value]="model.contactPhone"
                     >
-              <label>Available on WhatsApp</label>
+              <label>{{ 'AVAILABLE_ON_WHATSAPP' | translate }}</label>
             </div>
           </div>
 
@@ -540,8 +540,8 @@
               <div class="preview-item position-relative"
                    *ngFor="let preview of imagePreviews; let i = index">
                 <img [src]="preview" />
-                <button type="button" class="btn-remove" (click)="removeImage(i)">&times;</button>
-                <div class="order-badge" *ngIf="i === 0">Cover</div>
+                <button type="button" class="btn-remove" (click)="removeImage(i)">{{ '_TIMES_' | translate }}</button>
+                <div class="order-badge" *ngIf="i === 0">{{ 'COVER' | translate }}</div>
               </div>
             </div>
           </div>
@@ -550,21 +550,19 @@
 
       <!-- AI BOX -->
       <div class="ai-box mb-3 d-flex flex-row justify-content-center align-items-center">
-        <div class="ai-icon me-2">🧠</div>
+        <div class="ai-icon me-2">{{ '_' | translate }}</div>
         <div class="flex-grow-1">
-          <p class="fw-bold mb-1 small">Save time with AI.</p>
-          <p class="small mb-0">Generate description from given data.</p>
+          <p class="fw-bold mb-1 small">{{ 'SAVE_TIME_WITH_AI_' | translate }}</p>
+          <p class="small mb-0">{{ 'GENERATE_DESCRIPTION_FROM_GIVEN_DATA_' | translate }}</p>
         </div>
         <button type="button"
                 class="btn btn-warning rounded-pill px-4 py-2 text-white"
-                (click)="generateDescription()">
-          Generate
-        </button>
+                (click)="generateDescription()">{{ 'GENERATE' | translate }}</button>
       </div>
 
       <!-- DESCRIPTION -->
       <div class="form-group mb-4">
-        <label class="form-label">Description</label>
+        <label class="form-label">{{ 'DESCRIPTION' | translate }}</label>
         <textarea class="form-control"
                   rows="6"
                   [(ngModel)]="model.description"
@@ -574,9 +572,7 @@
       <div class="text-center pb-3 mt-4">
         <button class="btn btn-warning px-5 py-2 text-dark fw-bold"
                 type="submit"
-                [disabled]="f.invalid">
-          Next Step
-        </button>
+                [disabled]="f.invalid">{{ 'NEXT_STEP' | translate }}</button>
       </div>
     </form>
   </div>
@@ -585,8 +581,8 @@
 <!-- MODAL -->
 <div class="modal-backdrop-custom" *ngIf="showSelectCategoryModal">
   <div class="modal-dialog-custom">
-    <h5 class="mb-3">Select a category</h5>
-    <p class="mb-3">Please choose a category to see relevant fields.</p>
-    <button class="btn btn-warning" (click)="closeCategoryModal()">OK</button>
+    <h5 class="mb-3">{{ 'SELECT_A_CATEGORY' | translate }}</h5>
+    <p class="mb-3">{{ 'PLEASE_CHOOSE_A_CATEGORY_TO_SEE_RELEVANT' | translate }}</p>
+    <button class="btn btn-warning" (click)="closeCategoryModal()">{{ 'OK' | translate }}</button>
   </div>
 </div>

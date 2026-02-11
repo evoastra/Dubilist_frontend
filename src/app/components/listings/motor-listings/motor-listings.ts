@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { ListingsService } from '../../../services/listing-service';
 import { AuthService } from '../../../services/auth-service';
 import { ChatService } from '../../../services/chat-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 /* =====================
    INTERFACE
@@ -49,7 +50,7 @@ export interface MotorsListing {
 @Component({
   selector: 'app-motors-listings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,TranslateModule],
   templateUrl: './motor-listings.html',
   styleUrls: ['./motor-listings.css']
 })

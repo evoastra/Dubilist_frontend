@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ListingsService } from '../../services/listing-service';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
 interface Listing {
   title: string;
@@ -15,7 +16,7 @@ interface Listing {
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [NgFor, CommonModule, RouterLink,FormsModule],
+  imports: [NgFor, CommonModule, RouterLink,FormsModule,TranslateModule],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })

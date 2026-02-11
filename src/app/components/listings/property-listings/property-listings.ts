@@ -7,6 +7,7 @@ import { ListingsService } from '../../../services/listing-service';
 import { AuthService } from '../../../services/auth-service';
 import { ChatService } from '../../../services/chat-service';
 import { error } from 'console';
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface PropertyImage {
   imageUrl: string;
@@ -41,7 +42,7 @@ export interface PropertyListing {
 @Component({
   selector: 'app-property-listings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,TranslateModule],
   templateUrl: './property-listings.html',
   styleUrls: ['./property-listings.css']
 })

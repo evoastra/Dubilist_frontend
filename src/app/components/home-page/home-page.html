@@ -8,15 +8,13 @@
 
   <div class="hero-section text-center text-white  py-md-5">
     <div class="overlay "></div>
-    <h4 class="  mb-4">
-      Best place to sell and buy anything from cars to homes and everything in between
-    </h4>
+    <h4 class="  mb-4">{{ 'BEST_PLACE_TO_SELL_AND_BUY_ANYTHING_FROM' | translate }}</h4>
 
     <div class="bg-dark bg-opacity-75 m-2 m-md-3 p-3 rounded-3">
       <div
         class="d-none d-md-flex justify-content-center align-items-center gap-2 gap-lg-3 mb-3 flex-wrap"
       >
-        <span class="fw-bold">Searching in</span>
+        <span class="fw-bold">{{ 'SEARCHING_IN' | translate }}</span>
 
         <button
           *ngFor="let cat of categories"
@@ -45,9 +43,7 @@
             />
           </div>
 
-          <button class="btn btn-warning text-white fw-bold px-5 py-2"  (click)="onSearch()">
-            Search
-          </button>
+          <button class="btn btn-warning text-white fw-bold px-5 py-2"  (click)="onSearch()">{{ 'SEARCH' | translate }}</button>
         </div>
       </div>
     </div>
@@ -60,9 +56,7 @@
   class="featured-listings container"
   *ngIf="hasSearched"
 >
-  <h2>
-    Search Results
-    <span class="text-muted fs-6">
+  <h2>{{ 'SEARCH_RESULTS' | translate }}<span class="text-muted fs-6">
       for "{{ searchQuery }}"
     </span>
   </h2>
@@ -98,9 +92,7 @@
   <p
     *ngIf="!isSearching && !searchResults.length"
     class="text-muted text-center py-4"
-  >
-    No results found 😕
-  </p>
+  >{{ 'NO_RESULTS_FOUND_' | translate }}</p>
 </section>
 
 
@@ -110,14 +102,12 @@
       class="container d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start"
     >
       <div class="text-white mb-3 mb-md-0">
-        <h4 class="fw-bold m-0">Have Something to sell?</h4>
-        <p class="m-0">Post an Ad for free and start earning today.</p>
+        <h4 class="fw-bold m-0">{{ 'HAVE_SOMETHING_TO_SELL_' | translate }}</h4>
+        <p class="m-0">{{ 'POST_AN_AD_FOR_FREE_AND_START_EARNING_TO' | translate }}</p>
       </div>
       <button routerLink="/add-post"
         class="btn btn-white bg-white text-warning fw-bold px-4 py-3 shadow-sm rounded-3 mt-3 mt-md-0"
-      >
-        Post Your Ad Now
-      </button>
+      >{{ 'POST_YOUR_AD_NOW' | translate }}</button>
     </div>
   </section>
 </div>
@@ -141,18 +131,14 @@
 
       <!-- Text + Button -->
       <div class="text-center text-md-start">
-        <h4 class="fw-bold mb-2">Looking for an Interior Designer?</h4>
-        <p class="text-muted mb-3">
-          Find the perfect match for your dream space
-        </p>
+        <h4 class="fw-bold mb-2">{{ 'LOOKING_FOR_AN_INTERIOR_DESIGNER_' | translate }}</h4>
+        <p class="text-muted mb-3">{{ 'FIND_THE_PERFECT_MATCH_FOR_YOUR_DREAM_SP' | translate }}</p>
 
         <button
           class="btn fw-bold text-white px-4 py-2 rounded-3"
           style="background:#FFA500;"
           routerLink="/listings/interior-designers"
-        >
-          Explore
-        </button>
+        >{{ 'EXPLORE' | translate }}</button>
       </div>
     </div>
   </section>
@@ -174,18 +160,14 @@
 
       <!-- Text + Button -->
       <div class="text-center text-md-start order-md-1">
-        <h4 class="fw-bold mb-2">Connect with Agents and Agencies...!</h4>
-        <p class="text-muted mb-3">
-          Reach our partners to find your perfect home!
-        </p>
+        <h4 class="fw-bold mb-2">{{ 'CONNECT_WITH_AGENTS_AND_AGENCIES_' | translate }}</h4>
+        <p class="text-muted mb-3">{{ 'REACH_OUR_PARTNERS_TO_FIND_YOUR_PERFECT_' | translate }}</p>
 
         <button
           class="btn fw-bold text-white px-4 py-2 rounded-3"
           style="background:#FFA500;"
           (click)="openCmgSoon()"
-        >
-          Find Now
-        </button>
+        >{{ 'FIND_NOW' | translate }}</button>
       </div>
     </div>
   </section>
@@ -198,7 +180,7 @@
 
 <section class="browse-by-category mb-3">
   <div class="container border border-light-subtle rounded-4 p-3 p-md-4">
-    <h2 class="fw-bold">Browse by Category</h2>
+    <h2 class="fw-bold">{{ 'BROWSE_BY_CATEGORY' | translate }}</h2>
 
     <div class="category-grid">
       <div class="category-card" routerLink="/listings/property">
@@ -206,7 +188,7 @@
           src="/assets/images/Property.jpg"
           alt="Property"
         />
-        <h3>Property</h3>
+        <h3>{{ 'PROPERTY' | translate }}</h3>
       </div>
 
       <div class="category-card"  routerLink="/listings/motors">
@@ -214,7 +196,7 @@
           src="/assets/images/Motors.jpg"
           alt="Motors"
         />
-        <h3>Motors</h3>
+        <h3>{{ 'MOTORS' | translate }}</h3>
       </div>
 
       <div class="category-card"  routerLink="/listings/electronics">
@@ -222,7 +204,7 @@
           src="/assets/images/Electronics.jpg"
           alt="Electronics"
         />
-        <h3>Electronics</h3>
+        <h3>{{ 'ELECTRONICS' | translate }}</h3>
       </div>
 
       <div class="category-card"  routerLink="/listings/furniture">
@@ -230,7 +212,7 @@
           src="/assets/images/Furniture.jpg"
           alt="Furniture"
         />
-        <h3>Furniture</h3>
+        <h3>{{ 'FURNITURE' | translate }}</h3>
       </div>
 
       <div class="category-card"  routerLink="/listings/classifieds">
@@ -238,7 +220,7 @@
           src="/assets/images/Classifieds.jpg"
           alt="Classifieds"
         />
-        <h3>Classifieds</h3>
+        <h3>{{ 'CLASSIFIEDS' | translate }}</h3>
       </div>
 
       <div class="category-card"  routerLink="/listings/jobs">
@@ -246,7 +228,7 @@
           src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80"
           alt="Jobs"
         />
-        <h3>Jobs</h3>
+        <h3>{{ 'JOBS' | translate }}</h3>
       </div>
 
       <div class="category-card"  routerLink="/listings/property">
@@ -254,7 +236,7 @@
           src="/assets/images/Rooms for rent.jpg"
           alt="Rooms for Rent"
         />
-        <h3>Rooms for Rent</h3>
+        <h3>{{ 'ROOMS_FOR_RENT' | translate }}</h3>
       </div>
 
       <div class="category-card"  routerLink="/listings/interior-designers">
@@ -262,14 +244,14 @@
           src="/assets/images/Interior Designers.jpg"
           alt="Interior Designers"
         />
-        <h3>Interior Designers</h3>
+        <h3>{{ 'INTERIOR_DESIGNERS' | translate }}</h3>
       </div>
     </div>
   </div>
 </section>
 
 <section class="featured-listings container">
-  <h2>Featured For You</h2>
+  <h2>{{ 'FEATURED_FOR_YOU' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
     <div class="listing-card" *ngFor="let item of featuredListings"  (click)="goToCategory(item)">
@@ -286,7 +268,7 @@
 </section>
 
 <section class="featured-listings container">
-  <h2>Popular in Motors</h2>
+  <h2>{{ 'POPULAR_IN_MOTORS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
     <div class="listing-card" *ngFor="let item of popularCars"  (click)="goToCategory(item)">
@@ -304,7 +286,7 @@
 </section>
 
 <section class="featured-listings container">
-  <h2>Popular in Furniture</h2>
+  <h2>{{ 'POPULAR_IN_FURNITURE' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
     <div class="listing-card" *ngFor="let item of popularFurniture"  (click)="goToCategory(item)">
@@ -322,7 +304,7 @@
 </section>
 
 <section class="featured-listings container">
-  <h2>Popular in Resdentials</h2>
+  <h2>{{ 'POPULAR_IN_RESDENTIALS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
     <div class="listing-card" *ngFor="let item of residentialListings"  (click)="goToCategory(item)">
@@ -340,7 +322,7 @@
 </section>
 
 <section class="featured-listings container">
-  <h2>Popular in Electronics</h2>
+  <h2>{{ 'POPULAR_IN_ELECTRONICS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
     <div class="listing-card" *ngFor="let item of electronicsListings"  (click)="goToCategory(item)">
@@ -358,7 +340,7 @@
 </section>
 
 <section class="featured-listings container">
-  <h2>Popular in Classifieds</h2>
+  <h2>{{ 'POPULAR_IN_CLASSIFIEDS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
     <div class="listing-card" *ngFor="let item of classifiedListings"  (click)="goToCategory(item)">
@@ -383,6 +365,6 @@
     <div class="cmg-soon-header d-flex justify-content-end">
     <i class="bi bi-x-lg cmg-close-btn" (click)="showCmgSoon = false"></i>
   </div>
-    <p>Coming Soon!</p>
+    <p>{{ 'COMING_SOON_' | translate }}</p>
   </div>
 </div>

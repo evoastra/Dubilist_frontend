@@ -3,7 +3,7 @@
    <div class="container  my-4">
 
   <!-- HEADER -->
-  <h1 class="fw-bold mb-3">Favourites</h1>
+  <h1 class="fw-bold mb-3">{{ 'FAVOURITES' | translate }}</h1>
 
   <!-- SEARCH -->
   <div class="input-group mb-4">
@@ -25,9 +25,7 @@
   </div>
 
   <!-- EMPTY -->
-  <div *ngIf="!isLoading && filtered.length === 0" class="text-center text-muted py-5">
-    No favourites found
-  </div>
+  <div *ngIf="!isLoading && filtered.length === 0" class="text-center text-muted py-5">{{ 'NO_FAVOURITES_FOUND' | translate }}</div>
 
   <!-- GRID -->
   <div class="row g-4" *ngIf="!isLoading && filtered.length">

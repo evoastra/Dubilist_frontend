@@ -3,21 +3,19 @@
 
   <!-- HEADER -->
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="text-warning">My Ads</h1>
-    <button class="btn btn-warning text-white" (click)="postNewAd()">
-      Post New Ad
-    </button>
+    <h1 class="text-warning">{{ 'MY_ADS' | translate }}</h1>
+    <button class="btn btn-warning text-white" (click)="postNewAd()">{{ 'POST_NEW_AD' | translate }}</button>
   </div>
 
   <!-- TABS -->
   <div class="mb-4">
     <button class="tab-btn"
       [class.active]="activeTab==='active'"
-      (click)="activeTab='active'">Active</button>
+      (click)="activeTab='active'">{{ 'ACTIVE' | translate }}</button>
 
     <button class="tab-btn"
       [class.active]="activeTab==='inactive'"
-      (click)="activeTab='inactive'">Inactive</button>
+      (click)="activeTab='inactive'">{{ 'INACTIVE' | translate }}</button>
   </div>
 
   <!-- ADS LIST -->
@@ -55,9 +53,7 @@
 
           <button *ngIf="isJob(ad)"
           class="btn btn-outline-warning mb-2"
-          (click)="openApplications(ad)">
-          View Applications
-        </button>
+          (click)="openApplications(ad)">{{ 'VIEW_APPLICATIONS' | translate }}</button>
       </div>
 
       <div class="actions text-end">
@@ -65,9 +61,7 @@
       
 
         <button class="btn btn-warning text-white"
-          (click)="removeAd(ad.id)">
-          Remove Ad
-        </button>
+          (click)="removeAd(ad.id)">{{ 'REMOVE_AD' | translate }}</button>
 
       </div>
 
@@ -84,14 +78,14 @@
 
     <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
-      <h4>Applicants</h4>
+      <h4>{{ 'APPLICANTS' | translate }}</h4>
       <button class="btn-close" (click)="closeApplications()"></button>
     </div>
 
     <input class="form-control mb-3" placeholder="Search applicants">
 
     <div *ngIf="!applications.length">
-      <p class="text-muted text-center">No applicants found</p>
+      <p class="text-muted text-center">{{ 'NO_APPLICANTS_FOUND' | translate }}</p>
     </div>
 
     <!-- APPLICANTS LIST -->
@@ -132,7 +126,7 @@
       <div class="contact-item">
         <div class="icon-box d-flex flex-row align-items-center justify-content-center">
           <i class="bi bi-envelope"></i>
-           <p class="contact-label p-2">Email</p>
+           <p class="contact-label p-2">{{ 'EMAIL' | translate }}</p>
         </div>
         <div class="contact-text">
          
@@ -143,7 +137,7 @@
       <div class="contact-item">
         <div class="icon-box d-flex flex-row align-items-center justify-content-center">
           <i class="bi bi-telephone"></i>
-           <p class="contact-label p-2">Phone</p>
+           <p class="contact-label p-2">{{ 'PHONE' | translate }}</p>
         </div>
         <div class="contact-text">
          
@@ -154,7 +148,7 @@
       <div class="contact-item">
         <div class="icon-box d-flex flex-row align-items-center justify-content-center">
           <i class="bi bi-geo-alt"></i>
-           <p class="contact-label p-2">Location</p>
+           <p class="contact-label p-2">{{ 'LOCATION' | translate }}</p>
         </div>
         <div class="contact-text">
          
@@ -173,14 +167,12 @@
     <!-- Application Materials -->
     <div class="card-block">
       <div class="card-header">
-        <h4>Application Materials</h4>
+        <h4>{{ 'APPLICATION_MATERIALS' | translate }}</h4>
         <a
           class="view-btn"
           target="_blank"
           [href]="selectedApplication.resumeUrl"
-        >
-          View
-        </a>
+        >{{ 'VIEW' | translate }}</a>
       </div>
 
       <div class="item-row">
@@ -191,21 +183,21 @@
           <p class="item-title">
             {{ selectedApplication.name }} Resume 2024
           </p>
-          <p class="item-subtext">Uploaded recently · PDF</p>
+          <p class="item-subtext">{{ 'UPLOADED_RECENTLY_PDF' | translate }}</p>
         </div>
       </div>
     </div>
 
     <!-- Education -->
     <div class="card-block">
-      <h4>Education</h4>
+      <h4>{{ 'EDUCATION' | translate }}</h4>
 
       <div class="item-row">
         <div class="item-icon">
           <i class="bi bi-mortarboard"></i>
         </div>
         <div class="item-info">
-          <p class="item-title">Bachelor's Degree</p>
+          <p class="item-title">{{ 'BACHELOR_S_DEGREE' | translate }}</p>
           <p class="item-subtext">
             {{ selectedApplication.qualification }} ·
             {{ selectedApplication.dob | date: 'yyyy' }}
@@ -219,7 +211,7 @@
 
     <!-- Salary -->
     <div class="card-block">
-      <h4>Salary Expected</h4>
+      <h4>{{ 'SALARY_EXPECTED' | translate }}</h4>
       <span class="salary-tag">
         {{ selectedApplication.salaryExpectation }}
         {{ selectedApplication.salaryCurrency }}

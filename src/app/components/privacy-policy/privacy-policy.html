@@ -1,6 +1,6 @@
 <div class="mm">
 <div class="policy-wrapper">
-  <h1 class="main-title">Privacy Policy</h1>
+  <h1 class="main-title">{{ 'PRIVACY_POLICY' | translate }}</h1>
 
   <main>
     <div *ngFor="let section of sections" [id]="section.id" class="section-container">
@@ -17,7 +17,7 @@
       <p *ngIf="section.footerText" class="section-text mt-2">{{ section.footerText }}</p>
 
       <div *ngIf="section.type === 'contact'" class="contact-box">
-        <strong>Email: </strong>
+        <strong>{{ 'EMAIL_' | translate }}</strong>
         <a [href]="'mailto:' + section.email">{{ section.email }}</a>
       </div>
     </div>

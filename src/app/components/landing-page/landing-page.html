@@ -1,50 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="assets/images/logo.png" alt="Dubilist Logo" class="" style="height: 42px;" />
 
-    </a>
-
-    <button class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#mainNav"
-            aria-controls="mainNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="mainNav">
-      <!-- Center menu items + dropdown -->
-      <ul class="navbar-nav mx-auto  mb-lg-0 gap-lg-3">
-        <!-- <li class="nav-item">
-          <a class="nav-link txt" href="#why-dubilist">Why Dubilist?</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link txt" href="#security">Security</a>
-        </li>
-        
-        <li class="nav-item">
-          <a class="nav-link txt" href="#app-download">Resources</a>
-        </li> -->
-
-        <!-- Dropdown (visible in mobile/tab inside collapse) -->
-      </ul>
-
-      <!-- Right side buttons -->
-      <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-outline-secondary fw-semibold px-3" routerLink="/auth/signUp">
-          Login/Sign Up
-        </button>
-        <button class="btn btn-warning fw-semibold px-3 text-white" routerLink="/home">
-         Get Started
-        </button>
-      </div>
-    </div>
-  </div>
-</nav>
 
 
 
@@ -54,29 +8,29 @@
         <!-- Logo + Title -->
         <div class="mb-5">
             <img src="assets/images/logo.png" alt="logo" class="logo mb-4" style="width: 160px;height: 50px;">
-            <h1 class="fw-semibold" style="font-size:45px;">Buy & Sell</h1>
+            <h1 class="fw-semibold" style="font-size:45px;">{{ 'BUY_SELL' | translate }}</h1>
         </div>
 
-        <p class="subtitle">Which emirate would you like to explore?</p>
+        <p class="subtitle">{{ 'WHICH_EMIRATE_WOULD_YOU_LIKE_TO_EXPLORE_' | translate }}</p>
 
         <!-- Emirates Grid -->
         <div class="row row-cols-2 row-cols-md-4 row-cols-lg-4  justify-content-center ">
 
            <div class="cards-grid pt-5 pb-5" routerLink="/home">
-        <div class="city-card">Dubai</div>
-        <div class="city-card">Sharjah</div>
-        <div class="city-card">Abu Dhabi</div>
-        <div class="city-card">Ajman</div>
-        <div class="city-card">Al Ain</div>
-        <div class="city-card">Ras Al Khaimah</div>
-        <div class="city-card">Fujairah</div>
-        <div class="city-card">Umm Al Quwain</div>
+        <div class="city-card">{{ 'DUBAI' | translate }}</div>
+        <div class="city-card">{{ 'SHARJAH' | translate }}</div>
+        <div class="city-card">{{ 'ABU_DHABI' | translate }}</div>
+        <div class="city-card">{{ 'AJMAN' | translate }}</div>
+        <div class="city-card">{{ 'AL_AIN' | translate }}</div>
+        <div class="city-card">{{ 'RAS_AL_KHAIMAH' | translate }}</div>
+        <div class="city-card">{{ 'FUJAIRAH' | translate }}</div>
+        <div class="city-card">{{ 'UMM_AL_QUWAIN' | translate }}</div>
     </div>
 
         </div>
 
         <!-- Start Button -->
-        <button class="btn start-btn mt-4"  routerLink="/home">Get Started now</button>
+        <button class="btn start-btn mt-4"  routerLink="/home">{{ 'GET_STARTED_NOW' | translate }}</button>
 
     </div>
 </section>
@@ -90,25 +44,22 @@
 <div class="main-wrapper text-center  pt-5">
     <div class="banner-container">
         <div class="banner-content">
-            <h1 class="main-title">Welcome to Dubilist</h1>
-            <p class="subtitle">Buy, Sell, and Find Anything in your City</p>
-            <p class="description">
-                The safest, fastest way to trade locally. Join thousands of verified users<br>
-                today and discover great deals around you
-            </p>
-            <h1 class="cta-label">Which emirate would you like to explore?</h1>
+            <h1 class="main-title">{{ 'WELCOME_TO_DUBILIST' | translate }}</h1>
+            <p class="subtitle">{{ 'BUY_SELL_AND_FIND_ANYTHING_IN_YOUR_CITY' | translate }}</p>
+            <p class="description">{{ 'THE_SAFEST_FASTEST_WAY_TO_TRADE_LOCALLY_' | translate }}<br>{{ 'TODAY_AND_DISCOVER_GREAT_DEALS_AROUND_YO' | translate }}</p>
+            <h1 class="cta-label">{{ 'WHICH_EMIRATE_WOULD_YOU_LIKE_TO_EXPLORE_' | translate }}</h1>
         </div>
     </div>
 
     <div class="cards-grid pt-5 pb-5" routerLink="/home">
-        <div class="city-card">Dubai</div>
-        <div class="city-card">Sharjah</div>
-        <div class="city-card">Abu Dhabi</div>
-        <div class="city-card">Ajman</div>
-        <div class="city-card">Al Ain</div>
-        <div class="city-card">Ras Al Khaimah</div>
-        <div class="city-card">Fujairah</div>
-        <div class="city-card">Umm Al Quwain</div>
+        <div class="city-card">{{ 'DUBAI' | translate }}</div>
+        <div class="city-card">{{ 'SHARJAH' | translate }}</div>
+        <div class="city-card">{{ 'ABU_DHABI' | translate }}</div>
+        <div class="city-card">{{ 'AJMAN' | translate }}</div>
+        <div class="city-card">{{ 'AL_AIN' | translate }}</div>
+        <div class="city-card">{{ 'RAS_AL_KHAIMAH' | translate }}</div>
+        <div class="city-card">{{ 'FUJAIRAH' | translate }}</div>
+        <div class="city-card">{{ 'UMM_AL_QUWAIN' | translate }}</div>
     </div>
 </div>
 </section> -->
@@ -118,15 +69,9 @@
   <div class="features-wrapper">
 
     <div class="why-left mt-5">
-      <h5 class="section-title-highlight mb-2">Why Dubilist ?</h5>
-      <h2 class="section-headline mb-3">
-        We make buying and selling simple, safe, and social.
-      </h2>
-      <p class="section-description text-muted">
-        Experience a marketplace designed for trust.
-        From verified profiles to secure chats,
-        every feature is built with your safety in mind.
-      </p>
+      <h5 class="section-title-highlight mb-2">{{ 'WHY_DUBILIST_' | translate }}</h5>
+      <h2 class="section-headline mb-3">{{ 'WE_MAKE_BUYING_AND_SELLING_SIMPLE_SAFE_A' | translate }}</h2>
+      <p class="section-description text-muted">{{ 'EXPERIENCE_A_MARKETPLACE_DESIGNED_FOR_TR' | translate }}</p>
     </div>
 
     <div class="features-grid">
@@ -149,8 +94,8 @@
 <!-- 
 <section class="py-5  selling-process">
   <div class="container text-center">
-    <h2 class="fw-bold mb-2">Start selling in Minutes</h2>
-    <p class="text-muted mb-5">Turn your unused items into cash with our simple process</p>
+    <h2 class="fw-bold mb-2">{{ 'START_SELLING_IN_MINUTES' | translate }}</h2>
+    <p class="text-muted mb-5">{{ 'TURN_YOUR_UNUSED_ITEMS_INTO_CASH_WITH_OU' | translate }}</p>
 
     <div class="steps-container position-relative">
       <div class="connection-line d-none d-md-block"></div>
@@ -158,25 +103,23 @@
       <div class="step-item">
         <div class="icon-circle shadow-sm"><i class="fas fa-camera"></i></div>
         <h4 class="fw-bold mt-4">1. Snap a Photo</h4>
-        <p class="text-muted small">Take clear photos of your item.</p>
+        <p class="text-muted small">{{ 'TAKE_CLEAR_PHOTOS_OF_YOUR_ITEM_' | translate }}</p>
       </div>
 
       <div class="step-item">
         <div class="icon-circle shadow-sm"><i class="fas fa-file-alt"></i></div>
         <h4 class="fw-bold mt-4">2. Add Details</h4>
-        <p class="text-muted small">Set a price and pick a category.</p>
+        <p class="text-muted small">{{ 'SET_A_PRICE_AND_PICK_A_CATEGORY_' | translate }}</p>
       </div>
 
       <div class="step-item">
         <div class="icon-circle shadow-sm"><i class="fas fa-handshake"></i></div>
         <h4 class="fw-bold mt-4">3. Contact & Sell</h4>
-        <p class="text-muted small">Close the deal securely with buyers.</p>
+        <p class="text-muted small">{{ 'CLOSE_THE_DEAL_SECURELY_WITH_BUYERS_' | translate }}</p>
       </div>
     </div>
 
-    <button class="btn btn-warning btn-lg mt-5 px-5 fw-bold text-white rounded-3 shadow-sm" routerLink="/home">
-      Get Started
-    </button>
+    <button class="btn btn-warning btn-lg mt-5 px-5 fw-bold text-white rounded-3 shadow-sm" routerLink="/home">{{ 'GET_STARTED' | translate }}</button>
   </div>
 </section> -->
 
@@ -186,10 +129,8 @@
     <div class="row align-items-center g-5">
       
       <div class="col-lg-6 order-2 order-lg-1">
-        <h2 class="fw-bold mb-1">Your Safety is Our Priority</h2>
-        <p class="text-warning-emphasis mb-4">
-          We've built a community based on trust. Here is how we keep Dubilist safe.
-        </p>
+        <h2 class="fw-bold mb-1">{{ 'YOUR_SAFETY_IS_OUR_PRIORITY' | translate }}</h2>
+        <p class="text-warning-emphasis mb-4">{{ 'WE_VE_BUILT_A_COMMUNITY_BASED_ON_TRUST_H' | translate }}</p>
 
         <div class="safety-features">
           <div class="d-flex mb-3">
@@ -197,8 +138,8 @@
               <i class="fas fa-check-circle text-success"></i>
             </div>
             <div>
-              <h5 class="fw-bold mb-1 ">Verified Accounts</h5>
-              <p class="text-muted  mb-0">We verify phone numbers to keep bots away.</p>
+              <h5 class="fw-bold mb-1 ">{{ 'VERIFIED_ACCOUNTS' | translate }}</h5>
+              <p class="text-muted  mb-0">{{ 'WE_VERIFY_PHONE_NUMBERS_TO_KEEP_BOTS_AWA' | translate }}</p>
             </div>
           </div>
 
@@ -207,8 +148,8 @@
               <i class="fas fa-lock text-success"></i>
             </div>
             <div>
-              <h5 class="fw-bold mb-1 ">Safe Messaging</h5>
-              <p class="text-muted  mb-0">Built-in chat protects your contact details.</p>
+              <h5 class="fw-bold mb-1 ">{{ 'SAFE_MESSAGING' | translate }}</h5>
+              <p class="text-muted  mb-0">{{ 'BUILT_IN_CHAT_PROTECTS_YOUR_CONTACT_DETA' | translate }}</p>
             </div>
           </div>
 
@@ -217,7 +158,7 @@
               <i class="fas fa-shield-alt text-success"></i>
             </div>
             <div>
-              <h5 class="fw-bold mb-1 ">Fraud Protection</h5>
+              <h5 class="fw-bold mb-1 ">{{ 'FRAUD_PROTECTION' | translate }}</h5>
               <p class="text-muted  mb-0">AI systems monitor listings 24/7 for activity.</p>
             </div>
           </div>
@@ -240,11 +181,8 @@
     <div class="row align-items-center g-4">
       
       <div class="col-lg-6 text-center text-lg-start">
-        <h2 class="display-6 fw-bold mb-3 text-dark">Get Dubilist on the Go</h2>
-        <p class="app-description mb- mx-auto mx-lg-0">
-          To Browse listings, Chat with sellers and get notifications instantly. 
-          Download our App today.
-        </p>
+        <h2 class="display-6 fw-bold mb-3 text-dark">{{ 'GET_DUBILIST_ON_THE_GO' | translate }}</h2>
+        <p class="app-description mb- mx-auto mx-lg-0">{{ 'TO_BROWSE_LISTINGS_CHAT_WITH_SELLERS_AND' | translate }}</p>
         
         <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start align-items-center">
           <a href="#" class="download-badge">

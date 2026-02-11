@@ -2,9 +2,10 @@ import { Component, HostListener } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from "@angular/router";
+import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-landing-page',
-  imports: [ RouterLink,CommonModule],
+  imports: [ RouterLink,CommonModule,TranslateModule],
   templateUrl: './landing-page.html',
   styleUrl: './landing-page.css',
 })

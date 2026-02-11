@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 // Import specific icons
 import { faShieldHalved, faUsers, faLightbulb } from '@fortawesome/free-solid-svg-icons';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-about-us',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule], // Add FontAwesomeModule here
+  imports: [CommonModule, FontAwesomeModule,TranslateModule], // Add FontAwesomeModule here
   templateUrl: './about-us.html',
   styleUrls: ['./about-us.css']
 })

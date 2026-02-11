@@ -7,10 +7,11 @@ import { NavbarComponent } from './components/navbar/navbar';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { filter } from 'rxjs/internal/operators/filter';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',  
-  imports: [RouterOutlet, NavbarComponent, CommonModule, FormsModule, RouterLinkWithHref],
+  imports: [RouterOutlet, NavbarComponent, CommonModule, FormsModule, RouterLinkWithHref,TranslateModule],
   templateUrl: './app.html',
   styleUrl: './app.css',
   
@@ -45,4 +46,6 @@ export class App {
       cursor.style.top = e.clientY + 'px';
     }
 }
+
+
 }

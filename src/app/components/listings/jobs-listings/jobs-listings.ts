@@ -6,6 +6,7 @@ import { ListingsService } from '../../../services/listing-service';
 import { AuthService } from '../../../services/auth-service';
 import { routes } from '../../../app.routes';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 interface Job {
@@ -35,7 +36,7 @@ interface Job {
 @Component({
   selector: 'app-jobs-listings',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DecimalPipe],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DecimalPipe,TranslateModule],
   templateUrl: './jobs-listings.html',
   styleUrls: ['./jobs-listings.css']
 })

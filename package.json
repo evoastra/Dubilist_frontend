@@ -1,13 +1,15 @@
 {
   "name": "dubilist-frontend",
   "version": "0.0.0",
+  "type": "commonjs",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:dubilist_frontend": "node dist/dubilist_frontend/server/server.mjs"
+    "serve:ssr:dubilist_frontend": "node dist/dubilist_frontend/server/server.mjs",
+    "translate": "node translation-tool/translate-hi-ar.js"
   },
   "prettier": {
     "printWidth": 100,
@@ -34,8 +36,9 @@
     "@angular/ssr": "^21.0.3",
     "@fortawesome/angular-fontawesome": "^4.0.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
-    "@ngx-translate/core": "^17.0.0",
-    "@ngx-translate/http-loader": "^17.0.0",
+    "@ngx-translate/core": "^16.0.0",
+    "@ngx-translate/http-loader": "^16.0.0",
+    "@vitalets/google-translate-api": "^9.2.1",
     "bootstrap": "^5.3.8",
     "crypto-js": "^4.2.0",
     "express": "^5.1.0",

@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { ListingsService } from '../../../services/listing-service';
 import { AuthService } from '../../../services/auth-service';
 import { ChatService } from '../../../services/chat-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface ClassifiedsListing {
   id: number;
@@ -35,7 +36,7 @@ export interface ClassifiedsListing {
 @Component({
   selector: 'app-classifieds-listings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,TranslateModule],
   templateUrl: './classified-listings.html',
   styleUrls: ['./classified-listings.css']
 })

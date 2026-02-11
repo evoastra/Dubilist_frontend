@@ -10,38 +10,32 @@
     <!-- ===================== -->
     <aside class="filters-sidebar d-none d-md-block">
       <div class="filters-container">
-        <h2 class="filters-title">Filters</h2>
+        <h2 class="filters-title">{{ 'FILTERS' | translate }}</h2>
 
         <!-- SORT -->
         <section class="filter-section">
-          <h3 class="section-label">Sort by</h3>
+          <h3 class="section-label">{{ 'SORT_BY' | translate }}</h3>
           <div class="sort-buttons">
             <button
               class="sort-btn"
               [class.active]="isSortSelected('newest')"
-              (click)="selectSortBy('newest')">
-              Newest
-            </button>
+              (click)="selectSortBy('newest')">{{ 'NEWEST' | translate }}</button>
 
             <button
               class="sort-btn"
               [class.active]="isSortSelected('price-low')"
-              (click)="selectSortBy('price-low')">
-              Price: Low to High
-            </button>
+              (click)="selectSortBy('price-low')">{{ 'PRICE_LOW_TO_HIGH' | translate }}</button>
 
             <button
               class="sort-btn"
               [class.active]="isSortSelected('price-high')"
-              (click)="selectSortBy('price-high')">
-              Price: High to Low
-            </button>
+              (click)="selectSortBy('price-high')">{{ 'PRICE_HIGH_TO_LOW' | translate }}</button>
           </div>
         </section>
 
         <!-- CATEGORY -->
         <section class="filter-section">
-          <h3 class="section-label">Category</h3>
+          <h3 class="section-label">{{ 'CATEGORY' | translate }}</h3>
           <div class="furniture-type-grid">
             <button
               *ngFor="let cat of categories"
@@ -55,7 +49,7 @@
 
         <!-- CONDITION -->
         <section class="filter-section">
-          <h3 class="section-label">Condition</h3>
+          <h3 class="section-label">{{ 'CONDITION' | translate }}</h3>
           <div class="condition-buttons">
             <button
               *ngFor="let cond of conditions"
@@ -67,9 +61,7 @@
           </div>
         </section>
 
-        <button class="apply-filters-btn" (click)="applyFilters()">
-          Apply Filters
-        </button>
+        <button class="apply-filters-btn" (click)="applyFilters()">{{ 'APPLY_FILTERS' | translate }}</button>
       </div>
     </aside>
 
@@ -80,7 +72,7 @@
 
       <!-- HEADER -->
       <div class="listings-header d-flex align-items-center justify-content-between">
-        <h1 class="page-title">Classifieds</h1>
+        <h1 class="page-title">{{ 'CLASSIFIEDS' | translate }}</h1>
       </div>
 
       <!-- SEARCH -->
@@ -154,8 +146,8 @@
         class="empty-state"
         *ngIf="!isLoading && !paginatedListings.length">
         <i class="bi bi-inbox"></i>
-        <h3>No classifieds found</h3>
-        <p>Try adjusting filters or search</p>
+        <h3>{{ 'NO_CLASSIFIEDS_FOUND' | translate }}</h3>
+        <p>{{ 'TRY_ADJUSTING_FILTERS_OR_SEARCH' | translate }}</p>
       </div>
 
       <!-- ===================== -->
@@ -167,9 +159,7 @@
 
       <div
         class="no-more-listings text-center"
-        *ngIf="allLoaded && paginatedListings.length">
-        No more listings 📦
-      </div>
+        *ngIf="allLoaded && paginatedListings.length">{{ 'NO_MORE_LISTINGS_' | translate }}</div>
 
     </main>
   </div>
@@ -191,7 +181,7 @@
 
     <!-- BREADCRUMB -->
     <div class="breadcrumb">
-      <span class="crumb" (click)="closeDetail()">Classifieds</span>
+      <span class="crumb" (click)="closeDetail()">{{ 'CLASSIFIEDS' | translate }}</span>
       <span class="crumb-sep">/</span>
       <span class="crumb current">{{ selectedListing.title }}</span>
     </div>
@@ -243,22 +233,22 @@
 
         <!-- SPECIFICATIONS -->
         <div class="detail-section specifications">
-          <h2 class="section-title">Specifications</h2>
+          <h2 class="section-title">{{ 'SPECIFICATIONS' | translate }}</h2>
 
           <div class="specs-grid">
             <div class="spec-item">
               <div class="spec-value">{{ selectedListing.condition }}</div>
-              <div class="spec-label">Condition</div>
+              <div class="spec-label">{{ 'CONDITION' | translate }}</div>
             </div>
 
             <div class="spec-item" *ngIf="selectedListing.material">
               <div class="spec-value">{{ selectedListing.material }}</div>
-              <div class="spec-label">Material</div>
+              <div class="spec-label">{{ 'MATERIAL' | translate }}</div>
             </div>
 
             <div class="spec-item" *ngIf="selectedListing.color">
               <div class="spec-value">{{ selectedListing.color }}</div>
-              <div class="spec-label">Color</div>
+              <div class="spec-label">{{ 'COLOR' | translate }}</div>
             </div>
           </div>
         </div>
@@ -269,7 +259,7 @@
 
         <!-- PRICE -->
         <div class="price-card">
-          <h3 class="price-label">Price</h3>
+          <h3 class="price-label">{{ 'PRICE' | translate }}</h3>
           <p class="price-value">
             {{ selectedListing.currency }}
             {{ selectedListing.price | number }}
@@ -278,13 +268,13 @@
 
         <!-- LOCATION -->
         <div class="info-card">
-          <h3 class="card-title">Location</h3>
+          <h3 class="card-title">{{ 'LOCATION' | translate }}</h3>
           <p class="location-text">{{ selectedListing.location }}</p>
         </div>
 
         <!-- SELLER -->
         <div class="seller-card">
-          <h3 class="card-title">Seller Information</h3>
+          <h3 class="card-title">{{ 'SELLER_INFORMATION' | translate }}</h3>
 
           <div class="seller-profile">
             <img
@@ -296,24 +286,18 @@
             </div>
           </div>
 
-          <button class="contact-btn call-btn" (click)="callSeller()">
-            Call Now
-          </button>
+          <button class="contact-btn call-btn" (click)="callSeller()">{{ 'CALL_NOW' | translate }}</button>
 
           <button class="contact-btn whatsapp-btn" (click)="chatWhatsApp()">
-            <i class="bi bi-whatsapp"></i> WhatsApp
-          </button>
+            <i class="bi bi-whatsapp"></i>{{ 'WHATSAPP' | translate }}</button>
 
             <button
             class="contact-btn chat-btn"
             *ngIf="isLoggedIn"
             (click)="startChatWithSeller(selectedListing)">
-            <i class="bi bi-chat-dots"></i> Chat on Dubilist
-          </button>
+            <i class="bi bi-chat-dots"></i>{{ 'CHAT_ON_DUBILIST' | translate }}</button>
 
-          <p *ngIf="!isLoggedIn" class="login-hint">
-            Login to interact with seller
-          </p>
+          <p *ngIf="!isLoggedIn" class="login-hint">{{ 'LOGIN_TO_INTERACT_WITH_SELLER' | translate }}</p>
         </div>
 
         <!-- FAVORITE (DETAIL) -->
@@ -322,8 +306,7 @@
         <!-- REPORT -->
         <button
           class="action-btn report-btn"
-          (click)="reportAd()">
-          Report this Ad <i class="bi bi-flag"></i>
+          (click)="reportAd()">{{ 'REPORT_THIS_AD' | translate }}<i class="bi bi-flag"></i>
         </button>
 
       </div>
@@ -337,17 +320,17 @@
 <div class="modal-backdrop" *ngIf="showReportModal">
   <div class="modal-container" (click)="$event.stopPropagation()">
 
-    <h3>Report this Listing</h3>
+    <h3>{{ 'REPORT_THIS_LISTING' | translate }}</h3>
 
-    <label>Reason</label>
+    <label>{{ 'REASON' | translate }}</label>
     <select [(ngModel)]="reportReason">
-      <option value="">Select reason</option>
+      <option value="">{{ 'SELECT_REASON' | translate }}</option>
       <option *ngFor="let r of reportReasons" [value]="r">
         {{ r }}
       </option>
     </select>
 
-    <label>Details (optional)</label>
+    <label>{{ 'DETAILS_OPTIONAL_' | translate }}</label>
     <textarea
       rows="4"
       [(ngModel)]="reportDetails"
@@ -355,9 +338,7 @@
     </textarea>
 
     <div class="modal-actions">
-      <button class="btn cancel" (click)="closeReportModal()">
-        Cancel
-      </button>
+      <button class="btn cancel" (click)="closeReportModal()">{{ 'CANCEL' | translate }}</button>
       <button
         class="btn danger"
         [disabled]="isReporting"

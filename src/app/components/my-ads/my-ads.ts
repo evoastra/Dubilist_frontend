@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ListingsService } from '../../services/listing-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-my-ads',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,TranslateModule],
   templateUrl: './my-ads.html',
   styleUrls: ['./my-ads.css']
 })

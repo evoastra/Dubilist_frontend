@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AdminService } from '../../services/admin-service';
 import { AuthService } from '../../services/auth-service';
 import { ListingsService } from '../../services/listing-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 type DashboardTab = 'PENDING' | 'APPROVED' | 'REJECTED';
 type ApiStatus = 'pending' | 'approved' | 'rejected';
@@ -22,7 +23,7 @@ interface AdminListing {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,TranslateModule],
   templateUrl: './admin-dashboard.html',
   styleUrls: ['./admin-dashboard.css']
 })

@@ -6,11 +6,11 @@
     <!-- ================= DESKTOP FILTERS ================= -->
     <aside class="filters-sidebar d-none d-md-block">
       <div class="filters-container">
-        <h2 class="filters-title">Filters</h2>
+        <h2 class="filters-title">{{ 'FILTERS' | translate }}</h2>
 
         <!-- Property Type -->
         <section class="filter-section">
-          <h3 class="section-label">Property Type</h3>
+          <h3 class="section-label">{{ 'PROPERTY_TYPE' | translate }}</h3>
           <div class="property-type-grid">
             <button
               *ngFor="let type of propertyTypes"
@@ -24,7 +24,7 @@
 
         <!-- Furnishing -->
         <section class="filter-section">
-          <h3 class="section-label">Furnishing</h3>
+          <h3 class="section-label">{{ 'FURNISHING' | translate }}</h3>
           <div class="condition-buttons">
             <button
               *ngFor="let option of furnishingOptions"
@@ -38,7 +38,7 @@
 
         <!-- Amenities -->
         <section class="filter-section">
-          <h3 class="section-label">Amenities</h3>
+          <h3 class="section-label">{{ 'AMENITIES' | translate }}</h3>
           <div class="amenities-list">
             <label
               *ngFor="let amenity of amenitiesOptions"
@@ -52,9 +52,7 @@
           </div>
         </section>
 
-        <button class="apply-filters-btn" (click)="applyFilters()">
-          Apply Filters
-        </button>
+        <button class="apply-filters-btn" (click)="applyFilters()">{{ 'APPLY_FILTERS' | translate }}</button>
       </div>
     </aside>
 
@@ -63,7 +61,7 @@
 
       <!-- HEADER -->
       <div class="listings-header d-flex justify-content-between align-items-center">
-        <h1 class="page-title">Properties</h1>
+        <h1 class="page-title">{{ 'PROPERTIES' | translate }}</h1>
 
         <!-- MOBILE FILTER BUTTON -->
         <button
@@ -137,9 +135,7 @@
       <div
         class="no-more-listings"
        *ngIf="!isFetchingMore && allLoaded && paginatedListings.length"
->
-        No more listings 🏠
-      </div>
+>{{ 'NO_MORE_LISTINGS_' | translate }}</div>
 
     </main>
   </div>
@@ -148,7 +144,7 @@
 <!-- ================= MOBILE FILTERS ================= -->
 <div class="offcanvas offcanvas-start" id="mobileFilters">
   <div class="offcanvas-header">
-    <h5>Filters</h5>
+    <h5>{{ 'FILTERS' | translate }}</h5>
     <button class="btn-close" data-bs-dismiss="offcanvas"></button>
   </div>
 
@@ -156,7 +152,7 @@
 
     <!-- Property Type -->
     <section class="filter-section">
-      <h3 class="section-label">Property Type</h3>
+      <h3 class="section-label">{{ 'PROPERTY_TYPE' | translate }}</h3>
       <div class="property-type-grid">
         <button
           *ngFor="let type of propertyTypes"
@@ -170,7 +166,7 @@
 
     <!-- Furnishing -->
     <section class="filter-section">
-      <h3 class="section-label">Furnishing</h3>
+      <h3 class="section-label">{{ 'FURNISHING' | translate }}</h3>
       <div class="condition-buttons">
         <button
           *ngFor="let option of furnishingOptions"
@@ -184,7 +180,7 @@
 
     <!-- Amenities -->
     <section class="filter-section">
-      <h3 class="section-label">Amenities</h3>
+      <h3 class="section-label">{{ 'AMENITIES' | translate }}</h3>
       <div class="amenities-list">
         <label
           *ngFor="let amenity of amenitiesOptions"
@@ -201,9 +197,7 @@
     <button
       class="apply-filters-btn w-100"
       data-bs-dismiss="offcanvas"
-      (click)="applyFilters()">
-      Apply Filters
-    </button>
+      (click)="applyFilters()">{{ 'APPLY_FILTERS' | translate }}</button>
   </div>
 </div>
 <!-- ===================== -->
@@ -219,7 +213,7 @@
 
     <!-- BREADCRUMB -->
     <div class="breadcrumb">
-      <span class="crumb" (click)="closeDetail()">Properties</span>
+      <span class="crumb" (click)="closeDetail()">{{ 'PROPERTIES' | translate }}</span>
       <span class="crumb-sep">/</span>
       <span class="crumb current">
         {{ selectedListing.propertyType || 'Property' }}
@@ -284,37 +278,37 @@
 
         <!-- SPECIFICATIONS -->
         <div class="detail-section specifications">
-          <h2 class="section-title">Specifications</h2>
+          <h2 class="section-title">{{ 'SPECIFICATIONS' | translate }}</h2>
           <div class="specs-grid">
 
             <div class="spec-item" *ngIf="selectedListing.propertyType">
               <div class="spec-value">{{ selectedListing.propertyType }}</div>
-              <div class="spec-label">Type</div>
+              <div class="spec-label">{{ 'TYPE' | translate }}</div>
             </div>
 
             <div class="spec-item" *ngIf="selectedListing.furnishing">
               <div class="spec-value">{{ selectedListing.furnishing }}</div>
-              <div class="spec-label">Furnishing</div>
+              <div class="spec-label">{{ 'FURNISHING' | translate }}</div>
             </div>
 
             <div class="spec-item" *ngIf="selectedListing.bedrooms">
               <div class="spec-value">{{ selectedListing.bedrooms }}</div>
-              <div class="spec-label">Bedrooms</div>
+              <div class="spec-label">{{ 'BEDROOMS' | translate }}</div>
             </div>
           
              <div class="spec-item" *ngIf="selectedListing.bathrooms">
               <div class="spec-value">{{ selectedListing.bathrooms }}</div>
-              <div class="spec-label">Bathrooms</div>
+              <div class="spec-label">{{ 'BATHROOMS' | translate }}</div>
             </div>
 
              <div class="spec-item" *ngIf="selectedListing.halls">
               <div class="spec-value">{{ selectedListing.halls }}</div>
-              <div class="spec-label">Halls</div>
+              <div class="spec-label">{{ 'HALLS' | translate }}</div>
             </div>
 
              <div class="spec-item" *ngIf="selectedListing.areaSize">
               <div class="spec-value">{{ selectedListing.areaSize }}</div>
-              <div class="spec-label">Area (Sqft)</div>
+              <div class="spec-label">{{ 'AREA_SQFT_' | translate }}</div>
             </div>
 
   
@@ -325,7 +319,7 @@
         <div
           class="detail-section amenities"
           *ngIf="selectedListing.amenities?.length">
-          <h2 class="section-title">Amenities</h2>
+          <h2 class="section-title">{{ 'AMENITIES' | translate }}</h2>
 
           <div class="amenities-grid">
             <div
@@ -344,7 +338,7 @@
 
         <!-- PRICE -->
         <div class="price-card">
-          <h3 class="price-label">Price</h3>
+          <h3 class="price-label">{{ 'PRICE' | translate }}</h3>
           <p class="price-value">
             {{ selectedListing.currency }} {{ selectedListing.price | number }}
           </p>
@@ -352,13 +346,13 @@
 
         <!-- LOCATION -->
         <div class="info-card">
-          <h3 class="card-title">Location</h3>
+          <h3 class="card-title">{{ 'LOCATION' | translate }}</h3>
           <p class="location-text">{{ selectedListing.location }}</p>
         </div>
 
         <!-- SELLER -->
         <div class="seller-card">
-          <h3 class="card-title">Seller Information</h3>
+          <h3 class="card-title">{{ 'SELLER_INFORMATION' | translate }}</h3>
 
           <div class="seller-profile">
             <img
@@ -370,31 +364,24 @@
             </div>
           </div>
 
-          <button class="contact-btn call-btn" (click)="callSeller()">
-            Call Now
-          </button>
+          <button class="contact-btn call-btn" (click)="callSeller()">{{ 'CALL_NOW' | translate }}</button>
 
           <button class="contact-btn whatsapp-btn" (click)="chatWhatsApp()">
-            <i class="bi bi-whatsapp"></i> WhatsApp
-          </button>
+            <i class="bi bi-whatsapp"></i>{{ 'WHATSAPP' | translate }}</button>
 
           <button
             class="contact-btn chat-btn"
             *ngIf="isLoggedIn"
             (click)="startChatWithSeller(selectedListing)">
-            <i class="bi bi-chat-dots"></i> Chat on Dubilist
-          </button>
+            <i class="bi bi-chat-dots"></i>{{ 'CHAT_ON_DUBILIST' | translate }}</button>
 
-          <p *ngIf="!isLoggedIn" class="login-hint">
-            Login to interact with seller
-          </p>
+          <p *ngIf="!isLoggedIn" class="login-hint">{{ 'LOGIN_TO_INTERACT_WITH_SELLER' | translate }}</p>
         </div>
 
         <!-- FAVORITE -->
        
         <!-- REPORT -->
-        <button class="action-btn report-btn" (click)="reportAd(selectedListing.id)">
-          Report this Ad <i class="bi bi-flag"></i>
+        <button class="action-btn report-btn" (click)="reportAd(selectedListing.id)">{{ 'REPORT_THIS_AD' | translate }}<i class="bi bi-flag"></i>
         </button>
       </div>
     </div>
@@ -406,19 +393,19 @@
 <div class="modal-backdrop" *ngIf="showReportModal">
   <div class="modal-container" (click)="$event.stopPropagation()">
 
-    <h3>Report this Listing</h3>
+    <h3>{{ 'REPORT_THIS_LISTING' | translate }}</h3>
 
     <!-- Reason -->
-    <label>Reason</label>
+    <label>{{ 'REASON' | translate }}</label>
     <select [(ngModel)]="reportReason">
-      <option value="">Select reason</option>
+      <option value="">{{ 'SELECT_REASON' | translate }}</option>
       <option *ngFor="let r of reportReasons" [value]="r">
         {{ r }}
       </option>
     </select>
 
     <!-- Details -->
-    <label>Details (optional)</label>
+    <label>{{ 'DETAILS_OPTIONAL_' | translate }}</label>
     <textarea
       rows="4"
       placeholder="Provide more information..."
@@ -427,9 +414,7 @@
 
     <!-- Actions -->
     <div class="modal-actions">
-      <button class="btn cancel" (click)="closeReportModal()">
-        Cancel
-      </button>
+      <button class="btn cancel" (click)="closeReportModal()">{{ 'CANCEL' | translate }}</button>
 
       <button
         class="btn danger"
