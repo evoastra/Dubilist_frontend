@@ -4,7 +4,9 @@
   <router-outlet></router-outlet>
 </main>
 
-
+<div *ngIf="loading$ | async" class="global-loader">
+  <div class="spinner-border text-warning"></div>
+</div>
 
 <footer class="main-footer pt-5 pb-3" *ngIf="!hideFooter">
   <div class="container">

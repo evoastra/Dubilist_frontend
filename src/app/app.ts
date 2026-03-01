@@ -8,6 +8,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { filter } from 'rxjs/internal/operators/filter';
 import { TranslateModule } from '@ngx-translate/core';
+import { LoadingService } from './services/loading-service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',  
@@ -21,7 +23,12 @@ export class App {
 
   protected readonly title = signal('Dubilist');
 
-   constructor(private router: Router) {
+  loading$!: Observable<boolean>;
+
+
+
+   constructor(private router: Router,private loadingService: LoadingService) {
+    this.loading$ = this.loadingService.loading$;
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
@@ -36,6 +43,7 @@ export class App {
         );
       });
   }
+  
   
 
    @HostListener('document:mousemove', ['$event'])
