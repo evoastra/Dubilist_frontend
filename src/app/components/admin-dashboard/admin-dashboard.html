@@ -35,7 +35,7 @@
   </aside>
 
   <!-- Main Content -->
-  <main class="flex-grow-1 p-4 bg-light-gray overflow-auto" style="height: 100vh;">
+  <main class="flex-grow-1 p-4 bg-light-gray overflow-auto" style="min-height: 100vh;">
     
     <!-- Stats Cards - Always Visible -->
     <div class="row g-4 mb-4">
@@ -56,7 +56,7 @@
         <div class="card p-3 border-light h-100 shadow-sm rounded-4">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <div class="text-warning small fw-bold mb-2">{{ 'NEW_USERS_TODAY' | translate }}</div>
+              <div class="text-warning small fw-bold mb-2">{{ 'Total Users' | translate }}</div>
               <h2 class="fw-bold mb-0">{{userCount | number}}</h2>
             </div>
             <div class="icon-box bg-light-purple text-purple rounded-3">
@@ -169,7 +169,7 @@
 
               <div>
                 <div class="text-secondary small fw-medium mb-1">{{ item.title }}</div>
-                <div class="text-warning fw-bold mb-1">AED {{ item.price | number }}</div>
+                <div class="text-warning fw-bold mb-1" *ngIf="item.price !== undefined && item.price != 0">AED {{ item.price | number }}</div>
 
                 <button type="button"
                         class="btn btn-link p-0 text-dark fw-bold x-small text-decoration-none border-bottom"
@@ -387,7 +387,6 @@
               </td>
               <td>
                 <div class="text-secondary small fw-medium">{{ report.postTitle }}</div>
-                <div class="text-warning fw-bold x-small">AED {{ report.price | number }}</div>
               </td>
               <td class="text-secondary small">{{ report.reason }}</td>
               <td class="text-secondary small">{{ report.reporterName }}</td>
@@ -457,7 +456,7 @@
        (click)="$event.stopPropagation()">
 
     <div class="text-center">
-      <img [src]="selectedUser.avatarUrl || 'assets/images/avatarUrl.jpg'"
+      <img [src]="selectedUser.avatar || 'assets/images/avatarUrl.jpg'"
            class="rounded-circle mb-3"
            width="90"
            height="90">
@@ -524,103 +523,230 @@
     <!-- ===========================
          SPECIFICATIONS SECTION
     ============================ -->
-    <div class="card border-0 shadow-sm mb-4">
-      <div class="card-body p-4">
+  <div class="card border-0 shadow-sm mb-4">
+  <div class="card-body p-4">
 
-        <h5 class="border-bottom pb-2 mb-4">
-          <i class="bi bi-list-stars me-2"></i>{{ 'SPECIFICATIONS' | translate }}</h5>
+    <h5 class="border-bottom pb-2 mb-4">
+      <i class="bi bi-list-stars me-2"></i>{{ 'SPECIFICATIONS' | translate }}
+    </h5>
 
-        <div class="row g-4">
+    <div class="row g-4">
 
-          <!-- MOTORS -->
-          <ng-container *ngIf="reviewMainCatId === 1">
-            <div class="col-md-4"><strong>{{ 'MAKE_' | translate }}</strong><br>{{ reviewModel.make }}</div>
-            <div class="col-md-4"><strong>{{ 'MODEL_' | translate }}</strong><br>{{ reviewModel.model }}</div>
-            <div class="col-md-4"><strong>{{ 'VARIANT_' | translate }}</strong><br>{{ reviewModel.variant }}</div>
+      <!-- MOTORS -->
+      <ng-container *ngIf="reviewMainCatId === 1">
 
-            <div class="col-md-4"><strong>{{ 'YEAR_' | translate }}</strong><br>{{ reviewModel.year }}</div>
-            <div class="col-md-4"><strong>{{ 'KM_DRIVEN_' | translate }}</strong><br>{{ reviewModel.kilometres }}</div>
-            <div class="col-md-4"><strong>{{ 'FUEL_TYPE_' | translate }}</strong><br>{{ reviewModel.fuelType }}</div>
-
-            <div class="col-md-4"><strong>{{ 'TRANSMISSION_' | translate }}</strong><br>{{ reviewModel.transmission }}</div>
-            <div class="col-md-4"><strong>{{ 'BODY_TYPE_' | translate }}</strong><br>{{ reviewModel.bodyType }}</div>
-            <div class="col-md-4"><strong>{{ 'COLOR_' | translate }}</strong><br>{{ reviewModel.color }}</div>
-
-            <div class="col-md-4"><strong>{{ 'SERVICE_HISTORY_' | translate }}</strong><br>{{ reviewModel.serviceHistory ? 'Yes' : 'No' }}</div>
-            <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ reviewModel.price }}</span></div>
-          </ng-container>
-
-
-          <!-- JOBS -->
-          <ng-container *ngIf="reviewMainCatId === 2">
-            <div class="col-md-4"><strong>{{ 'JOB_TITLE_' | translate }}</strong><br>{{ reviewModel.jobTitle }}</div>
-            <div class="col-md-4"><strong>{{ 'COMPANY_' | translate }}</strong><br>{{ reviewModel.companyName }}</div>
-            <div class="col-md-4"><strong>{{ 'INDUSTRY_' | translate }}</strong><br>{{ reviewModel.industry }}</div>
-
-            <div class="col-md-4"><strong>{{ 'JOB_TYPE_' | translate }}</strong><br>{{ reviewModel.jobType }}</div>
-            <div class="col-md-4"><strong>{{ 'WORKPLACE_' | translate }}</strong><br>{{ reviewModel.workplaceType }}</div>
-
-            <div class="col-md-4"><strong>{{ 'EXPERIENCE_' | translate }}</strong><br>
-              {{ reviewModel.experienceMin }} - {{ reviewModel.experienceMax }} Years
-            </div>
-
-            <div class="col-md-4"><strong>{{ 'SALARY_' | translate }}</strong><br>
-              {{ reviewModel.salaryMin }} - {{ reviewModel.salaryMax }} AED / {{ reviewModel.salaryPeriod }}
-            </div>
-          </ng-container>
-
-
-          <!-- PROPERTY -->
-          <ng-container *ngIf="reviewMainCatId === 3">
-            <div class="col-md-4"><strong>{{ 'LISTING_TYPE_' | translate }}</strong><br>{{ reviewModel.listingType }}</div>
-            <div class="col-md-4"><strong>{{ 'PROPERTY_TYPE_' | translate }}</strong><br>{{ reviewModel.propertyType }}</div>
-            <div class="col-md-4"><strong>{{ 'AREA_' | translate }}</strong><br>{{ reviewModel.areaSqft }} sq.ft</div>
-
-            <div class="col-md-4"><strong>{{ 'BEDROOMS_' | translate }}</strong><br>{{ reviewModel.bedrooms }}</div>
-            <div class="col-md-4"><strong>{{ 'BATHROOMS_' | translate }}</strong><br>{{ reviewModel.bathrooms }}</div>
-            <div class="col-md-4"><strong>{{ 'HALLS_' | translate }}</strong><br>{{ reviewModel.halls }}</div>
-
-            <div class="col-md-4"><strong>{{ 'FURNISHING_' | translate }}</strong><br>{{ reviewModel.furnishing }}</div>
-            <div class="col-md-4"><strong>{{ 'RENT_FREQUENCY_' | translate }}</strong><br>{{ reviewModel.rentFrequency }}</div>
-
-            <div class="col-md-12"><strong>{{ 'AMENITIES_' | translate }}</strong><br>{{ reviewModel.amenities.join(', ') }}</div>
-
-            <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ reviewModel.price }}</span></div>
-          </ng-container>
-
-
-          <!-- ELECTRONICS -->
-          <ng-container *ngIf="reviewMainCatId === 5">
-            <div class="col-md-4"><strong>{{ 'BRAND_' | translate }}</strong><br>{{ reviewModel.brand }}</div>
-            <div class="col-md-4"><strong>{{ 'MODEL_' | translate }}</strong><br>{{ reviewModel.modelName }}</div>
-            <div class="col-md-4"><strong>{{ 'CONDITION_' | translate }}</strong><br>{{ reviewModel.condition }}</div>
-            <div class="col-md-4"><strong>{{ 'STORAGE_' | translate }}</strong><br>{{ reviewModel.storage }}</div>
-            <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ reviewModel.price }}</span></div>
-          </ng-container>
-
-
-          <!-- CLASSIFIEDS -->
-          <ng-container *ngIf="reviewMainCatId === 4">
-            <div class="col-md-4"><strong>{{ 'SUB_CATEGORY_' | translate }}</strong><br>{{ reviewModel.subCategory }}</div>
-            <div class="col-md-4"><strong>{{ 'BRAND_' | translate }}</strong><br>{{ reviewModel.brand }}</div>
-            <div class="col-md-4"><strong>{{ 'MATERIAL_' | translate }}</strong><br>{{ reviewModel.material }}</div>
-            <div class="col-md-4"><strong>{{ 'CONDITION_' | translate }}</strong><br>{{ reviewModel.condition }}</div>
-            <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ reviewModel.price }}</span></div>
-          </ng-container>
-
-
-          <!-- FURNITURE -->
-          <ng-container *ngIf="reviewMainCatId === 6">
-            <div class="col-md-4"><strong>{{ 'SUB_CATEGORY_' | translate }}</strong><br>{{ reviewModel.subCategory }}</div>
-            <div class="col-md-4"><strong>{{ 'BRAND_' | translate }}</strong><br>{{ reviewModel.brand }}</div>
-            <div class="col-md-4"><strong>{{ 'MATERIAL_' | translate }}</strong><br>{{ reviewModel.material }}</div>
-            <div class="col-md-4"><strong>{{ 'CONDITION_' | translate }}</strong><br>{{ reviewModel.condition }}</div>
-            <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ reviewModel.price }}</span></div>
-          </ng-container>
-
+        <div class="col-md-4" *ngIf="reviewModel?.make">
+          <strong>{{ 'MAKE_' | translate }}</strong><br>{{ reviewModel.make }}
         </div>
-      </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.model">
+          <strong>{{ 'MODEL_' | translate }}</strong><br>{{ reviewModel.model }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.variant">
+          <strong>{{ 'VARIANT_' | translate }}</strong><br>{{ reviewModel.variant }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.year">
+          <strong>{{ 'YEAR_' | translate }}</strong><br>{{ reviewModel.year }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.kilometres">
+          <strong>{{ 'KM_DRIVEN_' | translate }}</strong><br>{{ reviewModel.kilometres }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.fuelType">
+          <strong>{{ 'FUEL_TYPE_' | translate }}</strong><br>{{ reviewModel.fuelType }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.transmission">
+          <strong>{{ 'TRANSMISSION_' | translate }}</strong><br>{{ reviewModel.transmission }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.bodyType">
+          <strong>{{ 'BODY_TYPE_' | translate }}</strong><br>{{ reviewModel.bodyType }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.color">
+          <strong>{{ 'COLOR_' | translate }}</strong><br>{{ reviewModel.color }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.serviceHistory !== undefined">
+          <strong>{{ 'SERVICE_HISTORY_' | translate }}</strong><br>
+          {{ reviewModel.serviceHistory ? 'Yes' : 'No' }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.price">
+          <strong>{{ 'PRICE_' | translate }}</strong><br>
+          <span class="text-success fw-bold">AED {{ reviewModel.price }}</span>
+        </div>
+
+      </ng-container>
+
+
+      <!-- JOBS -->
+      <ng-container *ngIf="reviewMainCatId === 2">
+
+        <div class="col-md-4" *ngIf="reviewModel?.jobTitle">
+          <strong>{{ 'JOB_TITLE_' | translate }}</strong><br>{{ reviewModel.jobTitle }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.companyName">
+          <strong>{{ 'COMPANY_' | translate }}</strong><br>{{ reviewModel.companyName }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.industry">
+          <strong>{{ 'INDUSTRY_' | translate }}</strong><br>{{ reviewModel.industry }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.jobType">
+          <strong>{{ 'JOB_TYPE_' | translate }}</strong><br>{{ reviewModel.jobType }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.workplaceType">
+          <strong>{{ 'WORKPLACE_' | translate }}</strong><br>{{ reviewModel.workplaceType }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.experienceMin || reviewModel?.experienceMax">
+          <strong>{{ 'EXPERIENCE_' | translate }}</strong><br>
+          {{ reviewModel.experienceMin }} - {{ reviewModel.experienceMax }} Years
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.salaryMin || reviewModel?.salaryMax">
+          <strong>{{ 'SALARY_' | translate }}</strong><br>
+          {{ reviewModel.salaryMin }} - {{ reviewModel.salaryMax }} AED / {{ reviewModel.salaryPeriod }}
+        </div>
+
+      </ng-container>
+
+
+      <!-- PROPERTY -->
+      <ng-container *ngIf="reviewMainCatId === 3">
+
+        <div class="col-md-4" *ngIf="reviewModel?.listingType">
+          <strong>{{ 'LISTING_TYPE_' | translate }}</strong><br>{{ reviewModel.listingType }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.propertyType">
+          <strong>{{ 'PROPERTY_TYPE_' | translate }}</strong><br>{{ reviewModel.propertyType }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.areaSqft">
+          <strong>{{ 'AREA_' | translate }}</strong><br>{{ reviewModel.areaSqft }} sq.ft
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.bedrooms">
+          <strong>{{ 'BEDROOMS_' | translate }}</strong><br>{{ reviewModel.bedrooms }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.bathrooms">
+          <strong>{{ 'BATHROOMS_' | translate }}</strong><br>{{ reviewModel.bathrooms }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.halls">
+          <strong>{{ 'HALLS_' | translate }}</strong><br>{{ reviewModel.halls }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.furnishing">
+          <strong>{{ 'FURNISHING_' | translate }}</strong><br>{{ reviewModel.furnishing }}
+        </div>
+
+        <div class="col-md-12" *ngIf="reviewModel?.amenities?.length">
+          <strong>{{ 'AMENITIES_' | translate }}</strong><br>
+          {{ reviewModel.amenities.join(', ') }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.price">
+          <strong>{{ 'PRICE_' | translate }}</strong><br>
+          <span class="text-success fw-bold">AED {{ reviewModel.price }}</span>
+        </div>
+
+      </ng-container>
+
+
+      <!-- ELECTRONICS -->
+      <ng-container *ngIf="reviewMainCatId === 5">
+
+        <div class="col-md-4" *ngIf="reviewModel?.brand">
+          <strong>{{ 'BRAND_' | translate }}</strong><br>{{ reviewModel.brand }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.modelName">
+          <strong>{{ 'MODEL_' | translate }}</strong><br>{{ reviewModel.modelName }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.condition">
+          <strong>{{ 'CONDITION_' | translate }}</strong><br>{{ reviewModel.condition }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.storage">
+          <strong>{{ 'STORAGE_' | translate }}</strong><br>{{ reviewModel.storage }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.price">
+          <strong>{{ 'PRICE_' | translate }}</strong><br>
+          <span class="text-success fw-bold">AED {{ reviewModel.price }}</span>
+        </div>
+
+      </ng-container>
+
+
+      <!-- CLASSIFIEDS -->
+      <ng-container *ngIf="reviewMainCatId === 4">
+
+        <div class="col-md-4" *ngIf="reviewModel?.subCategory">
+          <strong>{{ 'SUB_CATEGORY_' | translate }}</strong><br>{{ reviewModel.subCategory }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.brand">
+          <strong>{{ 'BRAND_' | translate }}</strong><br>{{ reviewModel.brand }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.material">
+          <strong>{{ 'MATERIAL_' | translate }}</strong><br>{{ reviewModel.material }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.condition">
+          <strong>{{ 'CONDITION_' | translate }}</strong><br>{{ reviewModel.condition }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.price">
+          <strong>{{ 'PRICE_' | translate }}</strong><br>
+          <span class="text-success fw-bold">AED {{ reviewModel.price }}</span>
+        </div>
+
+      </ng-container>
+
+
+      <!-- FURNITURE -->
+      <ng-container *ngIf="reviewMainCatId === 6">
+
+        <div class="col-md-4" *ngIf="reviewModel?.subCategory">
+          <strong>{{ 'SUB_CATEGORY_' | translate }}</strong><br>{{ reviewModel.subCategory }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.brand">
+          <strong>{{ 'BRAND_' | translate }}</strong><br>{{ reviewModel.brand }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.material">
+          <strong>{{ 'MATERIAL_' | translate }}</strong><br>{{ reviewModel.material }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.condition">
+          <strong>{{ 'CONDITION_' | translate }}</strong><br>{{ reviewModel.condition }}
+        </div>
+
+        <div class="col-md-4" *ngIf="reviewModel?.price">
+          <strong>{{ 'PRICE_' | translate }}</strong><br>
+          <span class="text-success fw-bold">AED {{ reviewModel.price }}</span>
+        </div>
+
+      </ng-container>
+
     </div>
+  </div>
+</div>
 
     <!-- ADDITIONAL INFO -->
     <div class="card border-0 shadow-sm mb-4">

@@ -41,18 +41,19 @@ export class ChatComponent implements OnInit {
     this.loadChatRooms();
   }
 
-
-  onSearch(): void {
-    if (!this.searchQuery.trim()) {
-      this.loadChatRooms();
-      return;
-    }
-    const query = this.searchQuery.toLowerCase();
-    this.rooms = this.rooms.filter(room => {
-      const otherUser = room.users.find((u: any) => u.id !== this.currentUserId);
-      return otherUser && otherUser.name.toLowerCase().includes(query);
-    }); 
+onSearch(): void {
+  if (!this.searchQuery.trim()) {
+    this.loadChatRooms();
+    return;
   }
+
+  const query = this.searchQuery.toLowerCase();
+  console.log('Searching for:', query);
+
+  this.rooms = this.rooms.filter((room: any) =>
+    room.otherParty?.name?.toLowerCase().includes(query)
+  );
+}
   /* ======================
      LOAD CHAT ROOMS
      ====================== */

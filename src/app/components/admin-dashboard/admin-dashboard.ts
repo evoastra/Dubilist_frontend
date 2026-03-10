@@ -214,6 +214,7 @@ async submitReject() {
 
 
   openReject(id: number) {
+    this.showReviewModal = false; // Ensure review modal is closed 
     this.selectedListingId = id;
     this.rejectReason = '';
     this.showRejectModal = true;
@@ -227,7 +228,7 @@ async submitReject() {
       name: user.name,
       email: user.email,
       phone: user.phone || user.mobile,
-      avatar: user.avatarUrl || user.avatar,
+      avatar: user.avatarUrl,
       createdAt: user.createdAt
     };
     this.showUserModal = true;
@@ -355,9 +356,21 @@ async loadUsers(page: number = 1) {
     this.loading = true;
 
     const res: any = await this.adminService.getUsers(1, 99);
-    const raw = res?.data || [];
+    let raw = res?.data || [];
+
+    // 🔎 SEARCH FILTER
+    if (this.userSearch && this.userSearch.trim() !== '') {
+      const query = this.userSearch.toLowerCase();
+
+      raw = raw.filter((user: any) =>
+        user.name?.toLowerCase().includes(query) ||
+        user.email?.toLowerCase().includes(query) ||
+        user.phone?.toLowerCase().includes(query)
+      );
+    }
 
     this.userCount = raw.length;
+
     this.userTotalPages = Math.max(1, Math.ceil(raw.length / this.limit));
     this.userPage = Math.min(page, this.userTotalPages);
 
@@ -409,7 +422,7 @@ async loadUsers(page: number = 1) {
     const p = await this.adminService.getListings('pending', 1, 1);
     const a = await this.adminService.getListings('approved', 1, 1);
     const u = await this.adminService.getUsers(1, 1);
-    const r = await this.adminService.getReports('listing', 1, 1);
+    const r = await this.adminService.getReports('listing', 1, 99);
 
     this.pendingCount = p.pagination?.total || 0;
     this.activeCount = a.pagination?.total || 0;

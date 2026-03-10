@@ -8,7 +8,7 @@
 
         <div class="chat-list-header p-3 bg-light border-bottom">
           <h2 class="fw-bold mb-3 h4">{{ 'CHATS' | translate }}</h2>
-          <input type="text" class="form-control" [(ngModel)]="searchQuery" (keyup)="onSearch()" placeholder="Search by name" />
+          <input type="text" class="form-control" [(ngModel)]="searchQuery" (input)="onSearch()" placeholder="Search by name" />
         </div>
 
         <div class="chat-list-body">
