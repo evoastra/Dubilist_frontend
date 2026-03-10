@@ -3,15 +3,13 @@
 
   <div class="container-fluid px-5">
 
-    <a class="navbar-brand d-flex align-items-center fw-bold fs-3"
-       routerLink="/home">
+    <a class="navbar-brand d-flex align-items-center fw-bold fs-3" routerLink="/home">
       <img src="assets/images/logo.png"    
            alt="Dubilist Logo"
            class="me-2"
            style="height: 30px;" />
 
-      <span *ngIf="isAdmin"
-            class="badge bg-warning text-dark ms-2">{{ 'ADMIN_PANEL' | translate }}</span>
+      
     </a>
 
     <button class="navbar-toggler"
@@ -87,6 +85,11 @@
           <li class="nav-item fw-semibold text-secondary">
             {{ user?.name }} (Admin)
           </li>
+         <li>
+<button *ngIf="isAdmin" routerLink="/admin"
+            class="badge bg-warning text-dark ms-2">{{ 'ADMIN_PANEL' | translate }}</button>
+         </li>
+          
 
           <li class="nav-item">
             <button class="btn btn-outline-secondary btn-sm"

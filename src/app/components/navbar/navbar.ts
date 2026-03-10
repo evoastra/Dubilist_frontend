@@ -115,6 +115,11 @@ constructor(
      PROFILE OVERLAY LOGIC
      ========================= */
 
+  goToAdminPanel(): void {
+    console.log('Navigating to admin panel');
+    this.router.navigate(['admin']);
+  }   
+
   toggleOverlay(): void {
     this.isOverlayOpen = !this.isOverlayOpen;
     this.authService.getMe().subscribe({
