@@ -199,4 +199,11 @@ applyToJob(listingId: number, payload: any) {
   markAsSold(id: number): Observable<any> {
     return this.http.patch(`${this.baseUrl}/${id}/sold`, {});
   }
+
+  /**
+   * 🔹 Get all categories
+   */
+  getCategories(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/api/categories`);
+  }
 }

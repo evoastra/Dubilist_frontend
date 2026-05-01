@@ -1,4 +1,8 @@
 /* ================= ROOT LAYOUT ================= */
+.bg-light-gray {
+  background-color: #f8f9fa;
+}
+
 .admin-wrapper {
   min-height: 100vh;
   background: #f8f9fa;
@@ -319,4 +323,118 @@
 /* Count emphasis */
 .btn-pill span {
   font-weight: 700;
+}
+
+/* Banner Table Styles */
+.object-fit-cover {
+  object-fit: cover;
+}
+
+.x-small {
+  font-size: 0.75rem;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.bg-light-gray {
+  background-color: #f8f9fa;
+}
+
+/* ================= CATEGORY UPLOAD ENHANCEMENTS ================= */
+.upload-container {
+  margin-bottom: 20px;
+}
+
+.upload-box {
+  background: #fbfbfb !important;
+  border: 2px dashed #ffab00 !important;
+  border-radius: 16px;
+  padding: 40px 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.upload-box:hover {
+  background: #fff8e1 !important;
+  border-color: #ff8f00 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 171, 0, 0.15);
+}
+
+.upload-icon-wrapper {
+  transition: transform 0.3s ease;
+}
+
+.upload-box:hover .upload-icon-wrapper {
+  transform: scale(1.1);
+}
+
+/* Thumbnail Gallery */
+.thumb-gallery-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  width: 100px;
+  height: 100px;
+}
+
+.thumb-gallery-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.thumb-gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+
+.delete-thumb-btn {
+  background: rgba(220, 53, 69, 0.85);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  padding: 0;
+  transition: all 0.2s ease;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.delete-thumb-btn:hover {
+  background: #dc3545;
+  transform: rotate(90deg);
+}
+
+.primary-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 171, 0, 0.9);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px 0;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+/* ================= PULSE ANIMATION (unsaved badge) ================= */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.65; transform: scale(0.95); }
 }

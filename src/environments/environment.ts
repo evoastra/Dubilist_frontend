@@ -1,4 +1,4 @@
 export const environment = {
-  production: true,
-  apiUrl: 'https://api.dubilist.ae',
+  production: false,
+  apiUrl: 'http://localhost:3000',
 }

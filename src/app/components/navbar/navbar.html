@@ -1,113 +1,517 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white py-3 px-lg-5 shadow-sm sticky-top"
-     *ngIf="!hideNavbar">
+<nav class="dubilist-navbar" *ngIf="!hideNavbar">
 
-  <div class="container-fluid px-5">
-
-    <a class="navbar-brand d-flex align-items-center fw-bold fs-3" routerLink="/home">
-      <img src="assets/images/logo.png"    
-           alt="Dubilist Logo"
-           class="me-2"
-           style="height: 30px;" />
-
-      
-    </a>
-
-    <button class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarNav">
-
-      <ul class="navbar-nav ms-auto align-items-center gap-3">
-
-        <ng-container *ngIf="!isAdmin">
-
-          <li class="nav-item text-center px-2" routerLink="/home">
-  <i class="bi bi-house d-block nav-icon"></i>
-  <small class="nav-label">{{ 'HOME' | translate }}</small>
-</li>
-
-
-          <li class="nav-item text-center px-2" *ngIf="user"
-              (click)="navigateToFavourites()">
-            <i class="bi bi-heart d-block"></i>
-            <small>{{ 'FAVOURITES' | translate }}</small>
-          </li>
-
-          <li class="nav-item text-center px-2" *ngIf="user"
-              (click)="navigateToChats()">
-            <i class="bi bi-chat-dots d-block"></i>
-            <small>{{ 'CHATS' | translate }}</small>
-          </li>
-
-          <li class="nav-item text-center px-2" *ngIf="user"
-              (click)="navigateToMyAds()">
-            <i class="bi bi-card-list d-block"></i>
-            <small>{{ 'MY_ADS' | translate }}</small>
-          </li>
-
-          <li class="nav-item ms-lg-3" *ngIf="!user">
-            <button class="btn btn-outline-secondary px-4"
-                    (click)="onLoginClick()">{{ 'LOG_IN_SIGN_UP' | translate }}</button>
-          </li>
-
-    <li class="nav-item ms-lg-3 cursor-pointer" *ngIf="user" (click)="toggleOverlay()">
-  <div class="user-pill">
-    <i class="bi bi-person"></i>
-    <span>{{ user.name }}</span>
+  <!-- ======== TOP ALERT BANNER ======== -->
+  <div class="top-alert-banner" *ngIf="showTopAlert">
+    <div class="top-alert-container">
+      <div class="top-alert-content">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-patch-check-fill verify-badge-icon"></i>
+          <span class="alert-text ms-2">Join us in building a safer community. Get verified to boost your credibility and assist us in creating trust amongst our users!</span>
+        </div>
+        <div class="d-flex align-items-center alert-actions">
+          <button class="btn btn-outline-light verify-now-btn btn-sm">Verify Now</button>
+          <button class="close-alert-btn" aria-label="Close alert" (click)="showTopAlert = false">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
-</li>
-           <!-- 🌍 Language Switcher -->
-<li class="nav-item ms-lg-3">
- <select class="form-select lang-selector "
-        (change)="switchLang($event)">
 
+  <!-- ======== ROW 1 — Top utility bar ======== -->
+  <div class="navbar-top">
+    <div class="navbar-top-inner">
 
-    <option value="en">{{ 'ENGLISH' | translate }}</option>
-    <option value="hi">{{ 'HINDI' | translate }}</option>
-    <option value="ar">{{ 'ARABIC' | translate }}</option>
-  </select>
-</li>
+      <div class="d-flex align-items-center gap-3">
+        <!-- Logo -->
+        <a class="navbar-logo" routerLink="/home">
+          <img src="assets/images/logo.png" alt="Dubilist Logo" />
+        </a>
 
+        <!-- Location Selector -->
+        <div class="location-selector" *ngIf="!isAdmin">
+          <span class="location-label">Dubai</span>
+          <i class="bi bi-chevron-down location-chevron ms-1" style="font-size: 12px; font-weight: bold;"></i>
+        </div>
+      </div>
 
-          <!-- <li class="nav-item">
-            <button class="btn btn-warning text-white fw-bold px-4"
-                    (click)="onPlaceAdClick()">{{ 'PLACE_AD' | translate }}</button>
-          </li> -->
+      <!-- Spacer -->
+      <div class="navbar-top-spacer"></div>
 
-        </ng-container>
+      <!-- Utility Icons -->
+      <div class="utility-icons-wrapper" *ngIf="!isAdmin">
+        <button class="util-btn">
+          <i class="bi bi-bell"></i>
+          <span>{{ 'NOTIFICATIONS' | translate }}</span>
+        </button>
+        <button class="util-btn">
+          <i class="bi bi-bookmark"></i>
+          <span>{{ 'MY_SEARCHES' | translate }}</span>
+        </button>
+        <!-- The image shows Favorites even if not logged in possibly, but we conditionally show it.
+             Wait, dubizzle shows them always, and redirects to login if clicked. Let's just show them always. -->
+        <button class="util-btn" (click)="user ? navigateToFavourites() : onLoginClick()">
+          <i class="bi bi-heart"></i>
+          <span>{{ 'FAVORITES' | translate }}</span>
+        </button>
+        <button class="util-btn" (click)="user ? navigateToChats() : onLoginClick()">
+          <i class="bi bi-chat-dots"></i>
+          <span>{{ 'CHATS' | translate }}</span>
+        </button>
+        <button class="util-btn" (click)="user ? navigateToMyAds() : onLoginClick()">
+          <i class="bi bi-card-list"></i>
+          <span>{{ 'MY_ADS' | translate }}</span>
+        </button>
+      </div>
 
-        <ng-container *ngIf="isAdmin">
+      <!-- Guest Login -->
+      <button class="btn-login ms-4" *ngIf="!user && !isAdmin" (click)="onLoginClick()">
+        Log in or sign up
+      </button>
 
-          <li class="nav-item fw-semibold text-secondary">
-            {{ user?.name }} (Admin)
-          </li>
-         <li>
-<button *ngIf="isAdmin" routerLink="/admin"
-            class="badge bg-warning text-dark ms-2">{{ 'ADMIN_PANEL' | translate }}</button>
-         </li>
+      <!-- User Pill -->
+      <div class="user-pill ms-4" *ngIf="user && !isAdmin" (click)="toggleOverlay()">
+        <i class="bi bi-person"></i>
+        <span>{{ user.name }}</span>
+      </div>
+
+      <!-- Admin controls -->
+      <ng-container *ngIf="isAdmin">
+        <span class="admin-label">{{ user?.name }} (Admin)</span>
+        <button routerLink="/admin" class="btn-admin">{{ 'ADMIN_PANEL' | translate }}</button>
+        <button class="btn-outline-sm" (click)="goToWebsite()">{{ 'GO_TO_WEBSITE' | translate }}</button>
+        <button class="btn-danger-sm" (click)="onLogout()">{{ 'LOGOUT' | translate }}</button>
+      </ng-container>
+
+      <!-- Place Ad CTA -->
+      <button class="btn-place-ad ms-4" *ngIf="!isAdmin" (click)="onPlaceAdClick()">
+        Place Your Ad
+      </button>
+      
+      <!-- Language Selector -->
+      <select class="lang-selector ms-3" (change)="switchLang($event)" *ngIf="!isAdmin">
+        <option value="en">EN</option>
+        <option value="ar">AR</option>
+      </select>
+
+      <!-- Mobile Hamburger -->
+      <button class="mobile-hamburger ms-2" (click)="toggleMobileMenu()">
+        <i class="bi bi-list"></i>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ======== ROW 2 — Category tabs bar ======== -->
+  <div class="navbar-bottom" *ngIf="!isAdmin">
+    <div class="navbar-bottom-inner">
+      <ul class="category-tabs">
+
+        <!-- Motors Tab -->
+        <li class="cat-tab sub-nav-item" 
+            [class.active-tab]="showMotorsDropdown" 
+            (mouseenter)="openMotorsDropdown()" 
+            (mouseleave)="closeMotorsDropdownDelayed()"
+            (click)="toggleMotorsDropdown($event)">
+          <span class="tab-label">{{ 'MOTORS' | translate }} <span class="badge-new">{{ 'NEW' | translate }}</span></span>
+          <div class="black-underline" *ngIf="showMotorsDropdown"></div>
+
+          <!-- Motors Dropdown -->
+          <div class="property-dropdown-menu motors-dropdown shadow-lg" 
+               *ngIf="showMotorsDropdown" 
+               (mouseenter)="keepMotorsDropdownOpen()"
+               (mouseleave)="closeMotorsDropdownDelayed()"
+               (click)="$event.stopPropagation()">
+            <div class="motors-dropdown-wrapper">
+              
+              <!-- Sidebar -->
+              <div class="motors-sidebar">
+                <ul class="sidebar-list">
+                  <li [class.active]="activeMotorsCategory === 'USED_CARS'" (mouseover)="setMotorsCategory('USED_CARS', $event)">{{ 'USED_CARS' | translate }}</li>
+                  <li [class.active]="activeMotorsCategory === 'NEW_CARS'" (mouseover)="setMotorsCategory('NEW_CARS', $event)">{{ 'NEW_CARS' | translate }}</li>
+                  <li [class.active]="activeMotorsCategory === 'EXPORT_CARS'" (mouseover)="setMotorsCategory('EXPORT_CARS', $event)">{{ 'EXPORT_CARS' | translate }}</li>
+                  <li [class.active]="activeMotorsCategory === 'RENTAL_CARS'" (mouseover)="setMotorsCategory('RENTAL_CARS', $event)">
+                    {{ 'RENTAL_CARS' | translate }} <span class="badge-new-inline">NEW</span>
+                  </li>
+                  <li [class.active]="activeMotorsCategory === 'MOTORCYCLES'" (mouseover)="setMotorsCategory('MOTORCYCLES', $event)">{{ 'MOTORCYCLES' | translate }}</li>
+                  <li [class.active]="activeMotorsCategory === 'AUTO_ACCESSORIES'" (mouseover)="setMotorsCategory('AUTO_ACCESSORIES', $event)">{{ 'AUTO_ACCESSORIES_PARTS' | translate }}</li>
+                  <li [class.active]="activeMotorsCategory === 'HEAVY_VEHICLES'" (mouseover)="setMotorsCategory('HEAVY_VEHICLES', $event)">{{ 'HEAVY_VEHICLES' | translate }}</li>
+                  <li [class.active]="activeMotorsCategory === 'BOATS'" (mouseover)="setMotorsCategory('BOATS', $event)">{{ 'BOATS' | translate }}</li>
+                  <li [class.active]="activeMotorsCategory === 'NUMBER_PLATES'" (mouseover)="setMotorsCategory('NUMBER_PLATES', $event)">{{ 'NUMBER_PLATES' | translate }}</li>
+                </ul>
+
+                <!-- Sell My Car Banner -->
+                <div class="sell-car-banner" (click)="onPlaceAdClick()">
+                  <div class="banner-text">
+                    <span>{{ 'SELL_MY_CAR' | translate }}</span>
+                  </div>
+                  <img src="/assets/images/sell-car-icon.png" alt="Car" class="banner-car-img">
+                </div>
+
+                <!-- Services Section -->
+                <div class="motors-services-section">
+                  <p class="services-title">{{ 'SERVICES_BY_DUBILIST' | translate }}</p>
+                  <div class="services-grid">
+                    <div class="service-tag tag-red">{{ 'CAR_INSPECTION' | translate }}</div>
+                    <div class="service-tag tag-blue">{{ 'CAR_FINANCE' | translate }}</div>
+                    <div class="service-tag tag-yellow">{{ 'CAR_EVALUATION' | translate }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main Content (Brands) -->
+              <div class="motors-main-content">
+                <div class="content-header">
+                  <h6>{{ activeMotorsCategory | translate }}</h6>
+                  <span class="view-all" (click)="navigateToMotorsSub(activeMotorsCategory, 'all')">{{ 'VIEW_ALL' | translate }} →</span>
+                </div>
+                <div class="brands-grid" [ngSwitch]="activeMotorsCategory">
+                  <ng-container *ngSwitchCase="'USED_CARS'">
+                    <span (click)="navigateToMotorsSub('USED_CARS','Toyota')">Toyota</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Nissan')">Nissan</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Honda')">Honda</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','BMW')">BMW</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Mercedes')">Mercedes</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Audi')">Audi</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Hyundai')">Hyundai</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Ford')">Ford</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Chevrolet')">Chevrolet</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Kia')">Kia</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Mitsubishi')">Mitsubishi</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Land Rover')">Land Rover</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Jeep')">Jeep</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Porsche')">Porsche</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Lexus')">Lexus</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Dodge')">Dodge</span>
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    <span (click)="navigateToMotorsSub(activeMotorsCategory, 'all')">{{ 'VIEW_ALL' | translate }}</span>
+                  </ng-container>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </li>
+
+        <!-- Property Tab -->
+        <li class="cat-tab sub-nav-item"
+            [class.active-tab]="showPropertyDropdown"
+            (mouseenter)="openPropertyDropdown()"
+            (mouseleave)="closePropertyDropdownDelayed()"
+            (click)="togglePropertyDropdown($event)">
+          <span class="tab-label">{{ 'PROPERTY' | translate }}</span>
+          <div class="black-underline" *ngIf="showPropertyDropdown"></div>
+
+          <div class="property-dropdown-menu shadow-lg"
+               *ngIf="showPropertyDropdown"
+               (mouseenter)="keepPropertyDropdownOpen()"
+               (mouseleave)="closePropertyDropdownDelayed()"
+               (click)="$event.stopPropagation()">
+            <div class="dropdown-content-wrapper">
+              <div class="dropdown-col">
+                <div class="col-title">{{ 'FOR_SALE' | translate }}</div>
+                <ul class="col-list">
+                  <li (click)="navigateToPropertySub('residential','Apartments')">{{ 'APARTMENT' | translate }}</li>
+                  <li (click)="navigateToPropertySub('residential','Villas')">{{ 'VILLA' | translate }}</li>
+                  <li (click)="navigateToPropertySub('residential','Townhouses')">{{ 'TOWNHOUSE' | translate }}</li>
+                  <li (click)="navigateToPropertySub('new_projects','all')">{{ 'NEW_PROJECTS' | translate }}</li>
+                  <li (click)="navigateToPropertySub('off_plan','all')">{{ 'OFF_PLAN' | translate }}</li>
+                  <li (click)="navigateToPropertySub('land','all')">{{ 'LAND' | translate }}</li>
+                </ul>
+              </div>
+              <div class="dropdown-col">
+                <div class="col-title">{{ 'FOR_RENT' | translate }}</div>
+                <ul class="col-list">
+                  <li (click)="navigateToPropertySub('residential_rent','Apartments')">{{ 'APARTMENT' | translate }}</li>
+                  <li (click)="navigateToPropertySub('residential_rent','Villas')">{{ 'VILLA' | translate }}</li>
+                  <li (click)="navigateToPropertySub('commercial','Office')">{{ 'OFFICE' | translate }}</li>
+                  <li (click)="navigateToPropertySub('monthly_short_term','all')">{{ 'MONTHLY_SHORT_TERM' | translate }}</li>
+                </ul>
+              </div>
+              <div class="dropdown-col">
+                <div class="col-title link-title" (click)="navigateToPropertySub('agents','all')">{{ 'AGENT_AGENCY_SEARCH' | translate }}</div>
+                <div class="col-title link-title" (click)="navigateToPropertySub('multiple_units','all')">{{ 'MULTIPLE_UNITS' | translate }}</div>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <!-- Jobs Tab -->
+        <li class="cat-tab sub-nav-item"
+            [class.active-tab]="showJobsDropdown"
+            (mouseenter)="openJobsDropdown()"
+            (mouseleave)="closeJobsDropdownDelayed()"
+            (click)="toggleJobsDropdown($event)">
+          <span class="tab-label">{{ 'JOBS' | translate }}</span>
+          <div class="black-underline" *ngIf="showJobsDropdown"></div>
+
+          <div class="property-dropdown-menu motors-dropdown shadow-lg"
+               *ngIf="showJobsDropdown"
+               (mouseenter)="keepJobsDropdownOpen()"
+               (mouseleave)="closeJobsDropdownDelayed()"
+               (click)="$event.stopPropagation()">
+            <div class="motors-dropdown-wrapper">
+              <div class="motors-sidebar jobs-sidebar">
+                <p class="sidebar-header-label">{{ 'RECRUITERS' | translate }}</p>
+                <ul class="sidebar-list">
+                  <li [class.active]="activeJobsCategory === 'JOBS_BY_CATEGORIES'" (mouseover)="setJobsCategory('JOBS_BY_CATEGORIES', $event)">{{ 'JOBS_BY_CATEGORIES' | translate }}</li>
+                  <li [class.active]="activeJobsCategory === 'JOBS_BY_TYPES'" (mouseover)="setJobsCategory('JOBS_BY_TYPES', $event)">{{ 'JOBS_BY_TYPES' | translate }}</li>
+                  <li [class.active]="activeJobsCategory === 'JOBS_BY_QUALIFICATIONS'" (mouseover)="setJobsCategory('JOBS_BY_QUALIFICATIONS', $event)">{{ 'JOBS_BY_QUALIFICATIONS' | translate }}</li>
+                </ul>
+                <p class="sidebar-header-label">{{ 'JOBS_SEEKERS' | translate }}</p>
+                <ul class="sidebar-list">
+                  <li [class.active]="activeJobsCategory === 'JOBS_SEEKER_BY_CATEGORIES'" (mouseover)="setJobsCategory('JOBS_SEEKER_BY_CATEGORIES', $event)">{{ 'JOBS_SEEKER_BY_CATEGORIES' | translate }}</li>
+                  <li [class.active]="activeJobsCategory === 'JOBS_SEEKER_BY_TYPES'" (mouseover)="setJobsCategory('JOBS_SEEKER_BY_TYPES', $event)">{{ 'JOBS_SEEKER_BY_TYPES' | translate }}</li>
+                  <li [class.active]="activeJobsCategory === 'JOBS_SEEKER_BY_QUALIFICATIONS'" (mouseover)="setJobsCategory('JOBS_SEEKER_BY_QUALIFICATIONS', $event)">{{ 'JOBS_SEEKER_BY_QUALIFICATIONS' | translate }}</li>
+                </ul>
+                <div class="sidebar-footer-link" (click)="navigateToJobsSub('HIRE', 'all')">{{ 'HIRE_WITH_US' | translate }}</div>
+              </div>
+              <div class="motors-main-content">
+                <div class="content-header">
+                  <h6>{{ activeJobsCategory | translate }}</h6>
+                  <span class="view-all" (click)="navigateToJobsSub(activeJobsCategory, 'all')">{{ 'VIEW_ALL' | translate }} →</span>
+                </div>
+                <div class="brands-grid jobs-grid" [ngSwitch]="activeJobsCategory">
+                  <ng-container *ngSwitchCase="'JOBS_BY_CATEGORIES'">
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','IT')">IT & Telecoms</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Finance')">Finance & Banking</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Healthcare')">Healthcare</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Engineering')">Engineering</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Sales')">Sales & Marketing</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Education')">Education</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Hospitality')">Hospitality & Tourism</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Construction')">Construction</span>
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    <span (click)="navigateToJobsSub(activeJobsCategory, 'all')">{{ 'VIEW_ALL' | translate }}</span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <!-- Classifieds Tab -->
+        <li class="cat-tab sub-nav-item" 
+            [class.active-tab]="showClassifiedsDropdown" 
+            (mouseenter)="openClassifiedsDropdown()" 
+            (mouseleave)="closeClassifiedsDropdownDelayed()"
+            (click)="toggleClassifiedsDropdown($event)">
+          <span class="tab-label">{{ 'CLASSIFIEDS' | translate }}</span>
+          <div class="black-underline" *ngIf="showClassifiedsDropdown"></div>
+          <div class="property-dropdown-menu motors-dropdown shadow-lg" 
+               *ngIf="showClassifiedsDropdown" 
+               (mouseenter)="keepClassifiedsDropdownOpen()"
+               (mouseleave)="closeClassifiedsDropdownDelayed()"
+               (click)="$event.stopPropagation()">
+            <div class="motors-dropdown-wrapper">
+              <div class="motors-sidebar">
+                <ul class="sidebar-list">
+                  <li [class.active]="activeClassifiedsCategory === 'ELECTRONICS'" (mouseover)="setClassifiedsCategory('ELECTRONICS', $event)">{{ 'ELECTRONICS' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'COMPUTERS_NETWORKING'" (mouseover)="setClassifiedsCategory('COMPUTERS_NETWORKING', $event)">{{ 'COMPUTERS_NETWORKING' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'BUSINESS_INDUSTRIAL'" (mouseover)="setClassifiedsCategory('BUSINESS_INDUSTRIAL', $event)">{{ 'BUSINESS_INDUSTRIAL' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'HOME_APPLIANCES'" (mouseover)="setClassifiedsCategory('HOME_APPLIANCES', $event)">{{ 'HOME_APPLIANCES' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'SPORTS_EQUIPMENT'" (mouseover)="setClassifiedsCategory('SPORTS_EQUIPMENT', $event)">{{ 'SPORTS_EQUIPMENT' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'CLOTHING_ACCESSORIES'" (mouseover)="setClassifiedsCategory('CLOTHING_ACCESSORIES', $event)">{{ 'CLOTHING_ACCESSORIES' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'CAMERAS_IMAGING'" (mouseover)="setClassifiedsCategory('CAMERAS_IMAGING', $event)">{{ 'CAMERAS_IMAGING' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'JEWELRY_WATCHES'" (mouseover)="setClassifiedsCategory('JEWELRY_WATCHES', $event)">{{ 'JEWELRY_WATCHES' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'PETS'" (mouseover)="setClassifiedsCategory('PETS', $event)">{{ 'PETS' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'MUSICAL_INSTRUMENTS'" (mouseover)="setClassifiedsCategory('MUSICAL_INSTRUMENTS', $event)">{{ 'MUSICAL_INSTRUMENTS' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'GAMING'" (mouseover)="setClassifiedsCategory('GAMING', $event)">{{ 'GAMING' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'BABY_ITEMS'" (mouseover)="setClassifiedsCategory('BABY_ITEMS', $event)">{{ 'BABY_ITEMS' | translate }}</li>
+                  <li [class.active]="activeClassifiedsCategory === 'TOYS'" (mouseover)="setClassifiedsCategory('TOYS', $event)">{{ 'TOYS' | translate }}</li>
+                </ul>
+              </div>
+              <div class="motors-main-content">
+                <div class="content-header">
+                  <h6>{{ activeClassifiedsCategory | translate }}</h6>
+                  <span class="view-all" (click)="navigateToClassifiedsSub(activeClassifiedsCategory, 'all')">{{ 'VIEW_ALL' | translate }} →</span>
+                </div>
+                <div class="brands-grid" [ngSwitch]="activeClassifiedsCategory">
+                  <ng-container *ngSwitchCase="'ELECTRONICS'">
+                    <span (click)="navigateToClassifiedsSub('ELECTRONICS', 'Home Audio')">{{ 'HOME_AUDIO' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('ELECTRONICS', 'Televisions')">{{ 'TELEVISIONS' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('ELECTRONICS', 'DVD & Home Theater')">{{ 'DVD_HOME_THEATER' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('ELECTRONICS', 'Electronic Accessories')">{{ 'ELECTRONIC_ACCESSORIES' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('ELECTRONICS', 'Gadgets')">{{ 'GADGETS' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('ELECTRONICS', 'Car Electronics')">{{ 'CAR_ELECTRONICS' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('ELECTRONICS', 'Smart Home')">{{ 'SMART_HOME' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('ELECTRONICS', 'Wearable Technology')">{{ 'WEARABLE_TECHNOLOGY' | translate }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'COMPUTERS_NETWORKING'">
+                    <span (click)="navigateToClassifiedsSub('COMPUTERS_NETWORKING', 'Laptops')">{{ 'LAPTOPS' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('COMPUTERS_NETWORKING', 'Desktops')">{{ 'DESKTOPS' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('COMPUTERS_NETWORKING', 'Monitors')">{{ 'MONITORS' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('COMPUTERS_NETWORKING', 'Networking')">{{ 'NETWORKING' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('COMPUTERS_NETWORKING', 'Printers')">{{ 'PRINTERS' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('COMPUTERS_NETWORKING', 'Software')">{{ 'SOFTWARE' | translate }}</span>
+                    <span (click)="navigateToClassifiedsSub('COMPUTERS_NETWORKING', 'Components')">{{ 'COMPONENTS' | translate }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    <span (click)="navigateToClassifiedsSub(activeClassifiedsCategory, 'all')">{{ 'VIEW_ALL_IN_CATEGORY' | translate }}</span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <!-- Furniture Tab -->
+        <li class="cat-tab sub-nav-item" 
+            [class.active-tab]="showFurnitureDropdown" 
+            (mouseenter)="openFurnitureDropdown()" 
+            (mouseleave)="closeFurnitureDropdownDelayed()"
+            (click)="toggleFurnitureDropdown($event)">
+          <span class="tab-label">{{ 'FURNITURE_GARDEN' | translate }}</span>
+          <div class="black-underline" *ngIf="showFurnitureDropdown"></div>
+          <div class="property-dropdown-menu motors-dropdown shadow-lg" 
+               *ngIf="showFurnitureDropdown" 
+               (mouseenter)="keepFurnitureDropdownOpen()"
+               (mouseleave)="closeFurnitureDropdownDelayed()"
+               (click)="$event.stopPropagation()">
+            <div class="motors-dropdown-wrapper">
+              <div class="motors-sidebar">
+                <ul class="sidebar-list">
+                  <li [class.active]="activeFurnitureCategory === 'FURNITURE'" (mouseover)="setFurnitureCategory('FURNITURE', $event)">{{ 'FURNITURE' | translate }}</li>
+                  <li [class.active]="activeFurnitureCategory === 'HOME_ACCESSORIES'" (mouseover)="setFurnitureCategory('HOME_ACCESSORIES', $event)">{{ 'HOME_ACCESSORIES' | translate }}</li>
+                  <li [class.active]="activeFurnitureCategory === 'GARDEN_OUTDOOR'" (mouseover)="setFurnitureCategory('GARDEN_OUTDOOR', $event)">{{ 'GARDEN_OUTDOOR' | translate }}</li>
+                  <li [class.active]="activeFurnitureCategory === 'LIGHTING_FANS'" (mouseover)="setFurnitureCategory('LIGHTING_FANS', $event)">{{ 'LIGHTING_FANS' | translate }}</li>
+                  <li [class.active]="activeFurnitureCategory === 'RUGS_CARPETS'" (mouseover)="setFurnitureCategory('RUGS_CARPETS', $event)">{{ 'RUGS_CARPETS' | translate }}</li>
+                  <li [class.active]="activeFurnitureCategory === 'CURTAINS_BLINDS'" (mouseover)="setFurnitureCategory('CURTAINS_BLINDS', $event)">{{ 'CURTAINS_BLINDS' | translate }}</li>
+                  <li [class.active]="activeFurnitureCategory === 'TOOLS_HOME_IMPROVEMENT'" (mouseover)="setFurnitureCategory('TOOLS_HOME_IMPROVEMENT', $event)">{{ 'TOOLS_HOME_IMPROVEMENT' | translate }}</li>
+                </ul>
+              </div>
+              <div class="motors-main-content">
+                <div class="content-header">
+                  <h6>{{ activeFurnitureCategory | translate }}</h6>
+                  <span class="view-all" (click)="navigateToFurnitureSub(activeFurnitureCategory, 'all')">{{ 'VIEW_ALL' | translate }} →</span>
+                </div>
+                <div class="brands-grid" [ngSwitch]="activeFurnitureCategory">
+                  <ng-container *ngSwitchCase="'FURNITURE'">
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Armoires & Wardrobes')">{{ 'ARMOIRES_WARDROBES' | translate }}</span>
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Bar Tables')">{{ 'BAR_TABLES' | translate }}</span>
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Beds & Bed Sets')">{{ 'BEDS_BED_SETS' | translate }}</span>
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Bookcases')">{{ 'BOOKCASES' | translate }}</span>
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Cabinets & Cupboards')">{{ 'CABINETS_CUPBOARDS' | translate }}</span>
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Chairs, Benches & Stools')">{{ 'CHAIRS_BENCHES_STOOLS' | translate }}</span>
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Childrens Furniture')">{{ 'CHILDRENS_FURNITURE' | translate }}</span>
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Dining Sets')">{{ 'DINING_SETS' | translate }}</span>
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Office Furniture')">{{ 'OFFICE_FURNITURE' | translate }}</span>
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Sofas, Futons & Lounges')">{{ 'SOFAS_FUTONS_LOUNGES' | translate }}</span>
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Tables')">{{ 'TABLES' | translate }}</span>
+                    <span (click)="navigateToFurnitureSub('FURNITURE', 'Other')">{{ 'OTHER_FURNITURE' | translate }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    <span (click)="navigateToFurnitureSub(activeFurnitureCategory, 'all')">{{ 'VIEW_ALL_IN_CATEGORY' | translate }}</span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <!-- Mobiles & Tablets Tab -->
+        <li class="cat-tab sub-nav-item" 
+            [class.active-tab]="showMobilesDropdown" 
+            (mouseenter)="openMobilesDropdown()" 
+            (mouseleave)="closeMobilesDropdownDelayed()"
+            (click)="toggleMobilesDropdown($event)">
+          <span class="tab-label">{{ 'MOBILES_TABLETS' | translate }}</span>
+          <div class="black-underline" *ngIf="showMobilesDropdown"></div>
+          <div class="property-dropdown-menu motors-dropdown shadow-lg" 
+               *ngIf="showMobilesDropdown" 
+               (mouseenter)="keepMobilesDropdownOpen()"
+               (mouseleave)="closeMobilesDropdownDelayed()"
+               (click)="$event.stopPropagation()">
+            <div class="motors-dropdown-wrapper">
+              <div class="motors-sidebar">
+                <ul class="sidebar-list">
+                  <li [class.active]="activeMobilesCategory === 'MOBILE_PHONES'" (mouseover)="setMobilesCategory('MOBILE_PHONES', $event)">{{ 'MOBILE_PHONES' | translate }}</li>
+                  <li [class.active]="activeMobilesCategory === 'MOBILE_TABLET_ACCESSORIES'" (mouseover)="setMobilesCategory('MOBILE_TABLET_ACCESSORIES', $event)">{{ 'MOBILE_TABLET_ACCESSORIES' | translate }}</li>
+                  <li [class.active]="activeMobilesCategory === 'TABLETS'" (mouseover)="setMobilesCategory('TABLETS', $event)">{{ 'TABLETS' | translate }}</li>
+                  <li [class.active]="activeMobilesCategory === 'OTHER_MOBILES_TABLETS'" (mouseover)="setMobilesCategory('OTHER_MOBILES_TABLETS', $event)">{{ 'OTHER_MOBILES_TABLETS' | translate }}</li>
+                </ul>
+              </div>
+              <div class="motors-main-content">
+                <div class="content-header">
+                  <h6>{{ activeMobilesCategory | translate }}</h6>
+                  <span class="view-all" (click)="navigateToMobilesSub(activeMobilesCategory, 'all')">{{ 'VIEW_ALL' | translate }} →</span>
+                </div>
+                <div class="brands-grid" [ngSwitch]="activeMobilesCategory">
+                  <ng-container *ngSwitchCase="'MOBILE_PHONES'">
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Apple')">Apple</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Sony Ericsson')">Sony Ericsson</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Samsung')">Samsung</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'ZTE Phones')">ZTE Phones</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Google')">Google</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Vertu')">Vertu</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Huawei')">Huawei</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Asus')">Asus</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Xiaomi')">Xiaomi</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Infinix')">Infinix</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Oppo')">Oppo</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Blackberry')">Blackberry</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'OnePlus')">OnePlus</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Nothing Phone')">Nothing Phone</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Honor')">Honor</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Nokia')">Nokia</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Vivo')">Vivo</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Motorola')">Motorola</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_PHONES', 'Realme')">Realme</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'MOBILE_TABLET_ACCESSORIES'">
+                    <span (click)="navigateToMobilesSub('MOBILE_TABLET_ACCESSORIES', 'Cases & Covers')">{{ 'CASES_COVERS' | translate }}</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_TABLET_ACCESSORIES', 'Chargers & Cables')">{{ 'CHARGERS_CABLES' | translate }}</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_TABLET_ACCESSORIES', 'Screen Protectors')">{{ 'SCREEN_PROTECTORS' | translate }}</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_TABLET_ACCESSORIES', 'Power Banks')">{{ 'POWER_BANKS' | translate }}</span>
+                    <span (click)="navigateToMobilesSub('MOBILE_TABLET_ACCESSORIES', 'Earphones & Headphones')">{{ 'EARPHONES_HEADPHONES' | translate }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    <span (click)="navigateToMobilesSub(activeMobilesCategory, 'all')">{{ 'VIEW_ALL_IN_CATEGORY' | translate }}</span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <!-- Community -->
+        <li class="cat-tab sub-nav-item"
+            [class.active-tab]="showCommunityDropdown"
+            (mouseenter)="openCommunityDropdown()"
+            (mouseleave)="closeCommunityDropdownDelayed()"
+            (click)="toggleCommunityDropdown($event)">
+          <span class="tab-label">{{ 'COMMUNITY' | translate }}</span>
+          <div class="black-underline" *ngIf="showCommunityDropdown"></div>
           
-
-          <li class="nav-item">
-            <button class="btn btn-outline-secondary btn-sm"
-                    (click)="goToWebsite()">{{ 'GO_TO_WEBSITE' | translate }}</button>
-          </li>
-
-          <li class="nav-item">
-            <button class="btn btn-danger btn-sm"
-                    (click)="onLogout()">{{ 'LOGOUT' | translate }}</button>
-          </li>
-
-        </ng-container>
+          <div class="community-dropdown-menu shadow-lg"
+               *ngIf="showCommunityDropdown"
+               (mouseenter)="keepCommunityDropdownOpen()"
+               (mouseleave)="closeCommunityDropdownDelayed()"
+               (click)="$event.stopPropagation()">
+            <ul class="community-list">
+              <li (click)="navigateToCommunitySub('Auto Services')">Auto Services</li>
+              <li (click)="navigateToCommunitySub('Consultancy Services')">Consultancy Services</li>
+              <li (click)="navigateToCommunitySub('Domestic')">Domestic</li>
+              <li (click)="navigateToCommunitySub('Event & Entertainment')">Event & Entertainment</li>
+              <li (click)="navigateToCommunitySub('Freelancers')">Freelancers</li>
+              <li (click)="navigateToCommunitySub('Health & Wellbeing Services')">Health & Wellbeing Services</li>
+              <li (click)="navigateToCommunitySub('Home Maintenance')">Home Maintenance</li>
+              <li (click)="navigateToCommunitySub('Movers & Removals')">Movers & Removals</li>
+              <li (click)="navigateToCommunitySub('Other Services')">Other Services</li>
+              <li (click)="navigateToCommunitySub('Restoration & Repairs')">Restoration & Repairs</li>
+              <li (click)="navigateToCommunitySub('Tutors & Classes')">Tutors & Classes</li>
+              <li (click)="navigateToCommunitySub('Web & Computer Services')">Web & Computer Services</li>
+            </ul>
+          </div>
+        </li>
 
       </ul>
     </div>
   </div>
-</nav>
 
+</nav>
 <div class="modal-overlay" *ngIf="showLoginModal">
   <div class="modal-box">
     <h4 class="modal-title">

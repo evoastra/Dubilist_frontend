@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -28,14 +29,17 @@ export class ChatComponent implements OnInit {
 
   constructor(
     private chatService: ChatService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
     // ✅ Get logged-in user correctly
-    const userRaw = localStorage.getItem('user_data');
-    if (userRaw) {
-      this.currentUserId = JSON.parse(userRaw).id;
+    if (isPlatformBrowser(this.platformId)) {
+      const userRaw = localStorage.getItem('user_data');
+      if (userRaw) {
+        this.currentUserId = JSON.parse(userRaw).id;
+      }
     }
 
     this.loadChatRooms();
@@ -134,9 +138,11 @@ onSearch(): void {
      SCROLL
      ====================== */
   scrollToBottom(): void {
-    const el = document.getElementById('chatMessages');
-    if (el) {
-      el.scrollTop = el.scrollHeight;
+    if (isPlatformBrowser(this.platformId)) {
+      const el = document.getElementById('chatMessages');
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+      }
     }
   }
   closeChat(): void {

@@ -9,47 +9,128 @@
 </div>
 
 <footer class="main-footer pt-5 pb-3" *ngIf="!hideFooter">
-  <div class="container">
-    <div class="row g-4">
-      
-      <div class="col-lg-4 text-center text-lg-start">
-        <a class="navbar-brand mb-3 d-block" href="#">
-                <img src="assets/images/logo.png" alt="Dubilist Logo" class="me-2" style="height: 40px;" />
+  <div class="container overflow-hidden">
+    <div class="row g-4 footer-top-row">
+      <!-- Column 1: Company -->
+      <div class="col-6 col-md-4 col-lg-2">
+        <h6 class="fw-bold mb-3">{{ 'COMPANY' | translate }}</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a routerLink="/about-us">{{ 'ABOUT_US' | translate }}</a></li>
+          <li><a routerLink="/advertising">{{ 'ADVERTISING' | translate }}</a></li>
+          <li><a routerLink="/careers">{{ 'CAREERS' | translate }}</a></li>
+          <li><a routerLink="/legal-hub">{{ 'LEGAL_HUB' | translate }}</a></li>
+          <li><a routerLink="/property-blog">{{ 'PROPERTY_BLOG' | translate }}</a></li>
+        </ul>
+      </div>
 
-        </a>
-        <p class="text-muted footer-desc">{{ 'BUY_AND_SELL_ANYTHING_NEARBY_' | translate }}</p>
-        <div class="social-icons d-flex gap-3 mt-4 justify-content-center justify-content-lg-start">
-          <a href="#"><i class="fab fa-facebook-f"></i></a>
-          <a href="#"><i class="fab fa-instagram"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
+      <!-- Column 2: UAE -->
+      <div class="col-6 col-md-4 col-lg-2">
+        <h6 class="fw-bold mb-3">{{ 'UAE' | translate }}</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a routerLink="/dubai">{{ 'DUBAI' | translate }}</a></li>
+          <li><a routerLink="/abu-dhabi">{{ 'ABU_DHABI' | translate }}</a></li>
+          <li><a routerLink="/sharjah">{{ 'SHARJAH' | translate }}</a></li>
+          <li><a routerLink="/ajman">{{ 'AJMAN' | translate }}</a></li>
+          <li><a routerLink="/fujairah">{{ 'FUJAIRAH' | translate }}</a></li>
+          <li><a routerLink="/ras-al-khaimah">{{ 'RAS_AL_KHAIMAH' | translate }}</a></li>
+          <li><a routerLink="/umm-al-quwain">{{ 'UMM_AL_QUWAIN' | translate }}</a></li>
+          <li><a routerLink="/al-ain">{{ 'AL_AIN' | translate }}</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: Other Countries -->
+      <div class="col-6 col-md-4 col-lg-2">
+        <h6 class="fw-bold mb-3">{{ 'OTHER_COUNTRIES' | translate }}</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a href="#" (click)="openCmgSoon($event)">{{ 'EGYPT' | translate }}</a></li>
+          <li><a href="#" (click)="openCmgSoon($event)">{{ 'BAHRAIN' | translate }}</a></li>
+          <li><a href="#" (click)="openCmgSoon($event)">{{ 'SAUDI_ARABIA' | translate }}</a></li>
+          <li><a href="#" (click)="openCmgSoon($event)">{{ 'KUWAIT' | translate }}</a></li>
+          <li><a href="#" (click)="openCmgSoon($event)">{{ 'OMAN' | translate }}</a></li>
+          <li><a href="#" (click)="openCmgSoon($event)">{{ 'QATAR' | translate }}</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 4: Get Social -->
+      <div class="col-6 col-md-4 col-lg-2">
+        <h6 class="fw-bold mb-3">{{ 'GET_SOCIAL' | translate }}</h6>
+        <div class="social-icons-vertical">
+          <a href="#"><i class="fab fa-facebook-f me-2"></i> {{ 'FACEBOOK' | translate }}</a>
+          <a href="#"><i class="fab fa-twitter me-2"></i> {{ 'X_TWITTER' | translate }}</a>
+          <a href="#"><i class="fab fa-youtube me-2"></i> {{ 'YOUTUBE' | translate }}</a>
+          <a href="#"><i class="fab fa-instagram me-2"></i> {{ 'INSTAGRAM' | translate }}</a>
         </div>
       </div>
 
-      <div class="col-6 col-lg-2 offset-lg-1">
-        <h6 class="fw-bold mb-4">{{ 'COMPANY' | translate }}</h6>
+      <!-- Column 5: Support -->
+      <div class="col-6 col-md-4 col-lg-2">
+        <h6 class="fw-bold mb-3">{{ 'SUPPORT' | translate }}</h6>
         <ul class="list-unstyled footer-links">
-            <li><a routerLink="/home">{{ 'HOME' | translate }}</a></li>
-          <li><a routerLink="/about-us">{{ 'ABOUT_US' | translate }}</a></li>
-          <li><a routerLink="/terms-of-use">{{ 'TERMS_OF_USE' | translate }}</a></li>
-          <li><a  routerLink="/privacy-policy">{{ 'PRIVACY_POLICY' | translate }}</a></li>
-        </ul>
-      </div>
-      
-       <div class="col-6 col-lg-2 offset-lg-1">
-        <h6 class="fw-bold mb-4">{{ 'CONTACT_US' | translate }}</h6>
-        <ul class="list-unstyled footer-links">
-          <li><a >{{ 'SUPPORT_DUBILIST_COM' | translate }}</a></li>
-         
+          <li><a routerLink="/help">{{ 'HELP' | translate }}</a></li>
+          <li><a routerLink="/contact-us">{{ 'CONTACT_US' | translate }}</a></li>
+          <li><a href="tel:+971000000000">{{ 'CALL_US' | translate }}</a></li>
         </ul>
       </div>
 
+      <!-- Column 6: Languages -->
+      <div class="col-6 col-md-4 col-lg-2">
+        <h6 class="fw-bold mb-3">{{ 'LANGUAGES' | translate }}</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a href="#" (click)="switchLanguage('ar'); $event.preventDefault()">{{ 'ARABIC' | translate }}</a></li>
+        </ul>
+        <!-- App Store Buttons -->
+        <div class="app-buttons mt-4">
+          <a href="https://play.google.com/store/apps/details?id=com.dubilist.dubilist_app" target="_blank" class="d-block mb-2">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style="height: 35px;">
+          </a>
+          <a href="#" class="d-block">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style="height: 35px;">
+          </a>
+        </div>
+      </div>
     </div>
 
-    <hr class="mt-5 mb-4 opacity-25">
-    <div class="text-center text-muted small">
-      &copy; 2026 Dubilist. All rights reserved.
+    <!-- Bottom Branding Row -->
+    <hr class="mt-5 mb-4 opacity-10">
+    <div class="row align-items-center justify-content-between g-3">
+      <div class="col-md-auto text-center text-md-start mb-3 mb-md-0">
+        <div class="d-flex align-items-center justify-content-center justify-content-md-start">
+          <img src="assets/images/logo.png" alt="Dubilist Logo" class="me-3" style="height: 30px; opacity: 0.8;" />
+          <span class="text-muted small">&copy; 2026 {{ 'DUBILIST_GROUP' | translate }} {{ 'ALL_RIGHTS_RESERVED' | translate }}</span>
+        </div>
+      </div>
+      <div class="col-md-auto text-center">
+        <div class="be-right-seal d-inline-flex align-items-center px-3 py-1 rounded-pill border">
+          <div class="seal-icon me-2" style="width: 12px; height: 12px; background: #ffd700; border-radius: 50%;"></div>
+          <span class="text-muted" style="font-size: 11px; font-weight: 600;">BE RIGHT</span>
+        </div>
+      </div>
     </div>
   </div>
 </footer>
+
+<!-- Global Coming Soon Overlay -->
+<div *ngIf="showCmgSoon" class="cmg-soon-overlay">
+  <div class="cmg-soon-content text-center">
+    <div class="cmg-soon-header d-flex justify-content-end mb-2">
+      <i class="bi bi-x-lg cmg-close-btn" (click)="showCmgSoon = false"></i>
+    </div>
+    <div class="cmg-soon-body">
+      <div class="mb-4">
+        <i class="bi bi-lightning-charge-fill text-warning" style="font-size: 3rem;"></i>
+      </div>
+      <h3 class="fw-bold mb-2">{{ 'COMING_SOON_' | translate }}</h3>
+      <p class="text-muted small">We are working hard to expand our services to these regions. Stay tuned for updates!</p>
+      
+      <div class="mt-4 pt-3 border-top">
+        <p class="small fw-bold mb-2">Suggested for you:</p>
+        <div class="d-flex justify-content-center gap-2">
+          <button class="btn btn-sm btn-outline-warning rounded-pill px-3" routerLink="/listings/motors">Motors</button>
+          <button class="btn btn-sm btn-outline-warning rounded-pill px-3" routerLink="/listings/property">Property</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 

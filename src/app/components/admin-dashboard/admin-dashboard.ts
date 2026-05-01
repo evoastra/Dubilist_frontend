@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
 import { AdminService } from '../../services/admin-service';
 import { AuthService } from '../../services/auth-service';
 import { ListingsService } from '../../services/listing-service';
 import { TranslateModule } from '@ngx-translate/core';
+import { BannerService, Banner } from '../../services/banner.service';
 
 type DashboardTab = 'PENDING' | 'APPROVED' | 'REJECTED';
 type ApiStatus = 'pending' | 'approved' | 'rejected';
@@ -30,16 +32,27 @@ interface AdminListing {
 export class AdminDashboardComponent implements OnInit {
 
   /* ================= VIEW STATE ================= */
-  currentView: 'dashboard' | 'users' | 'reports' = 'dashboard';
+  currentView: 'dashboard' | 'users' | 'reports' | 'banners' | 'categories' = 'dashboard';
   activeDashboardTab: DashboardTab = 'PENDING';
   selectedCategory = 'All';
   loading = false;
+  isUploading = false;
   userSearch = '';
+
+  /* ================= BANNERS ================= */
+  banners: Banner[] = [];
+  newBanner = {
+    title: '',
+    link: '',
+    imageUrl: '',
+    description: ''
+  };
 
   /* ================= DATA ================= */
   listings: AdminListing[] = [];
   users: any[] = [];
   reports: any[] = [];
+  categories: any[] = [];
 
   /* ================= PAGINATION ================= */
   limit = 10;
@@ -83,6 +96,7 @@ export class AdminDashboardComponent implements OnInit {
   constructor(
     private adminService: AdminService,
     private listingService: ListingsService,
+    private bannerService: BannerService,
     private auth: AuthService,
     private router: Router
   ) {}
@@ -170,13 +184,139 @@ async loadListings(page: number = 1) {
     this.loadListings(1);
   }
 
-  switchView(view: 'dashboard' | 'users' | 'reports') {
+  switchView(view: 'dashboard' | 'users' | 'reports' | 'banners' | 'categories') {
     this.currentView = view;
-    view === 'dashboard'
-      ? this.loadListings(1)
-      : view === 'users'
-      ? this.loadUsers(1)
-      : this.loadReports(1);
+    if (view === 'dashboard') {
+      this.loadListings(1);
+    } else if (view === 'users') {
+      this.loadUsers(1);
+    } else if (view === 'reports') {
+      this.loadReports(1);
+    } else if (view === 'banners') {
+      this.loadBanners();
+    } else if (view === 'categories') {
+      this.loadCategories();
+    }
+  }
+
+  /* ================= CATEGORIES ================= */
+  async loadCategories() {
+    this.loading = true;
+    try {
+      const res: any = await this.adminService.getCategories();
+      this.categories = res.data.map((cat: any) => ({
+        ...cat,
+        thumbnails: Array.isArray(cat.thumbnails) ? cat.thumbnails : [],
+        isUploading: false,
+        isSaving: false,
+        _dirty: false
+      }));
+    } catch (err: any) {
+      this.triggerToast('Failed to load categories', 'danger');
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async saveCategory(cat: any) {
+    try {
+      cat.isSaving = true;
+      await this.adminService.updateCategory(cat.id, {
+        thumbnails: cat.thumbnails,
+        imageUrl: cat.imageUrl || (cat.thumbnails?.[0] ?? null)
+      });
+      cat._dirty = false;
+      this.triggerToast(`✓ ${cat.name} updated successfully`);
+    } catch (err: any) {
+      this.triggerToast('Failed to update category', 'danger');
+    } finally {
+      cat.isSaving = false;
+    }
+  }
+
+  onCategoryFileSelected(event: any, cat: any) {
+    const files: FileList = event.target.files;
+    if (!files || files.length === 0) return;
+
+    cat.isUploading = true;
+    const uploads = Array.from(files).map(file => this.auth.uploadImage(file, 'categories'));
+
+    forkJoin(uploads).subscribe({
+      next: (responses: any[]) => {
+        if (!cat.thumbnails) cat.thumbnails = [];
+        
+        let successCount = 0;
+        responses.forEach(res => {
+          if (res.success) {
+            cat.thumbnails.push(res.data.url);
+            if (!cat.imageUrl) cat.imageUrl = res.data.url;
+            successCount++;
+          }
+        });
+
+        if (successCount > 0) {
+          this.triggerToast(`${successCount} image(s) added — click "Save Changes" to apply!`);
+        }
+        cat.isUploading = false;
+        event.target.value = '';
+      },
+      error: (err: any) => {
+        console.error('Upload failed', err);
+        this.triggerToast('Some or all uploads failed', 'danger');
+        cat.isUploading = false;
+      }
+    });
+  }
+
+  removeThumbnail(cat: any, index: number) {
+    cat.thumbnails.splice(index, 1);
+    if (cat.thumbnails.length === 0) cat.imageUrl = null;
+    else cat.imageUrl = cat.thumbnails[0];
+  }
+
+  /* ================= BANNERS ================= */
+  loadBanners() {
+    this.bannerService.getBanners().subscribe(data => {
+      this.banners = data;
+    });
+  }
+
+  addBanner() {
+    if (!this.newBanner.title || !this.newBanner.imageUrl) {
+      this.triggerToast('Title and Image URL are required', 'danger');
+      return;
+    }
+    this.bannerService.addBanner(this.newBanner);
+    this.newBanner = { title: '', link: '', imageUrl: '', description: '' };
+    this.triggerToast('Banner added successfully');
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    this.isUploading = true;
+    this.auth.uploadImage(file, 'banners').subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.newBanner.imageUrl = res.data.url;
+          this.triggerToast('Image uploaded successfully');
+        }
+        this.isUploading = false;
+      },
+      error: (err: any) => {
+        console.error('Upload failed', err);
+        this.triggerToast('Upload failed. Using direct URLs is still an option.', 'danger');
+        this.isUploading = false;
+      }
+    });
+  }
+
+  deleteBanner(id: string) {
+    if (confirm('Are you sure you want to delete this banner?')) {
+      this.bannerService.deleteBanner(id);
+      this.triggerToast('Banner deleted');
+    }
   }
 
   /* ================= APPROVE / REJECT ================= */

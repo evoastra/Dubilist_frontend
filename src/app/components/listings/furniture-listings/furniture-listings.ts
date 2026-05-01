@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -114,7 +115,8 @@ export class FurnitureListingsComponent implements OnInit {
     private listingsService: ListingsService,
     private authService: AuthService,
     private router: Router,
-    private chatService: ChatService
+    private chatService: ChatService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   /* =====================
@@ -232,15 +234,18 @@ export class FurnitureListingsComponent implements OnInit {
   /* =====================
      INFINITE SCROLL
   ===================== */
+  @HostListener('window:scroll', [])
   onScroll(): void {
     if (this.isFetchingMore || this.allLoaded) return;
 
-    const nearBottom =
-      window.innerHeight + window.scrollY >=
-      document.body.offsetHeight - 300;
+    if (isPlatformBrowser(this.platformId)) {
+      const nearBottom =
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 300;
 
-    if (nearBottom) {
-      this.loadMore();
+      if (nearBottom) {
+        this.loadMore();
+      }
     }
   }
 
@@ -283,7 +288,9 @@ export class FurnitureListingsComponent implements OnInit {
     });
 
     this.currentImageIndex = 0;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   closeDetail(): void {
@@ -331,7 +338,7 @@ export class FurnitureListingsComponent implements OnInit {
      CONTACT
   ===================== */
   callSeller(): void {
-    if (this.selectedListing?.sellerPhone) {
+    if (this.selectedListing?.sellerPhone && isPlatformBrowser(this.platformId)) {
       window.location.href = `tel:${this.selectedListing.sellerPhone}`;
     }
   }
@@ -339,7 +346,9 @@ export class FurnitureListingsComponent implements OnInit {
   chatWhatsApp(): void {
     if (!this.selectedListing?.sellerPhone) return;
     const phone = this.selectedListing.sellerPhone.replace(/\D/g, '');
-    window.open(`https://wa.me/${phone}`, '_blank');
+    if (isPlatformBrowser(this.platformId)) {
+      window.open(`https://wa.me/${phone}`, '_blank');
+    }
   }
 
   startChatWithSeller(listing: FurnitureListing): void {

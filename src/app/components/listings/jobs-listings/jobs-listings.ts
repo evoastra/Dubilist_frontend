@@ -1,4 +1,5 @@
-import { Component, computed, signal, OnInit } from '@angular/core';
+import { Component, computed, signal, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
@@ -84,7 +85,8 @@ isSubmitting = false;
     private fb: FormBuilder,
     private listingsService: ListingsService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
    this.applyForm = this.fb.group({
   fullName: ['', Validators.required],
@@ -228,7 +230,9 @@ isSubmitting = false;
   changePage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (isPlatformBrowser(this.platformId)) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   }
 
@@ -240,7 +244,9 @@ isSubmitting = false;
       next: (res: any) => {
         this.selectedJob = this.mapBackendJob(res.data);  
         this.currentView.set('details');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        if (isPlatformBrowser(this.platformId)) {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
       }
     });
   }
@@ -252,7 +258,9 @@ isSubmitting = false;
     return;
   }
     this.currentView.set('apply');
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }
 
   goBack() {
@@ -262,7 +270,9 @@ isSubmitting = false;
       this.currentView.set('list');
       this.selectedJob = null;
     }
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }
 
   // =====================
