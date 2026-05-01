@@ -121,4 +121,24 @@ export class AdminService {
       )
     );
   }
+
+  /* ================= CATEGORIES ================= */
+
+  getCategories(): Promise<any> {
+    return firstValueFrom(
+      this.http.get(`${this.baseUrl}/categories`, this.getAuthHeaders())
+    );
+  }
+
+  updateCategory(id: number, data: any): Promise<any> {
+    return firstValueFrom(
+      this.http.put(`${this.baseUrl}/admin/categories/${id}`, data, this.getAuthHeaders())
+    );
+  }
+
+  createCategory(data: any): Promise<any> {
+    return firstValueFrom(
+      this.http.post(`${this.baseUrl}/admin/categories`, data, this.getAuthHeaders())
+    );
+  }
 }

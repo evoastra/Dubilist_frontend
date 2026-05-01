@@ -4,51 +4,123 @@
 
 
 <section class="search_section">
-  
-
-  <div class="hero-section text-center text-white  py-md-5">
+  <div class="hero-section text-center text-white py-4 px-3 py-md-5 px-md-0 position-relative shadow-lg">
     <div class="overlay"></div>
-    <h2 class=" mb-4">{{ 'BEST_PLACE_TO_SELL_AND_BUY_ANYTHING_FROM' | translate }}</h2>
+    <div class="w-100 position-relative z-2">
+      <!-- Added modern clamp typography and drop shadow for maximum legibility over the image -->
+      <h2 class="mb-4 hero-headline fw-bold" style="font-size: clamp(1.8rem, 4vw, 3rem); text-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+        {{ 'BEST_PLACE_TO_SELL_AND_BUY_ANYTHING_FROM' | translate }}
+      </h2>
 
-    <div class="bg-dark bg-opacity-75 m-2 m-md-3 p-3 rounded-3">
-      <div
-        class="d-none d-md-flex justify-content-center align-items-center gap-2 gap-lg-3 mb-3 flex-wrap"
-      >
-        <span class="fw-bold">{{ 'SEARCHING_IN' | translate }}</span>
+      <!-- Glassmorphic search container -->
+      <div class="hero-search-container m-0 mx-md-auto p-4 p-md-5 rounded-4" style="max-width: 950px;">
+        <div class="d-flex justify-content-center align-items-center gap-3 gap-lg-4 mb-4 flex-wrap pb-3">
+          <span class="fw-medium text-nowrap me-2 text-white-50" style="font-size: 0.95rem;">
+            {{ 'SEARCHING_IN' | translate }}
+          </span>
 
-        <button
-          *ngFor="let cat of categories"
-          class="btn rounded-pill px-4 text-white"
-          [ngClass]="{ 'btn-warning': selectedCategory === cat }"
-          (click)="onCategoryClick(cat)"
-        >
-          {{ cat }}
-        </button>
-      </div>
+          <button
+            *ngFor="let cat of categories"
+            class="btn rounded-pill px-4 py-2.5 category-search-pill text-nowrap fw-semibold"
+            [ngClass]="{ 'btn-warning fw-bold': selectedCategory === cat }"
+            (click)="onCategoryClick(cat)"
+          >
+            {{ cat }}
+          </button>
+        </div>
 
-      <div class="row justify-content-center mx-1">
-        <div
-          class="col-12 col-lg-10 bg-white rounded-3 shadow p-2 d-flex flex-column flex-md-row gap-2"
-        >
-          <div class="input-group flex-grow-1 border-0">
-            <span class="input-group-text bg-white border-0">
-              <i class="bi bi-search text-muted"></i>
-            </span>
-            <input
-              type="text"
-              class="form-control border-0"
-              [placeholder]="searchPlaceholder"
-              [(ngModel)]="searchQuery"
-               (keyup.enter)="onSearch()"
-            />
+        <div class="row justify-content-center mx-1">
+          <!-- Premium unified search pill -->
+          <div class="col-12 hero-search-input-wrapper d-flex flex-column flex-md-row gap-2 shadow-lg">
+            <div class="input-group flex-grow-1 border-0 rounded-pill bg-white px-3">
+              <span class="input-group-text bg-transparent border-0 pe-1">
+                <i class="bi bi-search text-muted fs-5"></i>
+              </span>
+              <input
+                type="text"
+                class="form-control border-0 py-3 fs-5 bg-transparent"
+                [placeholder]="searchPlaceholder"
+                [(ngModel)]="searchQuery"
+                 (keyup.enter)="onSearch()"
+              />
+            </div>
+
+            <button class="btn btn-warning text-white fw-bold px-5 py-3 fs-5 mt-2 mt-md-0" (click)="onSearch()">
+              {{ 'SEARCH' | translate }}
+            </button>
           </div>
-
-          <button class="btn btn-warning text-white fw-bold px-5 py-2"  (click)="onSearch()">{{ 'SEARCH' | translate }}</button>
         </div>
       </div>
     </div>
   </div>
 </section>
+<!-- ================= PROMOTIONAL CAROUSEL ================= -->
+<section class="promo-carousel-wrapper inner-border-container container my-4 my-md-5" *ngIf="banners.length > 0">
+  <!-- SVG moving border line -->
+  <svg class="card-border-svg" aria-hidden="true">
+    <rect class="card-border-track" width="100%" height="100%" rx="18" ry="18"/>
+    <rect class="card-border-runner" width="100%" height="100%" rx="18" ry="18"/>
+  </svg>
+  <div class="promotional-carousel">
+    <div id="promoCarousel" class="carousel slide promo-inner-card" data-bs-ride="carousel" data-bs-pause="false">
+    <!-- Indicators -->
+    <div class="carousel-indicators mb-4">
+      <button *ngFor="let banner of banners; let i = index" 
+              type="button" 
+              data-bs-target="#promoCarousel" 
+              [attr.data-bs-slide-to]="i" 
+              [attr.aria-current]="i === 0 ? 'true' : null" 
+              [attr.aria-label]="'Slide ' + (i + 1)"
+              class="indicator-bar"></button>
+    </div>
+
+    <!-- Slides -->
+    <div class="carousel-inner h-100">
+      <div *ngFor="let banner of banners; let i = index" 
+           class="carousel-item h-100" 
+           data-bs-interval="2500">
+        <!-- New Full-Width Background Layout (Dark fallback added to prevent white flashes) -->
+        <div class="promo-slide-wrapper position-relative w-100 h-100 bg-dark" 
+             [style.background-image]="'url(\'' + banner.imageUrl + '\')'">
+          
+          <!-- Modern Gradient Overlay -->
+          <div class="promo-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+
+          <!-- Content Container -->
+          <div class="container h-100 position-relative" style="z-index: 5;">
+            <div class="row h-100 align-items-center">
+              <div class="col-lg-7 col-md-9 p-4 p-md-5 text-content">
+                <div class="badge bg-warning text-white mb-3 px-3 py-2 rounded-pill shadow-sm slide-up-text" style="font-size:0.75rem;">FEATURED AD</div>
+                <h2 class="promo-title fw-bold mb-3 slide-up-text">{{ banner.title }}</h2>
+                <p class="promo-desc lead mb-4 slide-up-text-delayed">{{ banner.description }}</p>
+                <div class="slide-up-text-more-delayed">
+                  <a [routerLink]="banner.link" class="btn btn-warning btn-promo px-4 py-2 fw-bold rounded-pill text-white shadow-sm border-0 d-inline-flex align-items-center gap-2" style="font-size:0.88rem;">
+                    Explore Now <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls (Refined) -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
+      <div class="control-circle shadow-sm">
+        <i class="bi bi-chevron-left"></i>
+      </div>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel" data-bs-slide="next">
+      <div class="control-circle shadow-sm">
+        <i class="bi bi-chevron-right"></i>
+      </div>
+      <span class="visually-hidden">Next</span>
+    </button>
+    </div><!-- end promoCarousel -->
+  </div><!-- end promotional-carousel -->
+</section><!-- end promo-carousel-wrapper -->
 
 
 <!-- ================= SEARCH RESULTS ================= -->
@@ -76,14 +148,22 @@
       *ngFor="let item of searchResults"
       (click)="goToCategory(item)"
     >
-      <div class="image-wrapper">
-        <img [src]="item.imageUrl" [alt]="item.title" />
-      </div>
-
-      <div>
-        <p class="mb-0">{{ item.title }}</p>
-        <p class="price mb-0">{{ item.price }}</p>
-        <p class="city mb-0">{{ item.city }}</p>
+      <div class="listing-card-inner inner-border-container">
+        <!-- SVG moving border line -->
+        <svg class="card-border-svg" aria-hidden="true">
+          <rect class="card-border-track" width="100%" height="100%" rx="16" ry="16"/>
+          <rect class="card-border-runner" width="100%" height="100%" rx="16" ry="16"/>
+        </svg>
+        <div class="image-wrapper">
+          <img [src]="item.imageUrl" [alt]="item.title" />
+        </div>
+        <div class="card-details">
+          <h5 class="card-title">{{ item.title }}</h5>
+          <div class="card-meta d-flex justify-content-between align-items-center">
+            <span class="price-tag">{{ item.price }}</span>
+            <span class="location-tag"><i class="bi bi-geo-alt"></i> {{ item.city }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -97,77 +177,75 @@
 
 
 <div class="post_add_section px-md-5">
-  <section class="bg-warning add-post">
-    <div 
-      class="container d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start"
-    >
-      <div class="text-white mb-3 mb-md-0">
-        <h4 class="fw-bold m-0">{{ 'HAVE_SOMETHING_TO_SELL_' | translate }}</h4>
-        <p class="m-0">{{ 'POST_AN_AD_FOR_FREE_AND_START_EARNING_TO' | translate }}</p>
+  <section class="premium-sell-banner">
+    <div class="banner-overlay"></div>
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start banner-content">
+      <div class="text-white mb-3 mb-md-0 banner-text-content">
+        <h4 class="fw-bold m-0 text-shadow">{{ 'HAVE_SOMETHING_TO_SELL_' | translate }}</h4>
+        <p class="m-0 opacity-90 text-shadow">{{ 'POST_AN_AD_FOR_FREE_AND_START_EARNING_TO' | translate }}</p>
       </div>
-      <button routerLink="/add-post"
-        class="btn btn-white bg-white text-warning fw-bold px-4 py-3 shadow-sm rounded-3 mt-3 mt-md-0"
-      >{{ 'POST_YOUR_AD_NOW' | translate }}</button>
+      <button routerLink="/add-post" class="btn btn-premium-white fw-bold px-5 py-3 shadow-lg rounded-pill mt-3 mt-md-0">
+        {{ 'POST_YOUR_AD_NOW' | translate }} <i class="bi bi-plus-lg ms-2"></i>
+      </button>
     </div>
+    <!-- Decorative background elements -->
+    <div class="banner-circle bounce-1"></div>
+    <div class="banner-circle bounce-2"></div>
   </section>
 </div>
 
-<div class="d-flex flex-column flex-md-row justify-content-center">
+<div class="d-flex flex-column flex-md-row justify-content-center gap-4 px-md-5 mb-5 align-items-stretch modern-promo-cards-container">
 
   <!-- Interior Designer Card -->
-  <section class="interior_design_section">
-    <div
-      class="designer-banner d-flex flex-column flex-md-row  rounded-4 p-3"
-      style="background: #FFEECF;"
-    >
-      <!-- Image -->
-      <div class="mb-3 mb-md-0 me-md-4 text-center">
-        <img
-          src="/assets/images/interior_design.png"
-          class="int-img"
-          alt="Interior Designer Preview"
-        />
+  <section class="premium-promo-card flex-md-1 position-relative">
+    <!-- SVG moving border line -->
+    <svg class="card-border-svg" aria-hidden="true">
+      <rect class="card-border-track" width="100%" height="100%" rx="24" ry="24"/>
+      <rect class="card-border-runner" width="100%" height="100%" rx="24" ry="24"/>
+    </svg>
+    <div class="promo-card-content modern-card designer-card d-flex flex-column flex-sm-row">
+      <div class="p-4 p-md-5 flex-grow-1 text-content d-flex flex-column justify-content-center order-2 order-sm-1 z-2">
+        <span class="promo-accent-badge designer-badge mb-3 align-self-start shadow-sm">
+          <i class="bi bi-stars"></i> Premium Service
+        </span>
+        <h4 class="fw-bold mb-2 text-dark">{{ 'LOOKING_FOR_AN_INTERIOR_DESIGNER_' | translate }}</h4>
+        <p class="text-muted small mb-4">{{ 'FIND_THE_PERFECT_MATCH_FOR_YOUR_DREAM_SP' | translate }}</p>
+        <div class="mt-auto align-self-start">
+          <button class="btn btn-modern-cta cta-designer fw-bold rounded-pill shadow-sm" routerLink="/listings/interior-designers">
+            {{ 'EXPLORE' | translate }} <i class="bi bi-arrow-right icon-slide ms-1"></i>
+          </button>
+        </div>
       </div>
-
-      <!-- Text + Button -->
-      <div class="text-center text-md-start">
-        <h4 class="fw-bold mb-2">{{ 'LOOKING_FOR_AN_INTERIOR_DESIGNER_' | translate }}</h4>
-        <p class="text-muted mb-3">{{ 'FIND_THE_PERFECT_MATCH_FOR_YOUR_DREAM_SP' | translate }}</p>
-
-        <button
-          class="btn fw-bold text-white px-4 py-2 rounded-3"
-          style="background:#FFA500;"
-          routerLink="/listings/interior-designers"
-        >{{ 'EXPLORE' | translate }}</button>
+      <div class="image-showcase p-3 p-md-4 d-flex align-items-center justify-content-center order-1 order-sm-2 position-relative z-1">
+        <div class="image-glow designer-glow"></div>
+        <img src="/assets/images/interior_design.png" class="promo-img modern-promo-img floating-img" alt="Interior Designer Preview" />
       </div>
     </div>
   </section>
 
   <!-- Agents & Agencies Card -->
-  <section class="interior_design_section">
-    <div
-      class="designer-banner d-flex flex-column flex-md-row align-items-center rounded-4 p-3"
-      style="background: #FFEECF;"
-    >
-      <!-- Image -->
-      <div class="mb-3 mb-md-0 me-md-4 text-center order-md-2">
-        <img
-          src="/assets/images/agents.png"
-          class="int-img"
-          alt="Agents Preview"
-        />
+  <section class="premium-promo-card flex-md-1 position-relative">
+    <!-- SVG moving border line -->
+    <svg class="card-border-svg" aria-hidden="true">
+      <rect class="card-border-track" width="100%" height="100%" rx="24" ry="24"/>
+      <rect class="card-border-runner card-border-runner--delayed" width="100%" height="100%" rx="24" ry="24"/>
+    </svg>
+    <div class="promo-card-content modern-card agents-card d-flex flex-column flex-sm-row">
+      <div class="p-4 p-md-5 flex-grow-1 text-content d-flex flex-column justify-content-center order-2 order-sm-1 z-2">
+        <span class="promo-accent-badge agents-badge mb-3 align-self-start shadow-sm">
+          <i class="bi bi-people-fill"></i> Trusted Network
+        </span>
+        <h4 class="fw-bold mb-2 text-dark">{{ 'CONNECT_WITH_AGENTS_AND_AGENCIES_' | translate }}</h4>
+        <p class="text-muted small mb-4">{{ 'REACH_OUR_PARTNERS_TO_FIND_YOUR_PERFECT_' | translate }}</p>
+        <div class="mt-auto align-self-start">
+          <button class="btn btn-modern-cta cta-agents fw-bold rounded-pill shadow-sm" (click)="openCmgSoon()">
+            {{ 'FIND_NOW' | translate }} <i class="bi bi-arrow-right icon-slide ms-1"></i>
+          </button>
+        </div>
       </div>
-
-      <!-- Text + Button -->
-      <div class="text-center text-md-start order-md-1">
-        <h4 class="fw-bold mb-2">{{ 'CONNECT_WITH_AGENTS_AND_AGENCIES_' | translate }}</h4>
-        <p class="text-muted mb-3">{{ 'REACH_OUR_PARTNERS_TO_FIND_YOUR_PERFECT_' | translate }}</p>
-
-        <button
-          class="btn fw-bold text-white px-4 py-2 rounded-3"
-          style="background:#FFA500;"
-          (click)="openCmgSoon()"
-        >{{ 'FIND_NOW' | translate }}</button>
+      <div class="image-showcase p-3 p-md-4 d-flex align-items-center justify-content-center order-1 order-sm-2 position-relative z-1">
+        <div class="image-glow agents-glow"></div>
+        <img src="/assets/images/agents.png" class="promo-img modern-promo-img floating-img-delayed" alt="Agents Preview" />
       </div>
     </div>
   </section>
@@ -178,73 +256,89 @@
 
 
 
-<section class="browse-by-category mb-3">
-  <div class="container border border-light-subtle rounded-4 p-3 p-md-4">
-    <h2 class="fw-bold">{{ 'BROWSE_BY_CATEGORY' | translate }}</h2>
+<section class="browse-by-category py-4 mb-5">
+  <div class="container bg-white border-0 rounded-4 shadow-sm p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold m-0" style="color: #222; font-size: 1.75rem;">{{ 'BROWSE_BY_CATEGORY' | translate }}</h2>
+      <a routerLink="/home" class="text-warning text-decoration-none fw-semibold small">View All <i class="bi bi-chevron-right"></i></a>
+    </div>
 
-    <div class="category-grid">
-      <div class="category-card" routerLink="/listings/property">
-        <img
-          src="/assets/images/Property.jpg"
-          alt="Property"
-        />
-        <h3>{{ 'PROPERTY' | translate }}</h3>
+    <!-- Dynamic Category Grid -->
+    <div class="category-grid" *ngIf="dynamicCategories.length > 0; else loaderCategories">
+      <div class="premium-cat-card" *ngFor="let cat of dynamicCategories" [routerLink]="'/listings/' + cat.slug">
+        <!-- SVG moving border line -->
+        <svg class="card-border-svg" aria-hidden="true">
+          <rect class="card-border-track" width="100%" height="100%" rx="16" ry="16"/>
+          <rect class="card-border-runner" width="100%" height="100%" rx="16" ry="16"/>
+        </svg>
+
+        <!-- Carousel for Category Thumbnails -->
+        <div class="cat-image-carousel h-100 w-100 position-relative overflow-hidden">
+          <ng-container *ngIf="cat.thumbnails?.length > 1; else singleImg">
+             <img *ngFor="let thumb of cat.thumbnails; let i = index" 
+                  [src]="thumb" 
+                  [alt]="cat.name" 
+                  (error)="handleImageError($event)"
+                  class="cat-bg-img carousel-img transition-opacity"
+                  [class.opacity-100]="i === cat.currentThumbIndex"
+                  [class.opacity-0]="i !== cat.currentThumbIndex" />
+          </ng-container>
+          <ng-template #singleImg>
+            <img [src]="cat.thumbnails?.[0] || cat.imageUrl || '/assets/images/' + cat.name + '.jpg'" 
+                 [alt]="cat.name" 
+                 (error)="handleImageError($event)"
+                 class="cat-bg-img" />
+          </ng-template>
+        </div>
+
+        <!-- Glassmorphism Overlay -->
+        <div class="cat-glass-overlay"></div>
+        <div class="cat-content-wrapper p-3 d-flex flex-column justify-content-end">
+          <div class="cat-info d-flex justify-content-between align-items-center">
+            <div class="text-start">
+              <span class="cat-tag badge rounded-pill mb-1" *ngIf="cat.listingsCount">
+                {{ cat.listingsCount }} {{ 'ADS' | translate }}
+              </span>
+              <h3 class="cat-title m-0">{{ cat.name | translate }}</h3>
+            </div>
+            <div class="cat-arrow-circle">
+               <i class="bi bi-arrow-right"></i>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div class="category-card"  routerLink="/listings/motors">
-        <img
-          src="/assets/images/Motors.jpg"
-          alt="Motors"
-        />
-        <h3>{{ 'MOTORS' | translate }}</h3>
+    <!-- Skeleton Loader -->
+    <ng-template #loaderCategories>
+      <div class="category-grid">
+        <div class="premium-cat-card skeleton-card" *ngFor="let i of [1,2,3,4,5,6]">
+          <div class="skeleton-content h-100 w-100 bg-light opacity-50"></div>
+        </div>
       </div>
+    </ng-template>
+  </div>
+</section>
 
-      <div class="category-card"  routerLink="/listings/electronics">
-        <img
-          src="/assets/images/Electronics.jpg"
-          alt="Electronics"
-        />
-        <h3>{{ 'ELECTRONICS' | translate }}</h3>
-      </div>
-
-      <div class="category-card"  routerLink="/listings/furniture">
-        <img
-          src="/assets/images/Furniture.jpg"
-          alt="Furniture"
-        />
-        <h3>{{ 'FURNITURE' | translate }}</h3>
-      </div>
-
-      <div class="category-card"  routerLink="/listings/classifieds">
-        <img
-          src="/assets/images/Classifieds.jpg"
-          alt="Classifieds"
-        />
-        <h3>{{ 'CLASSIFIEDS' | translate }}</h3>
-      </div>
-
-      <div class="category-card"  routerLink="/listings/jobs">
-        <img
-          src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80"
-          alt="Jobs"
-        />
-        <h3>{{ 'JOBS' | translate }}</h3>
-      </div>
-
-      <div class="category-card"  routerLink="/listings/property">
-        <img
-          src="/assets/images/Rooms for rent.jpg"
-          alt="Rooms for Rent"
-        />
-        <h3>{{ 'ROOMS_FOR_RENT' | translate }}</h3>
-      </div>
-
-      <div class="category-card"  routerLink="/listings/interior-designers">
-        <img
-          src="/assets/images/Interior Designers.jpg"
-          alt="Interior Designers"
-        />
-        <h3>{{ 'INTERIOR_DESIGNERS' | translate }}</h3>
+<section class="popular-categories-section container my-5">
+  <h1 class="fw-bold mb-5" style="color: #222; font-size: 2rem;">Popular Categories</h1>
+  
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-5">
+    <div class="col" *ngFor="let cat of popularCategoriesData">
+      <div class="category-group">
+        <h5 class="category-header d-flex align-items-center gap-2 fw-bold mb-4 cursor-pointer" [routerLink]="'/listings/' + cat.slug">
+          <i [class]="'bi ' + cat.icon" class="text-warning fs-4"></i>
+          <span class="header-title text-black">{{ cat.title }}</span>
+        </h5>
+        <ul class="list-unstyled category-links">
+          <li *ngFor="let item of cat.items" class="mb-2">
+            <a [routerLink]="'/listings/' + item.slug" class="text-decoration-none d-flex align-items-center gap-2">
+              <span class="link-label" [class.text-warning]="item.isAll" [class.fw-bold]="item.isAll">{{ item.label }}</span>
+              <span *ngIf="item.isNew" class="badge-new">NEW</span>
+              <i *ngIf="item.isAll" class="bi bi-arrow-right small text-warning"></i>
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -254,14 +348,24 @@
   <h2>{{ 'FEATURED_FOR_YOU' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of featuredListings"  (click)="goToCategory(item)">
-      <div class="image-wrapper">
-        <img [src]="item.imageUrl" [alt]="item.title" />
-      </div>
-      <div>
-        <p class="mb-0">{{ item.title }}</p>
-        <p *ngIf="item.price && item.price !== '0'" class="price mb-0">{{ item.price }}</p>
-        <p class="city mb-0">{{ item.city }}</p>
+    <div class="listing-card" *ngFor="let item of featuredListings" (click)="goToCategory(item)">
+      <div class="listing-card-inner inner-border-container">
+        <!-- SVG moving border line -->
+        <svg class="card-border-svg" aria-hidden="true">
+          <rect class="card-border-track" width="100%" height="100%" rx="16" ry="16"/>
+          <rect class="card-border-runner" width="100%" height="100%" rx="16" ry="16"/>
+        </svg>
+        <div class="image-wrapper">
+          <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
+          <div class="card-badge">{{ 'FEATURED' | translate }}</div>
+        </div>
+        <div class="card-details">
+          <h5 class="card-title">{{ item.title }}</h5>
+          <div class="card-meta d-flex justify-content-between align-items-center">
+            <span class="price-tag">{{ item.price }}</span>
+            <span class="location-tag"><i class="bi bi-geo-alt"></i> {{ item.city }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -271,15 +375,23 @@
   <h2>{{ 'POPULAR_IN_MOTORS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of popularCars"  (click)="goToCategory(item)">
-      <div class="image-wrapper">
-        <img [src]="item.imageUrl" [alt]="item.title" />
-      </div>
-
-      <div>
-        <p class="mb-0">{{ item.title }}</p>
-        <p class="price mb-0">{{ item.price }}</p>
-        <p class="city mb-0">{{ item.city }}</p>
+    <div class="listing-card" *ngFor="let item of popularCars" (click)="goToCategory(item)">
+      <div class="listing-card-inner inner-border-container">
+        <!-- SVG moving border line -->
+        <svg class="card-border-svg" aria-hidden="true">
+          <rect class="card-border-track" width="100%" height="100%" rx="16" ry="16"/>
+          <rect class="card-border-runner card-border-runner--delayed" width="100%" height="100%" rx="16" ry="16"/>
+        </svg>
+        <div class="image-wrapper">
+          <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
+        </div>
+        <div class="card-details">
+          <h5 class="card-title">{{ item.title }}</h5>
+          <div class="card-meta d-flex justify-content-between align-items-center">
+            <span class="price-tag">{{ item.price }}</span>
+            <span class="location-tag"><i class="bi bi-geo-alt"></i> {{ item.city }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -289,15 +401,23 @@
   <h2>{{ 'POPULAR_IN_FURNITURE' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of popularFurniture"  (click)="goToCategory(item)">
-      <div class="image-wrapper">
-        <img [src]="item.imageUrl" [alt]="item.title" />
-      </div>
-
-      <div>
-        <p class="mb-0">{{ item.title }}</p>
-        <p class="price mb-0">{{ item.price }}</p>
-        <p class="city mb-0">{{ item.city }}</p>
+    <div class="listing-card" *ngFor="let item of popularFurniture" (click)="goToCategory(item)">
+      <div class="listing-card-inner inner-border-container">
+        <!-- SVG moving border line -->
+        <svg class="card-border-svg" aria-hidden="true">
+          <rect class="card-border-track" width="100%" height="100%" rx="16" ry="16"/>
+          <rect class="card-border-runner" width="100%" height="100%" rx="16" ry="16"/>
+        </svg>
+        <div class="image-wrapper">
+          <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
+        </div>
+        <div class="card-details">
+          <h5 class="card-title">{{ item.title }}</h5>
+          <div class="card-meta d-flex justify-content-between align-items-center">
+            <span class="price-tag">{{ item.price }}</span>
+            <span class="location-tag"><i class="bi bi-geo-alt"></i> {{ item.city }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -307,15 +427,23 @@
   <h2>{{ 'POPULAR_IN_RESDENTIALS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of residentialListings"  (click)="goToCategory(item)">
-      <div class="image-wrapper">
-        <img [src]="item.imageUrl" [alt]="item.title" />
-      </div>
-
-      <div>
-        <p class="mb-0">{{ item.title }}</p>
-        <p class="price mb-0">{{ item.price }}</p>
-        <p class="city mb-0">{{ item.city }}</p>
+    <div class="listing-card" *ngFor="let item of residentialListings" (click)="goToCategory(item)">
+      <div class="listing-card-inner inner-border-container">
+        <!-- SVG moving border line -->
+        <svg class="card-border-svg" aria-hidden="true">
+          <rect class="card-border-track" width="100%" height="100%" rx="16" ry="16"/>
+          <rect class="card-border-runner card-border-runner--delayed" width="100%" height="100%" rx="16" ry="16"/>
+        </svg>
+        <div class="image-wrapper">
+          <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
+        </div>
+        <div class="card-details">
+          <h5 class="card-title">{{ item.title }}</h5>
+          <div class="card-meta d-flex justify-content-between align-items-center">
+            <span class="price-tag">{{ item.price }}</span>
+            <span class="location-tag"><i class="bi bi-geo-alt"></i> {{ item.city }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -325,15 +453,23 @@
   <h2>{{ 'POPULAR_IN_ELECTRONICS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of electronicsListings"  (click)="goToCategory(item)">
-      <div class="image-wrapper">
-        <img [src]="item.imageUrl" [alt]="item.title" />
-      </div>
-
-      <div>
-        <p class="mb-0">{{ item.title }}</p>
-        <p class="price mb-0">{{ item.price }}</p>
-        <p class="city mb-0">{{ item.city }}</p>
+    <div class="listing-card" *ngFor="let item of electronicsListings" (click)="goToCategory(item)">
+      <div class="listing-card-inner inner-border-container">
+        <!-- SVG moving border line -->
+        <svg class="card-border-svg" aria-hidden="true">
+          <rect class="card-border-track" width="100%" height="100%" rx="16" ry="16"/>
+          <rect class="card-border-runner" width="100%" height="100%" rx="16" ry="16"/>
+        </svg>
+        <div class="image-wrapper">
+          <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
+        </div>
+        <div class="card-details">
+          <h5 class="card-title">{{ item.title }}</h5>
+          <div class="card-meta d-flex justify-content-between align-items-center">
+            <span class="price-tag">{{ item.price }}</span>
+            <span class="location-tag"><i class="bi bi-geo-alt"></i> {{ item.city }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -343,15 +479,23 @@
   <h2>{{ 'POPULAR_IN_CLASSIFIEDS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of classifiedListings"  (click)="goToCategory(item)">
-      <div class="image-wrapper">
-        <img [src]="item.imageUrl" [alt]="item.title" />
-      </div>
-
-      <div>
-        <p class="mb-0">{{ item.title }}</p>
-        <p class="price mb-0">{{ item.price }}</p>
-        <p class="city mb-0">{{ item.city }}</p>
+    <div class="listing-card" *ngFor="let item of classifiedListings" (click)="goToCategory(item)">
+      <div class="listing-card-inner inner-border-container">
+        <!-- SVG moving border line -->
+        <svg class="card-border-svg" aria-hidden="true">
+          <rect class="card-border-track" width="100%" height="100%" rx="16" ry="16"/>
+          <rect class="card-border-runner card-border-runner--delayed" width="100%" height="100%" rx="16" ry="16"/>
+        </svg>
+        <div class="image-wrapper">
+          <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
+        </div>
+        <div class="card-details">
+          <h5 class="card-title">{{ item.title }}</h5>
+          <div class="card-meta d-flex justify-content-between align-items-center">
+            <span class="price-tag">{{ item.price }}</span>
+            <span class="location-tag"><i class="bi bi-geo-alt"></i> {{ item.city }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

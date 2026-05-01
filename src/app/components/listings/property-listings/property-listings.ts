@@ -1,4 +1,5 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -105,7 +106,8 @@ skeletonArray = Array.from({ length: 12 });
     private listingsService: ListingsService,
     private authService: AuthService,
     private chatService: ChatService,
-    private router: Router
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
@@ -244,17 +246,19 @@ submitReport(): void {
   onScroll(): void {
     if (this.isFetchingMore || this.allLoaded) return;
 
-    const nearBottom =
-      window.innerHeight + window.scrollY >=
-      document.body.offsetHeight - 300;
+    if (isPlatformBrowser(this.platformId)) {
+      const nearBottom =
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 300;
 
-    if (nearBottom) {
-      this.isFetchingMore = true;
-      setTimeout(() => {
-        this.currentPage++;
-        this.appendPage();
-        this.isFetchingMore = false;
-      }, 500);
+      if (nearBottom) {
+        this.isFetchingMore = true;
+        setTimeout(() => {
+          this.currentPage++;
+          this.appendPage();
+          this.isFetchingMore = false;
+        }, 500);
+      }
     }
   }
 
@@ -304,7 +308,9 @@ submitReport(): void {
       this.selectedListing = this.mapBackendListing(res.data);
     });
     this.currentImageIndex = 0;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   closeDetail(): void {
@@ -332,22 +338,24 @@ submitReport(): void {
   /* ===================== CONTACT ===================== */
   callSeller(): void {
     if (!this.isLoggedIn) {
-    this.router.navigate(['/auth/login']);
-    return;
-  }
-    if (this.selectedListing?.sellerPhone) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+    if (this.selectedListing?.sellerPhone && isPlatformBrowser(this.platformId)) {
       window.location.href = `tel:${this.selectedListing.sellerPhone}`;
     }
   }
 
   chatWhatsApp(): void {
     if (!this.isLoggedIn) {
-    this.router.navigate(['/auth/login']);
-    return;
-  }
+      this.router.navigate(['/auth/login']);
+      return;
+    }
     if (!this.selectedListing?.sellerPhone) return;
     const phone = this.selectedListing.sellerPhone.replace(/\D/g, '');
-    window.open(`https://wa.me/${phone}`, '_blank');
+    if (isPlatformBrowser(this.platformId)) {
+      window.open(`https://wa.me/${phone}`, '_blank');
+    }
   }
 
   startChatWithSeller(listing: PropertyListing): void {

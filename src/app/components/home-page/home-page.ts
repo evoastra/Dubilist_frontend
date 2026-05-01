@@ -1,9 +1,10 @@
-import { CommonModule, NgFor } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser, NgFor, CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ListingsService } from '../../services/listing-service';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { BannerService, Banner } from '../../services/banner.service';
 
 interface Listing {
   title: string;
@@ -17,6 +18,7 @@ interface Listing {
   selector: 'app-home-page',
   standalone: true,
   imports: [NgFor, CommonModule, RouterLink,FormsModule,TranslateModule],
+  providers: [],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })
@@ -27,24 +29,28 @@ export class HomePage {
 
   categories = [
     'All',
-    'Properties',
+    'Property',
     'Jobs',
     'Electronics',
     'Motors',
     'Classifieds',
-    'Furniture'
+    'Furniture',
+    'Rooms for Rent',
+    'Interior Designers'
   ];
 
   showCmgSoon = false; 
 
   categoryMap: Record<string, number | null> = {
     All: null,
-    Properties: 3,
+    Property: 3,
     Jobs: 2,
     Electronics: 5,
     Motors: 1,
     Classifieds: 4,
-    Furniture: 6
+    Furniture: 6,
+    'Rooms for Rent': 9,
+    'Interior Designers': 10
   };
 
   searchQuery = '';
@@ -60,24 +66,184 @@ export class HomePage {
   electronicsListings: Listing[] = [];
   classifiedListings: Listing[] = [];
 
+  banners: Banner[] = [];
+  dynamicCategories: any[] = [];
+  categoryIntervals: any[] = [];
+
   isLoading = false;
+
+  popularCategoriesData = [
+    {
+      title: 'Motors',
+      icon: 'bi-car-front',
+      slug: 'motors',
+      items: [
+        { label: 'Used Cars', slug: 'used-cars' },
+        { label: 'Rental Cars', slug: 'rental-cars', isNew: true },
+        { label: 'New Cars', slug: 'new-cars' },
+        { label: 'Export Cars', slug: 'export-cars' },
+        { label: 'All in Motors', slug: 'motors', isAll: true }
+      ]
+    },
+    {
+      title: 'Property for Rent',
+      icon: 'bi-building',
+      slug: 'property-for-rent',
+      items: [
+        { label: 'Residential', slug: 'residential-for-rent' },
+        { label: 'Commercial', slug: 'commercial-for-rent' },
+        { label: 'Rooms For Rent', slug: 'rooms-for-rent' },
+        { label: 'Monthly Short Term', slug: 'monthly-short-term' },
+        { label: 'All in Property for Rent', slug: 'property-for-rent', isAll: true }
+      ]
+    },
+    {
+      title: 'Property for Sale',
+      icon: 'bi-house-heart',
+      slug: 'property-for-sale',
+      items: [
+        { label: 'Residential', slug: 'residential-for-sale' },
+        { label: 'Commercial', slug: 'commercial-for-sale' },
+        { label: 'New Projects', slug: 'new-projects' },
+        { label: 'Off-Plan', slug: 'off-plan' },
+        { label: 'All in Property for Sale', slug: 'property-for-sale', isAll: true }
+      ]
+    },
+    {
+      title: 'Classifieds',
+      icon: 'bi-box-seam',
+      slug: 'classifieds',
+      items: [
+        { label: 'Electronics', slug: 'electronics' },
+        { label: 'Computers & Networking', slug: 'computers-networking' },
+        { label: 'Clothing & Accessories', slug: 'clothing-accessories' },
+        { label: 'Jewelry & Watches', slug: 'jewelry-watches' },
+        { label: 'All in Classifieds', slug: 'classifieds', isAll: true }
+      ]
+    },
+    {
+      title: 'Jobs',
+      icon: 'bi-briefcase',
+      slug: 'jobs',
+      items: [
+        { label: 'Accounting / Finance', slug: 'accounting-finance' },
+        { label: 'Engineering', slug: 'engineering' },
+        { label: 'Sales / Business Development', slug: 'sales-business-development' },
+        { label: 'Secretarial / Front Office', slug: 'secretarial-front-office' },
+        { label: 'All in Jobs', slug: 'jobs', isAll: true }
+      ]
+    },
+    {
+      title: 'Community',
+      icon: 'bi-people',
+      slug: 'community',
+      items: [
+        { label: 'Freelancers', slug: 'freelancers' },
+        { label: 'Home Maintenance', slug: 'home-maintenance' },
+        { label: 'Other Services', slug: 'other-services' },
+        { label: 'Tutors & Classes', slug: 'tutors-classes' },
+        { label: 'All in Community', slug: 'community', isAll: true }
+      ]
+    },
+    {
+      title: 'Business & Industrial',
+      icon: 'bi-buildings',
+      slug: 'business-industrial',
+      items: [
+        { label: 'Businesses for Sale', slug: 'businesses-for-sale' },
+        { label: 'Construction', slug: 'construction' },
+        { label: 'Food & Beverage', slug: 'food-beverage' },
+        { label: 'Industrial Supplies', slug: 'industrial-supplies' },
+        { label: 'All in Business & Industrial', slug: 'business-industrial', isAll: true }
+      ]
+    },
+    {
+      title: 'Home Appliances',
+      icon: 'bi-washing-machine',
+      slug: 'home-appliances',
+      items: [
+        { label: 'Large Appliances / White Goods', slug: 'large-appliances-white-goods' },
+        { label: 'Small Kitchen Appliances', slug: 'small-kitchen-appliances' },
+        { label: 'Outdoor Appliances', slug: 'outdoor-appliances' },
+        { label: 'Small Bathroom Appliances', slug: 'small-bathroom-appliances' },
+        { label: 'All in Home Appliances', slug: 'home-appliances', isAll: true }
+      ]
+    },
+    {
+      title: 'Furniture, Home & Garden',
+      icon: 'bi-couch',
+      slug: 'furniture-home-garden',
+      items: [
+        { label: 'Furniture', slug: 'furniture' },
+        { label: 'Home Accessories', slug: 'home-accessories' },
+        { label: 'Garden & Outdoor', slug: 'garden-outdoor' },
+        { label: 'Lighting & Fans', slug: 'lighting-fans' },
+        { label: 'All in Furniture, Home & Garden', slug: 'furniture-home-garden', isAll: true }
+      ]
+    },
+    {
+      title: 'Mobile Phones & Tablets',
+      icon: 'bi-phone',
+      slug: 'mobile-phones-tablets',
+      items: [
+        { label: 'Mobile Phones', slug: 'mobile-phones' },
+        { label: 'Mobile Phone & Tablet Accessories', slug: 'mobile-phone-tablet-accessories' },
+        { label: 'Tablets', slug: 'tablets' },
+        { label: 'Other Mobile Phones & Tablets', slug: 'other-mobile-phones-tablets' },
+        { label: 'All in Mobile Phones & Tablets', slug: 'mobile-phones-tablets', isAll: true }
+      ]
+    }
+  ];
 
   constructor(
     private listingsService: ListingsService,
-    private router: Router
+    private bannerService: BannerService,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
     this.loadHomeData();
+    this.loadCategories();
+  }
+
+  loadCategories(): void {
+    this.listingsService.getCategories().subscribe({
+      next: (res: any) => {
+        this.dynamicCategories = res.data.map((cat: any) => ({
+          ...cat,
+          currentThumbIndex: 0,
+          thumbnails: Array.isArray(cat.thumbnails) ? cat.thumbnails : (cat.imageUrl ? [cat.imageUrl] : [])
+        }));
+        this.startThumbnailRotation();
+      },
+      error: (err: any) => console.error('Failed to load categories', err)
+    });
+  }
+
+  startThumbnailRotation(): void {
+    if (this.categoryIntervals.length) return;
+    
+    // Rotate thumbnails every 3 seconds for categories with multiple images
+    const interval = setInterval(() => {
+      this.dynamicCategories.forEach(cat => {
+        if (cat.thumbnails?.length > 1) {
+          cat.currentThumbIndex = (cat.currentThumbIndex + 1) % cat.thumbnails.length;
+        }
+      });
+    }, 3000);
+    
+    this.categoryIntervals.push(interval);
+  }
+
+  ngOnDestroy(): void {
+     this.categoryIntervals.forEach(i => clearInterval(i));
   }
 
   /* ===================== CATEGORY CLICK ===================== */
   onCategoryClick(cat: string): void {
     this.selectedCategory = cat;
-
-    if (this.searchQuery.trim()) {
-      this.onSearch();
-    }
+    this.onSearch();
   }
 
   get searchPlaceholder(): string {
@@ -86,7 +252,7 @@ export class HomePage {
 
   /* ===================== SEARCH ===================== */
   onSearch(): void {
-    if (!this.searchQuery.trim()) {
+    if (!this.searchQuery.trim() && this.selectedCategory === 'All') {
       console.log('Empty search query');
       this.clearSearch();
       return;
@@ -169,6 +335,34 @@ export class HomePage {
     this.listingsService.getListingsPaginated(4, 1, 5).subscribe(res => {
       this.classifiedListings = this.mapListings(res.data);
     });
+
+    // Banners
+    this.bannerService.getBanners().subscribe(data => {
+      this.banners = data;
+      // Initialize Bootstrap Carousel manually after DOM updates
+      if (isPlatformBrowser(this.platformId)) {
+        setTimeout(() => {
+          const carouselElement = document.getElementById('promoCarousel');
+          if (carouselElement) {
+            // Manually set first item as active since we removed Angular's binding
+            const firstIndicator = carouselElement.querySelector('.indicator-bar');
+            const firstSlide = carouselElement.querySelector('.carousel-item');
+            if (firstIndicator) firstIndicator.classList.add('active');
+            if (firstSlide) firstSlide.classList.add('active');
+
+            if (typeof (window as any).bootstrap !== 'undefined') {
+              // Initialize and force cycle
+              const carousel = new (window as any).bootstrap.Carousel(carouselElement, {
+                interval: 2500,
+                ride: 'carousel',
+                pause: false
+              });
+              carousel.cycle();
+            }
+          }
+        }, 100);
+      }
+    });
   }
 
   /* ===================== MAPPER ===================== */
@@ -186,5 +380,9 @@ export class HomePage {
   goToCategory(listing: Listing): void {
     if (!listing.categorySlug) return;
     this.router.navigate([`/listings/${listing.categorySlug}`]);
+  }
+
+  handleImageError(event: any): void {
+    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmMGYwZjAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxMCIgZmlsbD0iI2FhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlBob3RvIENvbWluZyBTb29uPC90ZXh0Pjwvc3ZnPg=='; 
   }
 }

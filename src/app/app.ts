@@ -1,4 +1,5 @@
-import { Component, HostListener, signal } from '@angular/core';
+import { Component, HostListener, signal, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { LandingPage } from './components/landing-page/landing-page';
 import { HomePage } from './components/home-page/home-page';
 import { NavigationEnd, Router, RouterOutlet, RouterLinkWithHref } from "@angular/router";
@@ -7,7 +8,7 @@ import { NavbarComponent } from './components/navbar/navbar';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { filter } from 'rxjs/internal/operators/filter';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LoadingService } from './services/loading-service';
 import { Observable } from 'rxjs';
 
@@ -20,6 +21,7 @@ import { Observable } from 'rxjs';
 })
 export class App {
   hideFooter = false;
+  showCmgSoon = false;
 
   protected readonly title = signal('Dubilist');
 
@@ -27,7 +29,12 @@ export class App {
 
 
 
-   constructor(private router: Router,private loadingService: LoadingService) {
+   constructor(
+     private router: Router,
+     private loadingService: LoadingService,
+     private translate: TranslateService,
+     @Inject(PLATFORM_ID) private platformId: Object
+   ) {
     this.loading$ = this.loadingService.loading$;
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
@@ -43,15 +50,36 @@ export class App {
         );
       });
   }
+
+  switchLanguage(lang: string) {
+    this.translate.use(lang);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem("app_lang", lang);
+      document.body.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    }
+  }
+
+  openCmgSoon(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.showCmgSoon = true;
+    setTimeout(() => {
+      this.showCmgSoon = false;
+    }, 3000);
+  }
   
   
 
    @HostListener('document:mousemove', ['$event'])
   onMouseMove(e: MouseEvent) {
-    const cursor = document.querySelector('.custom-cursor') as HTMLElement;
-    if (cursor) {
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top = e.clientY + 'px';
+    if (isPlatformBrowser(this.platformId)) {
+      const cursor = document.querySelector('.custom-cursor') as HTMLElement;
+      if (cursor) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      }
     }
 }
 

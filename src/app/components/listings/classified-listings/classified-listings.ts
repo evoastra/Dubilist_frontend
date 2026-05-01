@@ -1,8 +1,11 @@
 import {
   Component,
   OnInit,
-  HostListener
+  HostListener,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -96,7 +99,8 @@ export class ClassifiedListingsComponent implements OnInit {
     private listingsService: ListingsService,
     private authService: AuthService,
     private chatService: ChatService,
-    private router: Router
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   /* ===================== INIT ===================== */
@@ -205,12 +209,14 @@ export class ClassifiedListingsComponent implements OnInit {
   onWindowScroll(): void {
     if (this.isFetchingMore || this.allLoaded) return;
 
-    const nearBottom =
-      window.innerHeight + window.scrollY >=
-      document.body.offsetHeight - 300;
+    if (isPlatformBrowser(this.platformId)) {
+      const nearBottom =
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 300;
 
-    if (nearBottom) {
-      this.loadMore();
+      if (nearBottom) {
+        this.loadMore();
+      }
     }
   }
 
@@ -250,7 +256,9 @@ export class ClassifiedListingsComponent implements OnInit {
         const mapped = this.mapBackendClassified(res.data); 
         this.selectedListing = mapped;
         this.currentImageIndex = 0;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (isPlatformBrowser(this.platformId)) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       },error: () => {  
         alert('Error fetching listing details.');
       }
@@ -318,7 +326,7 @@ export class ClassifiedListingsComponent implements OnInit {
       return;
     }
 
-    if (this.selectedListing?.sellerPhone) {
+    if (this.selectedListing?.sellerPhone && isPlatformBrowser(this.platformId)) {
       window.location.href = `tel:${this.selectedListing.sellerPhone}`;
     }
   }
@@ -331,7 +339,9 @@ export class ClassifiedListingsComponent implements OnInit {
 
     if (!this.selectedListing?.sellerPhone) return;
     const phone = this.selectedListing.sellerPhone.replace(/\D/g, '');
-    window.open(`https://wa.me/${phone}`, '_blank');
+    if (isPlatformBrowser(this.platformId)) {
+      window.open(`https://wa.me/${phone}`, '_blank');
+    }
   }
 
   /* ===================== REPORT (SAME AS MOTORS) ===================== */

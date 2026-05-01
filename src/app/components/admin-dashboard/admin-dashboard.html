@@ -24,6 +24,18 @@
         <i class="bi bi-flag fs-5"></i> 
         <span class="fw-medium">{{ 'REPORTS' | translate }}</span>
       </a>
+      <a class="nav-link d-flex align-items-center gap-3 px-3 py-3 rounded" 
+         [class.active-link]="currentView === 'banners'" 
+         (click)="switchView('banners')">
+        <i class="bi bi-megaphone fs-5"></i> 
+        <span class="fw-medium">Promotional Ads</span>
+      </a>
+      <a class="nav-link d-flex align-items-center gap-3 px-3 py-3 rounded" 
+         [class.active-link]="currentView === 'categories'" 
+         (click)="switchView('categories')">
+        <i class="bi bi-tags fs-5"></i> 
+        <span class="fw-medium">Browse Categories</span>
+      </a>
     </nav>
 
     <div class="mt-auto p-4 border-top">
@@ -417,6 +429,202 @@
             <button class="page-link" (click)="loadReports(reportPage + 1)">{{ 'NEXT' | translate }}</button>
           </li>
         </ul>
+      </div>
+    </div>
+
+    <!-- Banners Management View -->
+    <div *ngIf="currentView === 'banners'" class="bg-white rounded-4 shadow-sm p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+          <h5 class="fw-bold mb-0">Promotional Banner Management</h5>
+          <p class="text-muted small mb-0">Create and manage ads that appear on the Home Page carousel.</p>
+        </div>
+      </div>
+
+      <!-- Add Banner Form -->
+      <div class="card border-0 bg-light-gray rounded-4 p-4 mb-5">
+        <h6 class="fw-bold mb-3"><i class="bi bi-plus-circle me-2"></i>Create New Banner</h6>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label small fw-bold text-secondary">Banner Title</label>
+            <input type="text" class="form-control" [(ngModel)]="newBanner.title" placeholder="e.g. Find Your Dream Home">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-bold text-secondary">Action Link (URL or Route)</label>
+            <input type="text" class="form-control" [(ngModel)]="newBanner.link" placeholder="e.g. /listings/property">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label small fw-bold text-secondary">Upload Image from Computer</label>
+            <div class="input-group">
+              <input type="file" class="form-control shadow-sm border-0 bg-white" (change)="onFileSelected($event)" accept=".jpg, .jpeg, .png, .webp, .avif">
+              <span class="input-group-text bg-white" *ngIf="isUploading">
+                <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+              </span>
+            </div>
+            <p class="text-muted mb-0 mt-1" style="font-size: 0.75rem;">Selected image will be uploaded and the URL will be filled below automatically.</p>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label small fw-bold text-secondary">Image URL (Auto-filled on upload)</label>
+            <input type="text" class="form-control" [(ngModel)]="newBanner.imageUrl" placeholder="HTTPS image link (1200x400 recommended)">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label small fw-bold text-secondary">Short Description</label>
+            <textarea class="form-control" rows="2" [(ngModel)]="newBanner.description" placeholder="Brief tagline for the banner..."></textarea>
+          </div>
+          <div class="col-12 text-end">
+            <button class="btn btn-warning text-white fw-bold px-4 rounded-pill shadow-sm" (click)="addBanner()">
+              Add to Carousel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Banners List -->
+      <h6 class="fw-bold mb-3">Active Banners ({{ banners.length }})</h6>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead class="text-warning small fw-bold border-bottom">
+            <tr>
+              <th class="ps-3 py-3">Preview</th>
+              <th>Details</th>
+              <th>Link</th>
+              <th class="text-end pe-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let banner of banners">
+              <td class="ps-3 py-3">
+                <img [src]="banner.imageUrl" class="rounded-3 border object-fit-cover shadow-sm" 
+                     width="120" height="60" alt="Banner preview">
+              </td>
+              <td class="small">
+                <div class="fw-bold text-dark">{{ banner.title }}</div>
+                <div class="text-muted x-small text-truncate" style="max-width: 250px;">{{ banner.description }}</div>
+              </td>
+              <td>
+                <span class="badge bg-light text-primary border">{{ banner.link }}</span>
+              </td>
+              <td class="text-end pe-3">
+                <button class="btn btn-outline-danger btn-sm rounded-pill px-3" (click)="deleteBanner(banner.id)">
+                  <i class="bi bi-trash me-1"></i>Delete
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="banners.length === 0">
+              <td colspan="4" class="text-center py-5 text-muted">No active banners found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Category Management View -->
+    <div *ngIf="currentView === 'categories'" class="bg-white rounded-4 shadow-sm p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+          <h5 class="fw-bold mb-0">Browse Categories Management</h5>
+          <p class="text-muted small mb-0">Upload images per category — they'll appear on the Home Page's "Browse by Category" section.</p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-6" *ngFor="let cat of categories">
+          <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden"
+               [style.border]="cat._dirty ? '2px solid #ffab00' : '2px solid transparent'"
+               style="transition: border 0.3s;">
+            <!-- Card Header -->
+            <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-tag-fill text-warning"></i>
+                <h6 class="fw-bold mb-0" style="color: #333;">{{ cat.name }}</h6>
+                <!-- Unsaved changes badge -->
+                <span *ngIf="cat._dirty" class="badge bg-warning text-dark" style="font-size: 0.65rem; animation: pulse 1.5s infinite;">
+                  ● Unsaved
+                </span>
+              </div>
+              <!-- Save Changes Button -->
+              <button class="btn btn-sm btn-warning text-white fw-bold px-4 rounded-pill shadow-sm"
+                      (click)="saveCategory(cat)"
+                      [disabled]="cat.isSaving || cat.isUploading"
+                      style="min-width: 130px;">
+                <span *ngIf="cat.isSaving" class="spinner-border spinner-border-sm me-1" role="status"></span>
+                <i *ngIf="!cat.isSaving" class="bi bi-cloud-check me-1"></i>
+                {{ cat.isSaving ? 'Saving...' : 'Save Changes' }}
+              </button>
+            </div>
+
+            <div class="card-body bg-light-gray p-4">
+
+              <!-- Upload Zone -->
+              <div class="mb-3">
+                <div class="upload-container position-relative">
+                  <input type="file" #fileInput hidden
+                         (change)="onCategoryFileSelected($event, cat); cat._dirty = true"
+                         accept=".jpg, .jpeg, .png, .webp, .avif" multiple>
+
+                  <div class="upload-box p-4 border-2 border-dashed rounded-4 bg-white text-center"
+                       (click)="!cat.isUploading && fileInput.click()"
+                       [style.cursor]="cat.isUploading ? 'not-allowed' : 'pointer'"
+                       style="border: 2px dashed #ffab00 !important; background: #fffcf5 !important; transition: all 0.3s;">
+
+                    <!-- Uploading state -->
+                    <ng-container *ngIf="cat.isUploading; else uploadReady">
+                      <div class="d-flex flex-column align-items-center py-2">
+                        <div class="spinner-border text-warning mb-3" role="status"></div>
+                        <p class="mb-0 fw-bold text-warning">Uploading images...</p>
+                        <p class="text-muted x-small mb-0">Please wait, do not close the page</p>
+                      </div>
+                    </ng-container>
+
+                    <!-- Default upload state -->
+                    <ng-template #uploadReady>
+                      <div class="upload-icon-wrapper mb-2">
+                        <i class="bi bi-cloud-plus-fill text-warning fs-1"></i>
+                      </div>
+                      <p class="mb-1 fw-bold text-dark">Click to select multiple images</p>
+                      <p class="text-muted x-small mb-0">Supports JPG, PNG, WebP or AVIF (Max 5MB each)</p>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Thumbnails Gallery -->
+              <div class="d-flex flex-wrap gap-3 mt-3">
+                <div *ngFor="let thumb of cat.thumbnails; let i = index" class="thumb-gallery-item">
+                  <img [src]="thumb" alt="Thumbnail">
+                  <button class="delete-thumb-btn" (click)="removeThumbnail(cat, i); cat._dirty = true">
+                    <i class="bi bi-x-lg" style="font-size: 12px;"></i>
+                  </button>
+                  <div *ngIf="i === 0" class="primary-badge">Primary</div>
+                </div>
+
+                <!-- Empty state -->
+                <div *ngIf="cat.thumbnails?.length === 0"
+                     class="text-muted small py-5 w-100 text-center border-0 rounded-4 bg-white shadow-sm">
+                   <i class="bi bi-images d-block fs-3 mb-2 opacity-50"></i>
+                   No images added yet.
+                </div>
+              </div>
+
+              <!-- Status bar -->
+              <div class="mt-3">
+                <div *ngIf="cat.thumbnails?.length > 1"
+                     class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-2">
+                  <i class="bi bi-collection-play-fill text-success fs-5"></i>
+                  <div>
+                    <p class="text-success small fw-bold mb-0">Carousel mode — {{ cat.thumbnails.length }} images</p>
+                    <p class="text-muted x-small mb-0">Images rotate every 3s on the home page</p>
+                  </div>
+                </div>
+                <div *ngIf="cat.thumbnails?.length === 1"
+                     class="p-3 bg-light rounded-3 d-flex align-items-center gap-2">
+                  <i class="bi bi-image text-primary fs-5"></i>
+                  <p class="text-secondary small fw-bold mb-0">Single thumbnail — add more images to enable carousel</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </main>

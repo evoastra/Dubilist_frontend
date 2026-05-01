@@ -1,8 +1,11 @@
 import {
   Component,
   OnInit,
-  HostListener
+  HostListener,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -154,7 +157,8 @@ applyFilters(): void {}
     private listingsService: ListingsService,
     private authService: AuthService,
     private chatService: ChatService,
-    private router: Router
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   /* =====================
@@ -210,12 +214,14 @@ applyFilters(): void {}
   onWindowScroll(): void {
     if (this.isFetchingMore || this.allLoaded) return;
 
-    const nearBottom =
-      window.innerHeight + window.scrollY >=
-      document.body.offsetHeight - 300;
+    if (isPlatformBrowser(this.platformId)) {
+      const nearBottom =
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 300;
 
-    if (nearBottom) {
-      this.loadMore();
+      if (nearBottom) {
+        this.loadMore();
+      }
     }
   }
 
@@ -281,7 +287,9 @@ applyFilters(): void {}
       next: (res: any) => {
         this.selectedListing = this.mapBackendListing(res.data);
         this.currentImageIndex = 0;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (isPlatformBrowser(this.platformId)) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       },
       error: () => alert('Unable to load listing')
     });
@@ -317,7 +325,7 @@ applyFilters(): void {}
       this.router.navigate(['/auth/login']);
       return;
     }
-    if (this.selectedListing?.sellerPhone) {
+    if (this.selectedListing?.sellerPhone && isPlatformBrowser(this.platformId)) {
       window.location.href = `tel:${this.selectedListing.sellerPhone}`;
     }
   }
@@ -330,7 +338,9 @@ applyFilters(): void {}
     if (!this.selectedListing?.sellerPhone) return;
 
     const phone = this.selectedListing.sellerPhone.replace(/\D/g, '');
-    window.open(`https://wa.me/${phone}`, '_blank');
+    if (isPlatformBrowser(this.platformId)) {
+      window.open(`https://wa.me/${phone}`, '_blank');
+    }
   }
 
   startChatWithSeller(listing: MotorsListing): void {
