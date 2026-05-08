@@ -1,5 +1,5 @@
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, NgFor, CommonModule } from '@angular/common';
+import { Component, Inject, PLATFORM_ID, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ListingsService } from '../../services/listing-service';
 import { FormsModule } from '@angular/forms';
@@ -77,6 +77,7 @@ export class HomePage {
       title: 'Motors',
       icon: 'bi-car-front',
       slug: 'motors',
+      routePath: 'motors',
       items: [
         { label: 'Used Cars', slug: 'used-cars' },
         { label: 'Rental Cars', slug: 'rental-cars', isNew: true },
@@ -89,6 +90,7 @@ export class HomePage {
       title: 'Property for Rent',
       icon: 'bi-building',
       slug: 'property-for-rent',
+      routePath: 'property',
       items: [
         { label: 'Residential', slug: 'residential-for-rent' },
         { label: 'Commercial', slug: 'commercial-for-rent' },
@@ -101,6 +103,7 @@ export class HomePage {
       title: 'Property for Sale',
       icon: 'bi-house-heart',
       slug: 'property-for-sale',
+      routePath: 'property',
       items: [
         { label: 'Residential', slug: 'residential-for-sale' },
         { label: 'Commercial', slug: 'commercial-for-sale' },
@@ -113,6 +116,7 @@ export class HomePage {
       title: 'Classifieds',
       icon: 'bi-box-seam',
       slug: 'classifieds',
+      routePath: 'classifieds',
       items: [
         { label: 'Electronics', slug: 'electronics' },
         { label: 'Computers & Networking', slug: 'computers-networking' },
@@ -125,6 +129,7 @@ export class HomePage {
       title: 'Jobs',
       icon: 'bi-briefcase',
       slug: 'jobs',
+      routePath: 'jobs',
       items: [
         { label: 'Accounting / Finance', slug: 'accounting-finance' },
         { label: 'Engineering', slug: 'engineering' },
@@ -137,6 +142,7 @@ export class HomePage {
       title: 'Community',
       icon: 'bi-people',
       slug: 'community',
+      routePath: 'classifieds',
       items: [
         { label: 'Freelancers', slug: 'freelancers' },
         { label: 'Home Maintenance', slug: 'home-maintenance' },
@@ -149,6 +155,7 @@ export class HomePage {
       title: 'Business & Industrial',
       icon: 'bi-buildings',
       slug: 'business-industrial',
+      routePath: 'classifieds',
       items: [
         { label: 'Businesses for Sale', slug: 'businesses-for-sale' },
         { label: 'Construction', slug: 'construction' },
@@ -161,6 +168,7 @@ export class HomePage {
       title: 'Home Appliances',
       icon: 'bi-washing-machine',
       slug: 'home-appliances',
+      routePath: 'electronics',
       items: [
         { label: 'Large Appliances / White Goods', slug: 'large-appliances-white-goods' },
         { label: 'Small Kitchen Appliances', slug: 'small-kitchen-appliances' },
@@ -173,6 +181,7 @@ export class HomePage {
       title: 'Furniture, Home & Garden',
       icon: 'bi-couch',
       slug: 'furniture-home-garden',
+      routePath: 'furniture',
       items: [
         { label: 'Furniture', slug: 'furniture' },
         { label: 'Home Accessories', slug: 'home-accessories' },
@@ -185,6 +194,7 @@ export class HomePage {
       title: 'Mobile Phones & Tablets',
       icon: 'bi-phone',
       slug: 'mobile-phones-tablets',
+      routePath: 'electronics',
       items: [
         { label: 'Mobile Phones', slug: 'mobile-phones' },
         { label: 'Mobile Phone & Tablet Accessories', slug: 'mobile-phone-tablet-accessories' },
@@ -199,6 +209,8 @@ export class HomePage {
     private listingsService: ListingsService,
     private bannerService: BannerService,
     private router: Router,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -222,18 +234,30 @@ export class HomePage {
   }
 
   startThumbnailRotation(): void {
-    if (this.categoryIntervals.length) return;
+    if (this.categoryIntervals.length || !isPlatformBrowser(this.platformId)) return;
     
     // Rotate thumbnails every 3 seconds for categories with multiple images
-    const interval = setInterval(() => {
-      this.dynamicCategories.forEach(cat => {
-        if (cat.thumbnails?.length > 1) {
-          cat.currentThumbIndex = (cat.currentThumbIndex + 1) % cat.thumbnails.length;
+    // Run outside Angular to avoid constant change detection cycles
+    this.ngZone.runOutsideAngular(() => {
+      const interval = setInterval(() => {
+        let changed = false;
+        this.dynamicCategories.forEach(cat => {
+          if (cat.thumbnails?.length > 1) {
+            cat.currentThumbIndex = (cat.currentThumbIndex + 1) % cat.thumbnails.length;
+            changed = true;
+          }
+        });
+        
+        if (changed) {
+          // Manually trigger change detection only when data actually changes
+          this.ngZone.run(() => {
+            this.cdr.detectChanges();
+          });
         }
-      });
-    }, 3000);
-    
-    this.categoryIntervals.push(interval);
+      }, 3000);
+      
+      this.categoryIntervals.push(interval);
+    });
   }
 
   ngOnDestroy(): void {

@@ -26,16 +26,21 @@ export class AdminService {
   /* ================= LISTINGS ================= */
 
   getListings(
-    status: 'pending' | 'approved' | 'rejected',
+    status: 'pending' | 'approved' | 'rejected' | 'all',
     page: number = 1,
     limit: number = 10
   ): Promise<any> {
+    const params: any = { page, limit };
+    if (status !== 'all') {
+      params.status = status;
+    }
+    
     return firstValueFrom(
       this.http.get(
         `${this.baseUrl}/admin/listings`,
         {
           ...this.getAuthHeaders(),
-          params: { status, page, limit }
+          params
         }
       )
     );

@@ -50,8 +50,24 @@
   <main class="flex-grow-1 p-4 bg-light-gray overflow-auto" style="min-height: 100vh;">
     
     <!-- Stats Cards - Always Visible -->
-    <div class="row g-4 mb-4">
-      <div class="col-md-3">
+    <div class="row g-4 mb-4 row-cols-1 row-cols-md-3 row-cols-xl-5">
+      
+      <!-- Total Uploaded Products Card (Clickable) -->
+      <div class="col">
+        <div class="card p-3 border-light h-100 shadow-sm rounded-4 cursor-pointer hover-scale" style="transition: transform 0.2s;" (click)="switchView('dashboard'); switchStatus('ALL')">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="text-success small fw-bold mb-2">Total Uploaded</div>
+              <h2 class="fw-bold mb-0">{{totalListingsCount | number}}</h2>
+            </div>
+            <div class="icon-box bg-light-success text-success rounded-3">
+              <i class="bi bi-box-seam-fill"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
         <div class="card p-3 border-light h-100 shadow-sm rounded-4">
           <div class="d-flex justify-content-between align-items-start">
             <div>
@@ -64,8 +80,9 @@
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card p-3 border-light h-100 shadow-sm rounded-4">
+
+      <div class="col">
+        <div class="card p-3 border-light h-100 shadow-sm rounded-4 cursor-pointer hover-scale" style="transition: transform 0.2s;" (click)="switchView('users')">
           <div class="d-flex justify-content-between align-items-start">
             <div>
               <div class="text-warning small fw-bold mb-2">{{ 'Total Users' | translate }}</div>
@@ -77,8 +94,9 @@
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card p-3 border-start-accent h-100 shadow-sm rounded-4">
+
+      <div class="col">
+        <div class="card p-3 border-start-accent h-100 shadow-sm rounded-4 cursor-pointer hover-scale" style="transition: transform 0.2s;" (click)="switchView('dashboard'); switchStatus('PENDING')">
           <div class="d-flex justify-content-between align-items-start">
             <div>
               <div class="text-warning small fw-bold mb-1">{{ 'PENDING_ADS' | translate }}</div>
@@ -91,8 +109,9 @@
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card p-3 border-light h-100 shadow-sm rounded-4">
+
+      <div class="col">
+        <div class="card p-3 border-light h-100 shadow-sm rounded-4 cursor-pointer hover-scale" style="transition: transform 0.2s;" (click)="switchView('reports')">
           <div class="d-flex justify-content-between align-items-start">
             <div>
               <div class="text-danger small fw-bold mb-2">{{ 'REPORTED_ISSUES' | translate }}</div>
@@ -125,6 +144,13 @@
 
     <!-- TABS -->
     <div class="d-flex gap-2">
+      <button class="btn btn-pill"
+              [class.btn-warning-active]="activeDashboardTab === 'ALL'"
+              [class.btn-pill-inactive]="activeDashboardTab !== 'ALL'"
+              (click)="switchStatus('ALL')">
+        All ({{ totalListingsCount }})
+      </button>
+
       <button class="btn btn-pill"
               [class.btn-warning-active]="activeDashboardTab === 'PENDING'"
               [class.btn-pill-inactive]="activeDashboardTab !== 'PENDING'"
@@ -213,23 +239,20 @@
 
           <!-- ACTIONS -->
           <td class="text-end pe-3">
-            <div class="d-flex justify-content-end gap-2">
+            <div class="d-flex justify-content-end gap-2 align-items-center">
 
-              <!-- PENDING -->
-              <ng-container *ngIf="activeDashboardTab === 'PENDING'">
+              <ng-container *ngIf="item.status === 'pending'">
                 <button class="btn btn-success btn-sm rounded-pill px-3" (click)="approve(item.id)">{{ 'APPROVE' | translate }}</button>
                 <button class="btn btn-danger btn-sm rounded-pill px-3" (click)="openReject(item.id)">{{ 'REJECT' | translate }}</button>
               </ng-container>
 
-              <!-- APPROVED -->
-              <ng-container *ngIf="activeDashboardTab === 'APPROVED'">
-                <span class="badge bg-success px-3 py-2 rounded-pill">{{ 'APPROVED' | translate }}</span>
-              </ng-container>
+              <span *ngIf="item.status === 'approved'" class="badge bg-success px-3 py-2 rounded-pill me-2">{{ 'APPROVED' | translate }}</span>
+              
+              <span *ngIf="item.status === 'rejected'" class="badge bg-danger px-3 py-2 rounded-pill me-2">{{ 'REJECTED' | translate }}</span>
 
-              <!-- REJECTED -->
-              <ng-container *ngIf="activeDashboardTab === 'REJECTED'">
-                <span class="badge bg-danger px-3 py-2 rounded-pill">{{ 'REJECTED' | translate }}</span>
-              </ng-container>
+              <button class="btn btn-outline-danger btn-sm rounded-pill px-3" (click)="deleteListing(item.id)" title="Delete Ad">
+                <i class="bi bi-trash"></i> Delete
+              </button>
 
             </div>
           </td>
