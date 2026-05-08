@@ -2,7 +2,7 @@
 <!-- LISTINGS PAGE -->
 <!-- ===================== -->
 <div class="mt-5">
-  <div class="listings-page" [class.hidden]="selectedListing">
+  <div class="listings-page" *ngIf="!selectedListing">
 
     <!-- ===================== -->
     <!-- FILTERS (DESKTOP) -->
@@ -109,27 +109,39 @@
           *ngFor="let listing of paginatedListings"
           class="listing-card"
           (click)="viewListing(listing.id)">
+          
+          <div class="listing-card-inner">
+            <!-- SVG moving border line -->
+            <svg class="card-border-svg" aria-hidden="true">
+              <rect class="card-border-track" width="100%" height="100%" rx="20" ry="20"/>
+              <rect class="card-border-runner" width="100%" height="100%" rx="20" ry="20"/>
+            </svg>
 
-          <div class="card-image">
-            <img [src]="listing.image" [alt]="listing.title" loading="lazy" />
+            <div class="image-wrapper">
+              <img [src]="listing.image" [alt]="listing.title" loading="lazy" />
 
-            <button
-              class="favorite-btn"
-              *ngIf="isLoggedIn"
-              (click)="toggleFavorite(listing, $event)">
-              <i
-                class="bi"
-                [ngClass]="listing.isFavorite ? 'bi-heart-fill' : 'bi-heart'">
-              </i>
-            </button>
-          </div>
+              <button
+                class="wishlist-btn"
+                *ngIf="isLoggedIn"
+                (click)="toggleFavorite(listing, $event)">
+                <i
+                  class="bi"
+                  [ngClass]="listing.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'">
+                </i>
+              </button>
+            </div>
 
-          <div class="card-content">
-            <h3 class="listing-title">{{ listing.title }}</h3>
-            <p class="listing-price">
-              {{ listing.currency }} {{ listing.price | number }}
-            </p>
-            <p class="listing-location">{{ listing.location }}</p>
+            <div class="card-details">
+              <h3 class="card-title">{{ listing.title }}</h3>
+              <div class="card-meta">
+                <span class="price-tag">
+                  {{ listing.currency }} {{ listing.price | number }}
+                </span>
+                <span class="location-tag">
+                  <i class="bi bi-geo-alt"></i> {{ listing.location }}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -159,181 +171,155 @@
 </div>
 
 <!-- ===================== -->
-<!-- DETAIL OVERLAY -->
+<!-- FULL-PAGE DETAIL VIEW -->
 <!-- ===================== -->
-<div
-  class="detail-overlay"
-  *ngIf="selectedListing"
-  (click)="closeDetail()">
+<div class="detail-page" *ngIf="selectedListing">
+  <div class="detail-page-inner">
 
-  <div class="detail-container" (click)="$event.stopPropagation()">
-
-    <button class="close-btn" (click)="closeDetail()">
-      <i class="bi bi-x-lg"></i>
-    </button>
-
-    <!-- BREADCRUMB -->
-    <div class="breadcrumb">
-      <span class="crumb" (click)="closeDetail()">{{ 'ELECTRONICS' | translate }}</span>
-      <span class="crumb-sep">/</span>
-      <span class="crumb current">{{ selectedListing.title }}</span>
+    <!-- BACK BAR -->
+    <div class="detail-back-bar">
+      <button class="back-link" (click)="closeDetail()">
+        <i class="bi bi-arrow-left"></i>
+        {{ 'BACK_TO_SEARCH' | translate }}
+      </button>
+      <div class="breadcrumb-trail">
+        <span class="crumb" (click)="closeDetail()">{{ 'ELECTRONICS' | translate }}</span>
+        <span class="crumb-sep">›</span>
+        <span class="crumb current">{{ selectedListing.title }}</span>
+      </div>
     </div>
 
-    <div class="detail-content">
+    <!-- PREMIUM IMAGE GALLERY -->
+    <div class="premium-image-gallery">
+      <div class="main-featured-image">
+        <img [src]="selectedListing.images.length ? selectedListing.images[0].imageUrl : selectedListing.image"
+             [alt]="selectedListing.title">
+      </div>
+      <div class="secondary-images" *ngIf="selectedListing.images.length > 1">
+        <div class="side-image">
+          <img [src]="selectedListing.images[1]?.imageUrl || selectedListing.image" alt="Image 2">
+        </div>
+        <div class="side-image more-images-container">
+          <img [src]="selectedListing.images[2]?.imageUrl || selectedListing.image" alt="Image 3">
+          <div class="more-images-overlay" *ngIf="selectedListing.images.length > 3">
+            <i class="bi bi-camera-fill"></i>
+            <span>{{ selectedListing.images.length - 3 }}+</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TWO-COLUMN LAYOUT -->
+    <div class="detail-two-col">
 
       <!-- LEFT -->
-      <div class="detail-left">
+      <div class="detail-col-left">
 
-        <!-- IMAGE CAROUSEL -->
-        <div class="image-carousel">
-          <button
-            class="carousel-btn prev"
-            *ngIf="selectedListing.images.length > 1"
-            (click)="previousImage()">
-            <i class="bi bi-chevron-left"></i>
-          </button>
-
-          <div class="main-image">
-            <img
-              [src]="selectedListing.images[currentImageIndex].imageUrl || selectedListing.image"
-              [alt]="selectedListing.title" />
+        <!-- TITLE & META -->
+        <div class="detail-section">
+          <h1 class="listing-title">{{ selectedListing.title }}</h1>
+          <div class="listing-meta-row">
+            <span *ngIf="selectedListing.brand"><i class="bi bi-tag"></i> {{ selectedListing.brand }}</span>
+            <span *ngIf="selectedListing.condition"><i class="bi bi-check-circle"></i> {{ selectedListing.condition }}</span>
+            <span *ngIf="selectedListing.location"><i class="bi bi-geo-alt"></i> {{ selectedListing.location }}</span>
           </div>
+        </div>
 
-          <button
-            class="carousel-btn next"
-            *ngIf="selectedListing.images.length > 1"
-            (click)="nextImage()">
-            <i class="bi bi-chevron-right"></i>
-          </button>
-
-          <div class="image-indicators" *ngIf="selectedListing.images.length > 1">
-            <span
-              *ngFor="let img of selectedListing.images; let i = index"
-              class="indicator"
-              [class.active]="i === currentImageIndex"
-              (click)="selectImage(i)">
-            </span>
+        <!-- SPECS -->
+        <div class="detail-section specifications">
+          <h2 class="section-title">{{ 'SPECIFICATIONS' | translate }}</h2>
+          <div class="specs-grid">
+            <div class="spec-item" *ngIf="selectedListing.brand">
+              <div class="spec-value">{{ selectedListing.brand }}</div>
+              <div class="spec-label">{{ 'BRAND' | translate }}</div>
+            </div>
+            <div class="spec-item" *ngIf="selectedListing.model">
+              <div class="spec-value">{{ selectedListing.model }}</div>
+              <div class="spec-label">{{ 'MODEL' | translate }}</div>
+            </div>
+            <div class="spec-item" *ngIf="selectedListing.ram">
+              <div class="spec-value">{{ selectedListing.ram }}</div>
+              <div class="spec-label">{{ 'RAM' | translate }}</div>
+            </div>
+            <div class="spec-item" *ngIf="selectedListing.storage">
+              <div class="spec-value">{{ selectedListing.storage }}</div>
+              <div class="spec-label">{{ 'STORAGE' | translate }}</div>
+            </div>
+            <div class="spec-item" *ngIf="selectedListing.processor">
+              <div class="spec-value">{{ selectedListing.processor }}</div>
+              <div class="spec-label">{{ 'PROCESSOR' | translate }}</div>
+            </div>
+            <div class="spec-item" *ngIf="selectedListing.operatingSystem">
+              <div class="spec-value">{{ selectedListing.operatingSystem }}</div>
+              <div class="spec-label">{{ 'OS' | translate }}</div>
+            </div>
+            <div class="spec-item" *ngIf="selectedListing.screenSize">
+              <div class="spec-value">{{ selectedListing.screenSize }}</div>
+              <div class="spec-label">{{ 'SCREEN_SIZE' | translate }}</div>
+            </div>
+            <div class="spec-item" *ngIf="selectedListing.color">
+              <div class="spec-value">{{ selectedListing.color }}</div>
+              <div class="spec-label">{{ 'COLOR' | translate }}</div>
+            </div>
           </div>
         </div>
 
         <!-- DESCRIPTION -->
         <div class="detail-section">
-          <h1 class="listing-title">{{ selectedListing.title }}</h1>
+          <h2 class="section-title">{{ 'DESCRIPTION' | translate }}</h2>
           <p class="listing-description">{{ selectedListing.description }}</p>
         </div>
 
-        <!-- SPECIFICATIONS -->
-        <div class="detail-section specifications">
-          <h2 class="section-title">{{ 'SPECIFICATIONS' | translate }}</h2>
-
-          <div class="specs-grid">
-
-            <div class="spec-item" *ngIf="selectedListing.brand">
-              <div class="spec-value">{{ selectedListing.brand }}</div>
-              <div class="spec-label">{{ 'BRAND' | translate }}</div>
-            </div>
-
-            <div class="spec-item" *ngIf="selectedListing.model">
-              <div class="spec-value">{{ selectedListing.model }}</div>
-              <div class="spec-label">{{ 'MODEL' | translate }}</div>
-            </div>
-
-            <div class="spec-item" *ngIf="selectedListing.ram">
-              <div class="spec-value">{{ selectedListing.ram }}</div>
-              <div class="spec-label">{{ 'RAM' | translate }}</div>
-            </div>
-
-            <div class="spec-item" *ngIf="selectedListing.storage">
-              <div class="spec-value">{{ selectedListing.storage }}</div>
-              <div class="spec-label">{{ 'STORAGE' | translate }}</div>
-            </div>
-
-            <div class="spec-item" *ngIf="selectedListing.processor">
-              <div class="spec-value">{{ selectedListing.processor }}</div>
-              <div class="spec-label">{{ 'PROCESSOR' | translate }}</div>
-            </div>
-
-            <div class="spec-item" *ngIf="selectedListing.operatingSystem">
-              <div class="spec-value">{{ selectedListing.operatingSystem }}</div>
-              <div class="spec-label">{{ 'OS' | translate }}</div>
-            </div>
-
-            <div class="spec-item" *ngIf="selectedListing.screenSize">
-              <div class="spec-value">{{ selectedListing.screenSize }}</div>
-              <div class="spec-label">{{ 'SCREEN_SIZE' | translate }}</div>
-            </div>
-
-            <div class="spec-item" *ngIf="selectedListing.resolution">
-              <div class="spec-value">{{ selectedListing.resolution }}</div>
-              <div class="spec-label">{{ 'RESOLUTION' | translate }}</div>
-            </div>
-
-            <div class="spec-item" *ngIf="selectedListing.color">
-              <div class="spec-value">{{ selectedListing.color }}</div>
-              <div class="spec-label">{{ 'COLOR' | translate }}</div>
-            </div>
-
-          </div>
+        <!-- LOCATION -->
+        <div class="detail-section">
+          <h2 class="section-title">{{ 'LOCATION' | translate }}</h2>
+          <p class="location-text"><i class="bi bi-geo-alt-fill" style="color:#ffa500"></i> {{ selectedListing.location }}</p>
         </div>
+
       </div>
 
-      <!-- RIGHT -->
-      <div class="detail-right">
+      <!-- RIGHT: Sticky Sidebar -->
+      <div class="detail-col-right">
+        <div class="detail-sticky">
 
-        <!-- PRICE -->
-        <div class="price-card">
-          <h3 class="price-label">{{ 'PRICE' | translate }}</h3>
-          <p class="price-value">
-            {{ selectedListing.currency }} {{ selectedListing.price | number }}
-          </p>
-        </div>
-
-        <!-- LOCATION -->
-        <div class="info-card">
-          <h3 class="card-title">{{ 'LOCATION' | translate }}</h3>
-          <p class="location-text">{{ selectedListing.location }}</p>
-        </div>
-
-        <!-- SELLER -->
-        <div class="seller-card">
-          <h3 class="card-title">{{ 'SELLER_INFORMATION' | translate }}</h3>
-
-          <div class="seller-profile">
-            <img
-              [src]="selectedListing.sellerImage || 'assets/images/avatarUrl.jpg'"
-              class="seller-avatar" />
-            <div class="seller-info">
-              <h4 class="seller-name">{{ selectedListing.sellerName }}</h4>
-              <p class="seller-contact">{{ selectedListing.sellerPhone }}</p>
-            </div>
+          <!-- PRICE -->
+          <div class="price-card">
+            <p class="price-label">{{ 'PRICE' | translate }}</p>
+            <p class="price-value">{{ selectedListing.currency }} {{ selectedListing.price | number }}</p>
           </div>
 
-          <button class="contact-btn call-btn" (click)="callSeller()">{{ 'CALL_NOW' | translate }}</button>
+          <!-- SELLER -->
+          <div class="seller-card">
+            <div class="seller-profile">
+              <img [src]="selectedListing.sellerImage || 'assets/images/avatarUrl.jpg'" class="seller-avatar" alt="Seller">
+              <div>
+                <h4 class="seller-name">{{ selectedListing.sellerName }}</h4>
+                <p class="seller-role">Private Seller</p>
+              </div>
+            </div>
+            <button class="contact-btn call-btn" (click)="callSeller()">
+              <i class="bi bi-telephone-fill"></i> {{ 'CALL_NOW' | translate }}
+            </button>
+            <button class="contact-btn whatsapp-btn" (click)="chatWhatsApp()">
+              <i class="bi bi-whatsapp"></i> {{ 'WHATSAPP' | translate }}
+            </button>
+            <button class="contact-btn chat-btn" *ngIf="isLoggedIn" (click)="startChatWithSeller(selectedListing)">
+              <i class="bi bi-chat-dots"></i> {{ 'CHAT_ON_DUBILIST' | translate }}
+            </button>
+            <p *ngIf="!isLoggedIn" class="login-hint">{{ 'LOGIN_TO_INTERACT_WITH_SELLER' | translate }}</p>
+          </div>
 
-          <button class="contact-btn whatsapp-btn" (click)="chatWhatsApp()">
-            <i class="bi bi-whatsapp"></i>{{ 'WHATSAPP' | translate }}</button>
+          <!-- REPORT -->
+          <button class="action-btn" (click)="reportAd(selectedListing.id)">
+            <i class="bi bi-flag"></i> {{ 'REPORT_THIS_AD' | translate }}
+          </button>
 
-          <button
-            class="contact-btn chat-btn"
-            *ngIf="isLoggedIn"
-            (click)="startChatWithSeller(selectedListing)">
-            <i class="bi bi-chat-dots"></i>{{ 'CHAT_ON_DUBILIST' | translate }}</button>
-
-          <p *ngIf="!isLoggedIn" class="login-hint">{{ 'LOGIN_TO_INTERACT_WITH_SELLER' | translate }}</p>
         </div>
-
-        <!-- FAVORITE -->
-       
-        <!-- REPORT -->
-        <button
-          class="action-btn report-btn"
-          (click)="reportAd(selectedListing.id)">{{ 'REPORT_THIS_AD' | translate }}<i class="bi bi-flag"></i>
-        </button>
-
       </div>
     </div>
   </div>
 </div>
+
 
 <!-- ===================== -->
 <!-- MOBILE FILTERS -->

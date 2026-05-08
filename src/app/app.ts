@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { filter } from 'rxjs/internal/operators/filter';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LoadingService } from './services/loading-service';
-import { Observable } from 'rxjs';
+import { Observable, delay } from 'rxjs';
 
 @Component({
   selector: 'app-root',  
@@ -35,7 +35,7 @@ export class App {
      private translate: TranslateService,
      @Inject(PLATFORM_ID) private platformId: Object
    ) {
-    this.loading$ = this.loadingService.loading$;
+    this.loading$ = this.loadingService.loading$.pipe(delay(0));
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {

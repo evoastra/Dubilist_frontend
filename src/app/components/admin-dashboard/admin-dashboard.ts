@@ -9,17 +9,18 @@ import { ListingsService } from '../../services/listing-service';
 import { TranslateModule } from '@ngx-translate/core';
 import { BannerService, Banner } from '../../services/banner.service';
 
-type DashboardTab = 'PENDING' | 'APPROVED' | 'REJECTED';
-type ApiStatus = 'pending' | 'approved' | 'rejected';
+type DashboardTab = 'PENDING' | 'APPROVED' | 'REJECTED' | 'ALL';
+type ApiStatus = 'pending' | 'approved' | 'rejected' | 'all';
 
 interface AdminListing {
   id: number;
   title: string;
-  price: number;
+  price?: number;
   categoryName: string;
   userName: string;
   createdDate: string;
   displayImage: string;
+  status: string;
 }
 
 @Component({
@@ -65,11 +66,12 @@ export class AdminDashboardComponent implements OnInit {
   reportPage = 1;
   reportTotalPages = 1;
 
-  /* ================= COUNTS ================= */
   activeCount = 0;
   userCount = 0;
   pendingCount = 0;
   reportCount = 0;
+  rejectedCount = 0;
+  totalListingsCount = 0;
 
   /* ================= USER PROFILE MODAL ================= */
   showUserModal = false;
@@ -124,7 +126,8 @@ export class AdminDashboardComponent implements OnInit {
   private statusMap: Record<DashboardTab, ApiStatus> = {
     PENDING: 'pending',
     APPROVED: 'approved',
-    REJECTED: 'rejected'
+    REJECTED: 'rejected',
+    ALL: 'all'
   };
 
   /* ================= LISTINGS ================= */
@@ -149,7 +152,8 @@ async loadListings(page: number = 1) {
       categoryName: item.category?.name || 'Uncategorized',
       userName: item.user?.name || 'Unknown',
       createdDate: item.createdAt,
-      displayImage: item.images?.[0]?.imageUrl || 'assets/images/no-image.png'
+      displayImage: item.images?.[0]?.imageUrl || 'assets/images/no-image.png',
+      status: item.status || 'pending'
     }));
    
     // Apply category filter
@@ -360,6 +364,20 @@ async submitReject() {
     this.showRejectModal = true;
   }
 
+  deleteListing(listingId: number) {
+    if (!confirm('Are you sure you want to completely delete this listing?')) return;
+    this.listingService.deleteListing(listingId).subscribe({
+      next: () => {
+        this.triggerToast('Listing completely removed');
+        this.loadListings(this.listPage);
+        this.updateCounts();
+      },
+      error: (err: any) => {
+        alert(err?.error?.message || 'Failed to delete listing.');
+      }
+    });
+  }
+
 
 
   /* ================= USER PROFILE ================= */
@@ -545,29 +563,35 @@ async loadUsers(page: number = 1) {
     this.reportTotalPages = Math.max(1, Math.ceil(this.reportCount / this.limit));
   }
 
- async remove(listingId: number) {
-  try {
-    await this.listingService.deleteListing(listingId);
-    this.triggerToast('Listing removed');
-    this.loadReports(this.reportPage);
-    this.updateCounts();
-  } catch (err: any) {
-    alert(err?.error?.message || 'Failed to delete listing.');
+  remove(listingId: number) {
+    this.listingService.deleteListing(listingId).subscribe({
+      next: () => {
+        this.triggerToast('Listing removed');
+        this.loadReports(this.reportPage);
+        this.updateCounts();
+      },
+      error: (err: any) => {
+        alert(err?.error?.message || 'Failed to delete listing.');
+      }
+    });
   }
-}
 
 
   /* ================= COUNTS ================= */
   async updateCounts() {
     const p = await this.adminService.getListings('pending', 1, 1);
     const a = await this.adminService.getListings('approved', 1, 1);
+    const rej = await this.adminService.getListings('rejected', 1, 1);
     const u = await this.adminService.getUsers(1, 1);
     const r = await this.adminService.getReports('listing', 1, 99);
 
     this.pendingCount = p.pagination?.total || 0;
     this.activeCount = a.pagination?.total || 0;
+    this.rejectedCount = rej.pagination?.total || 0;
     this.userCount = u.pagination?.total || 0;
     this.reportCount = r?.data?.listingReports?.length || 0;
+    
+    this.totalListingsCount = this.pendingCount + this.activeCount + this.rejectedCount;
   }
 
   /* ================= HELPERS ================= */

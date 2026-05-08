@@ -4,9 +4,9 @@
   "type": "commonjs",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "dev": "ng serve",
-    "server": "ng serve",
+    "start": "ng serve --port 4200",
+    "dev": "ng serve --port 4200",
+    "server": "ng serve --port 4200",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

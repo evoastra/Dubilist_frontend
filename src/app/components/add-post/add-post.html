@@ -1,35 +1,37 @@
-<div class="m-3 pt-5 mt-5">
-  <div class="add-post-wrapper">
-    <h3 class="text-center fw-bold form-title p-2" style="color: #ffa500;">{{ 'POST_YOUR_AD' | translate }}</h3>
-   
+<div class="add-post-page-bg">
+  <div class="add-post-header">
+    <h2>{{ 'POST_YOUR_AD' | translate }}</h2>
+  </div>
 
-      
-
-    <form #f="ngForm" (ngSubmit)="submit(f)" class="add-post-card mx-5" novalidate>
-      <div class="row">
-        <div class="col-md-6">
-
-          <!-- MAIN CATEGORY -->
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'CATEGORY' | translate }}</label>
-            <select class="form-select"
+  <div class="master-orange-container">
+    <form #f="ngForm" (ngSubmit)="submit(f)" novalidate>
+      <div class="row g-4">
+        <!-- Left Column -->
+        <div class="col-lg-7">
+          
+          <!-- Section: Category -->
+          <div class="mb-4">
+            <label class="form-label-custom">{{ 'CATEGORY' | translate }}</label>
+            <select class="form-select-premium"
                     [ngModel]="selectedMainCategoryId"
                     (ngModelChange)="onMainCategoryChange($event)"
                     name="mainCategory"
+                    [disabled]="loadingCategories"
                     required>
-              <option [ngValue]="null" disabled>{{ 'SELECT_CATEGORY' | translate }}</option>
+              <option [ngValue]="null" disabled>
+                {{ loadingCategories ? 'Loading categories...' : 'SELECT_CATEGORY' | translate }}
+              </option>
               <option *ngFor="let c of mainCategories" [ngValue]="c.id">
                 {{ c.name }}
               </option>
             </select>
           </div>
 
-          <!-- SUB CATEGORY -->
-          <div class="form-group mb-3" *ngIf="selectedMainCategoryId && filteredSubCategories.length">
-            <label class="form-label">{{ 'SUB_CATEGORY' | translate }}</label>
-            <select class="form-select"
+          <div class="mb-4" *ngIf="selectedMainCategoryId && filteredSubCategories.length">
+            <label class="form-label-custom">{{ 'SUB_CATEGORY' | translate }}</label>
+            <select class="form-select-premium"
                     [(ngModel)]="selectedSubCategoryId"
-                      (ngModelChange)="onSubCategoryChange($event)"
+                    (ngModelChange)="onSubCategoryChange($event)"
                     name="subCategory">
               <option [ngValue]="null" disabled>{{ 'SELECT_SUB_CATEGORY' | translate }}</option>
               <option *ngFor="let sc of filteredSubCategories" [ngValue]="sc.id">
@@ -38,551 +40,277 @@
             </select>
           </div>
 
-          <!-- TITLE -->
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'AD_TITLE' | translate }}</label>
-            <input class="form-control"
-                   placeholder="Title"
-                   (focus)="onFieldAttemptFocus($event)"
+          <!-- Dynamic Other Subcategory Input -->
+          <div class="mb-4" *ngIf="isOthersSelected">
+            <label class="form-label-custom">Specify {{ mainCategoryName }} Type</label>
+            <input class="form-control-premium"
+                   [(ngModel)]="model.subCategory"
+                   name="customSubCategory"
+                   [placeholder]="'e.g. ' + getCustomPlaceholder()"
+                   required
+                   minlength="2"
+                   maxlength="50" />
+            <small class="form-text text-muted">Please specify the exact type of {{ mainCategoryName.toLowerCase() }} you're posting</small>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label-custom">{{ 'AD_TITLE' | translate }}</label>
+            <input class="form-control-premium"
+                   placeholder="{{ 'TITLE' | translate }}"
                    [(ngModel)]="model.title"
                    name="title"
                    required />
           </div>
 
-          <!-- ------------------------ MOTORS ------------------------- -->
-          <ng-container *ngIf="selectedMainCategoryId === 1">
-            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">{{ 'VEHICLE_DETAILS' | translate }}</label>
-
-            <div class="row">
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'MAKE' | translate }}</label>
-                <input class="form-control" [(ngModel)]="model.make" name="make" placeholder="Tesla" />
+          <!-- CATEGORY SPECIFIC FIELDS -->
+          <div class="category-specific-zone py-3" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            
+            <!-- MOTORS spec -->
+            <ng-container *ngIf="selectedMainCategoryId === 1">
+              <h6 class="section-title-premium">{{ 'VEHICLE_DETAILS' | translate }}</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label-custom">{{ 'MAKE' | translate }}</label>
+                  <select class="form-select-premium" [(ngModel)]="model.make" name="make">
+                    <option value="" disabled>Select Brand</option>
+                    <option *ngFor="let b of motorBrands" [value]="b">{{ b }}</option>
+                  </select>
+                </div>
+                <div class="col-md-6" *ngIf="model.make === 'Others'">
+                  <label class="form-label-custom">Custom Brand</label>
+                  <input class="form-control-premium" [(ngModel)]="model.customMake" name="customMake">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label-custom">{{ 'MODEL' | translate }}</label>
+                  <input class="form-control-premium" [(ngModel)]="model.model" name="model" placeholder="e.g. Camry, X5">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label-custom">{{ 'YEAR' | translate }}</label>
+                  <input class="form-control-premium" type="number" [(ngModel)]="model.year" name="year" placeholder="2024">
+                </div>
               </div>
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'MODEL' | translate }}</label>
-                <input class="form-control" [(ngModel)]="model.model" name="model" placeholder="GLX">
+            </ng-container>
 
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'VARIANT_TRIM' | translate }}</label>
-                <input class="form-control" [(ngModel)]="model.variant" name="variant" placeholder="GLX, Sport" />
-              </div>
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'COLOR' | translate }}</label>
-                <input class="form-control" [(ngModel)]="model.color" name="color" placeholder="White" />
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'YEAR' | translate }}</label>
-                <input type="number" class="form-control" [(ngModel)]="model.year" name="year" placeholder="2022" />
-              </div>
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'KILOMETRES' | translate }}</label>
-                <input type="number" class="form-control" [(ngModel)]="model.kilometres" name="kilometres" placeholder="35000" />
-              </div>
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label">{{ 'BODY_TYPE' | translate }}</label>
-              <select class="form-select" [(ngModel)]="model.bodyType" name="bodyType">
-                <option value="Sedan">{{ 'SEDAN' | translate }}</option>
-                <option value="SUV">{{ 'SUV' | translate }}</option>
-                <option value="Coupe">{{ 'COUPE' | translate }}</option>
-                <option value="Truck">{{ 'TRUCK' | translate }}</option>
-                <option value="Van">{{ 'VAN' | translate }}</option>
-              </select>
-            </div>
-
-            <div class="form-check mb-3">
-              <input class="form-check-input" type="checkbox" [(ngModel)]="model.serviceHistory" name="serviceHistory">
-              <label class="form-check-label">{{ 'FULL_SERVICE_HISTORY_AVAILABLE' | translate }}</label>
-            </div>
-          
-            <div class="mb-2">
-  <label class="form-label">{{ 'CONDITION' | translate }}</label>
-  <select class="form-select"
-          [(ngModel)]="model.condition"
-          name="condition"
-          required>
-    <option [ngValue]="null" disabled>{{ 'SELECT_CONDITION' | translate }}</option>
-    <option value="New">{{ 'NEW' | translate }}</option>
-    <option value="Used">{{ 'USED' | translate }}</option>
-  </select>
-</div>
-
-             
-            <!-- FUEL TYPE -->
-            <div class="mb-3 price-box">
-              <label class="form-label d-block">{{ 'FUEL_TYPE' | translate }}</label>
-              <div class="btn-group w-100">
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.fuelType === 'Petrol'"
-                        (click)="model.fuelType = 'Petrol'">{{ 'PETROL' | translate }}</button>
-
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.fuelType === 'Diesel'"
-                        (click)="model.fuelType = 'Diesel'">{{ 'DIESEL' | translate }}</button>
-
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.fuelType === 'Electric'"
-                        (click)="model.fuelType = 'Electric'">{{ 'ELECTRIC' | translate }}</button>
-
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.fuelType === 'Hybrid'"
-                        (click)="model.fuelType = 'Hybrid'">{{ 'HYBRID' | translate }}</button>
-              </div>
-            </div>
-          </ng-container>
-
-
-          <!-- ------------------------ JOBS ------------------------- -->
-          <ng-container *ngIf="selectedMainCategoryId === 2">
-            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">{{ 'JOB_DETAILS' | translate }}</label>
-
-            <div class="mb-2">
-              <label class="form-label">{{ 'JOB_TITLE' | translate }}</label>
-              <input class="form-control" [(ngModel)]="model.jobTitle" name="jobTitle" placeholder="Sales Manager">
-            </div>
-
-            <div class="row">
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'COMPANY_NAME' | translate }}</label>
-                <input class="form-control" [(ngModel)]="model.companyName" name="companyName">
-              </div>
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'INDUSTRY' | translate }}</label>
-                <input class="form-control" [(ngModel)]="model.industry" name="industry">
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'JOB_TYPE' | translate }}</label>
-                <select class="form-select" [(ngModel)]="model.jobType" name="jobType">
-                  <option value="Full-time">{{ 'FULL_TIME' | translate }}</option>
-                  <option value="Part-time">{{ 'PART_TIME' | translate }}</option>
-                  <option value="Contract">{{ 'CONTRACT' | translate }}</option>
-                  <option value="Internship">{{ 'INTERNSHIP' | translate }}</option>
-                </select>
-              </div>
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'WORKPLACE' | translate }}</label>
-                <select class="form-select" [(ngModel)]="model.workplaceType" name="workplaceType">
-                  <option value="On-site">{{ 'ON_SITE' | translate }}</option>
-                  <option value="Remote">{{ 'REMOTE' | translate }}</option>
-                  <option value="Hybrid">{{ 'HYBRID' | translate }}</option>
-                </select>
-              </div>
-            </div>
-
-            <label class="form-label">{{ 'EXPERIENCE_YEARS_' | translate }}</label>
-            <div class="row">
-              <div class="col-6">
-                <input class="form-control" type="number"
-                       [(ngModel)]="model.experienceMin" name="experienceMin"
-                       placeholder="Min (e.g. 2)">
-              </div>
-              <div class="col-6">
-                <input class="form-control" type="number"
-                       [(ngModel)]="model.experienceMax" name="experienceMax"
-                       placeholder="Max (e.g. 5)">
-              </div>
-            </div>
-
-            <label class="form-label">{{ 'SALARY_RANGE' | translate }}</label>
-            <div class="row">
-              <div class="col-4">
-                <input class="form-control" type="number"
-                       [(ngModel)]="model.salaryMin" name="salaryMin"
-                       placeholder="Min">
-              </div>
-              <div class="col-4">
-                <input class="form-control" type="number"
-                       [(ngModel)]="model.salaryMax" name="salaryMax"
-                       placeholder="Max">
-              </div>
-              <div class="col-4">
-                <select class="form-select" [(ngModel)]="model.salaryPeriod" name="salaryPeriod">
-                  <option value="Monthly">{{ 'MONTHLY' | translate }}</option>
-                  <option value="Yearly">{{ 'YEARLY' | translate }}</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label">{{ 'APPLICATION_EMAIL' | translate }}</label>
-              <input type="email" class="form-control"
-                     [(ngModel)]="model.applicationEmail" name="applicationEmail">
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label">{{ 'RESPONSIBILITIES' | translate }}</label>
-              <textarea class="form-control" rows="3"
-                        [(ngModel)]="model.responsibilities" name="responsibilities"></textarea>
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label">{{ 'SKILLS_REQUIREMENTS' | translate }}</label>
-              <textarea class="form-control" rows="3"
-                        [(ngModel)]="model.skillsRequired" name="skillsRequired"></textarea>
-            </div>
-
-          </ng-container>
-
-
-          <!-- ------------------------ PROPERTY ------------------------- -->
-          <ng-container *ngIf="selectedMainCategoryId === 3">
-
-            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">{{ 'PROPERTY_DETAILS' | translate }}</label>
-
-            <!-- Listing Type -->
-            <div class="price-box mb-3">
-              <label class="form-label d-block">{{ 'LISTING_TYPE' | translate }}</label>
-              <div class="btn-group bg-white w-100">
-                <button type="button" class="btn btn-light"
-                        [class.active]="model.listingType === 'For Sale'"
-                        (click)="model.listingType = 'For Sale'">{{ 'FOR_SALE' | translate }}</button>
-
-                <button type="button" class="btn btn-light"
-                        [class.active]="model.listingType === 'For Rent'"
-                        (click)="model.listingType = 'For Rent'">{{ 'FOR_RENT' | translate }}</button>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'PROPERTY_TYPE' | translate }}</label>
-                <select class="form-select" [(ngModel)]="model.propertyType" name="propertyType">
-                  <option value="Apartment">{{ 'APARTMENT' | translate }}</option>
-                  <option value="Villa">{{ 'VILLA' | translate }}</option>
-                  <option value="Office">{{ 'OFFICE' | translate }}</option>
-                  <option value="Townhouse">{{ 'TOWNHOUSE' | translate }}</option>
-                </select>
-              </div>
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'AREA_SQFT_' | translate }}</label>
-                <input class="form-control" type="number"
-                       [(ngModel)]="model.areaSqft" name="areaSqft"
-                       placeholder="1200">
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-4 mb-2">
-                <label>{{ 'BEDROOMS' | translate }}</label>
-                <input class="form-control" type="number" [(ngModel)]="model.bedrooms" name="bedrooms">
-              </div>
-              <div class="col-4 mb-2">
-                <label>{{ 'BATHROOMS' | translate }}</label>
-                <input class="form-control" type="number" [(ngModel)]="model.bathrooms" name="bathrooms">
-              </div>
-              <div class="col-4 mb-2">
-                <label>{{ 'HALLS' | translate }}</label>
-                <input class="form-control" type="number" [(ngModel)]="model.halls" name="halls">
-              </div>
-            </div>
-
-            <div class="mb-3" *ngIf="model.listingType === 'For Rent'">
-              <label class="form-label">{{ 'RENT_FREQUENCY' | translate }}</label>
-              <select class="form-select" [(ngModel)]="model.rentFrequency" name="rentFrequency">
-                <option value="Monthly">{{ 'MONTHLY' | translate }}</option>
-                <option value="Yearly">{{ 'YEARLY' | translate }}</option>
-                <option value="Weekly">{{ 'WEEKLY' | translate }}</option>
-              </select>
-            </div>
-
-            <div class="price-box mb-3">
-               <label class="form-label d-block">{{ 'FURNISHING' | translate }}</label>
-               <div class="btn-group bg-white w-100">
-                 <button type="button" class="btn btn-light"
-                         [class.active]="model.furnishing === 'Furnished'"
-                         (click)="model.furnishing = 'Furnished'">{{ 'FURNISHED' | translate }}</button>
-
-                 <button type="button" class="btn btn-light"
-                         [class.active]="model.furnishing === 'Unfurnished'"
-                         (click)="model.furnishing = 'Unfurnished'">{{ 'UNFURNISHED' | translate }}</button>
-
-                 <button type="button" class="btn btn-light"
-                         [class.active]="model.furnishing === 'Partly'"
-                         (click)="model.furnishing = 'Partly'">{{ 'PARTLY' | translate }}</button>
+            <!-- JOBS spec -->
+            <ng-container *ngIf="selectedMainCategoryId === 2">
+               <h6 class="section-title-premium">Job Specification</h6>
+               <div class="row g-3">
+                 <div class="col-md-12">
+                    <label class="form-label-custom">Company Name</label>
+                    <input class="form-control-premium" [(ngModel)]="model.companyName" name="companyName" placeholder="e.g. Google, Tech UAE">
+                 </div>
+                 <div class="col-md-6">
+                    <label class="form-label-custom">Workplace Type</label>
+                    <select class="form-select-premium" [(ngModel)]="model.workplaceType" name="workplaceType">
+                       <option value="On-site">On-site</option>
+                       <option value="Remote">Remote</option>
+                       <option value="Hybrid">Hybrid</option>
+                    </select>
+                 </div>
+                 <div class="col-md-6">
+                    <label class="form-label-custom">Salary Period</label>
+                    <select class="form-select-premium" [(ngModel)]="model.salaryPeriod" name="salaryPeriod">
+                       <option value="Monthly">Monthly</option>
+                       <option value="Yearly">Yearly</option>
+                       <option value="Weekly">Weekly</option>
+                    </select>
+                 </div>
                </div>
+            </ng-container>
+
+            <!-- PROPERTY spec -->
+            <ng-container *ngIf="selectedMainCategoryId === 3">
+              <h6 class="section-title-premium">{{ 'PROPERTY_DETAILS' | translate }}</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label-custom">{{ 'BEDROOMS' | translate }}</label>
+                  <select class="form-select-premium" [(ngModel)]="model.bedrooms" name="bedrooms">
+                    <option *ngFor="let n of [0,1,2,3,4,5,6,7,8]" [value]="n">{{ n === 0 ? 'Studio' : n + ' BR' }}</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label-custom">{{ 'AREA_SQFT' | translate }}</label>
+                  <input class="form-control-premium" type="number" [(ngModel)]="model.areaSqft" name="areaSqft" placeholder="e.g. 1500">
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- MOBILES & ELECTRONICS spec -->
+            <ng-container *ngIf="selectedMainCategoryId === 5 || selectedMainCategoryId === 4">
+               <h6 class="section-title-premium">Product Details</h6>
+               <div class="row g-3">
+                 <div class="col-md-6" *ngIf="selectedMainCategoryId === 5">
+                    <label class="form-label-custom">Brand</label>
+                    <select class="form-select-premium" [(ngModel)]="model.brand" name="mobileBrand">
+                       <option value="" disabled>Select Brand</option>
+                       <option *ngFor="let b of mobileBrands" [value]="b">{{ b }}</option>
+                    </select>
+                 </div>
+                 <div class="col-md-6">
+                    <label class="form-label-custom">Condition</label>
+                    <select class="form-select-premium" [(ngModel)]="model.condition" name="condition">
+                       <option value="New">New</option>
+                       <option value="Like New">Like New</option>
+                       <option value="Used">Used</option>
+                       <option value="For Parts">For Parts</option>
+                    </select>
+                 </div>
+               </div>
+            </ng-container>
+
+            <!-- GENERAL PLACEHOLDER FOR OTHERS -->
+            <ng-container *ngIf="!selectedMainCategoryId">
+               <div class="py-4 text-center" style="background: rgba(255,255,255,0.05); border-radius: 15px; border: 2px dashed rgba(255,255,255,0.2);">
+                 <p class="m-0 fw-bold text-white opacity-50">Select category for detailed specifications</p>
+               </div>
+            </ng-container>
+
+          </div>
+
+          <!-- PHOTO UPLOAD -->
+          <div class="mt-5">
+            <h6 class="section-title-premium text-white">{{ fileUploadLabel }}</h6>
+
+            <!-- Minimum Requirement Warning -->
+            <div class="alert alert-warning border-0 mb-3" *ngIf="!isJobsCategory && files.length < minImages" style="background: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107;">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <strong>Important:</strong> At least {{ minImages }} high-quality images are required to submit your listing.
             </div>
 
-            <div class="p-2 form-group bg-white rounded">
-              <label class="form-label d-block">{{ 'AMENITIES' | translate }}</label>
-              <div class="amenities-wrapper">
-                <button type="button"
-                        *ngFor="let a of amenitiesOptions"
-                        class="btn btn-outline-warning amenity-btn btn-sm m-1"
-                        [class.active]="model.amenities.includes(a)"
-                        (click)="toggleAmenity(a)">
-                  {{ a }}
-                </button>
+            <!-- Image Requirements Alert -->
+            <div class="alert alert-info border-0 mb-3" style="background: rgba(13, 110, 253, 0.1); border-left: 4px solid #0d6efd;">
+              <i class="bi bi-info-circle-fill me-2"></i>
+              <strong>Image Requirements:</strong><br>
+              <small>{{ imageRequirementMessage }}</small>
+            </div>
+
+            <!-- Success Alert -->
+            <div class="alert alert-success border-0 mb-3" *ngIf="imageUploadSuccess" style="background: rgba(25, 135, 84, 0.1); border-left: 4px solid #198754;">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              <strong>Success!</strong><br>
+              <small>{{ imageUploadSuccess }}</small>
+            </div>
+
+            <!-- Error Alert -->
+            <div class="alert alert-danger border-0 mb-3" *ngIf="imageUploadError" style="background: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545;">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <strong>Upload Error:</strong><br>
+              <small [innerHTML]="imageUploadError.replace(/\n/g, '<br>')"></small>
+            </div>
+
+            <div class="upload-zone-modern" (click)="fileInput.click()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDropFiles($event)">
+              <input type="file" #fileInput (change)="onFileChange($event)" multiple hidden [accept]="acceptedFileTypes" />
+
+              <!-- Loading state during validation -->
+              <div *ngIf="isValidatingImages" class="text-center">
+                <div class="spinner-border text-primary mb-2" role="status">
+                  <span class="visually-hidden">Validating...</span>
+                </div>
+                <h5 class="fw-bold mb-1">Validating Images...</h5>
+                <p class="m-0 small opacity-75">Checking quality and dimensions</p>
+              </div>
+
+              <!-- Normal upload state -->
+              <div *ngIf="!isValidatingImages">
+                <i class="bi bi-cloud-arrow-up-fill"></i>
+                <h5 class="fw-bold mb-1">{{ 'UPLOAD_HERE' | translate }}</h5>
+                <p class="m-0 small opacity-75">{{ 'DRAG_AND_DROP_OR_CLICK_TO_BROWSE' | translate }}</p>
+                <div class="mt-2">
+                  <small class="text-muted">
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>PNG, JPEG, JPG, WebP supported<br>
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>Min: 100KB | Max: 10MB per image<br>
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>High resolution recommended
+                  </small>
+                </div>
               </div>
             </div>
 
-          </ng-container>
-
-
-          <!-- ------------------------ ELECTRONICS ------------------------- -->
-          <ng-container *ngIf="selectedMainCategoryId === 5">
-
-            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">{{ 'DEVICE_DETAILS' | translate }}</label>
-
-            <div class="row">
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'BRAND' | translate }}</label>
-                <input class="form-control" [(ngModel)]="model.brand" name="electronicBrand">
-              </div>
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'MODEL' | translate }}</label>
-                <input class="form-control" [(ngModel)]="model.model" name="electronicModel">
+            <!-- Image Counter and Status -->
+            <div class="mt-2 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <small class="text-muted">
+                  <span [class]="files.length >= minImages ? 'text-success fw-bold' : 'text-warning'">
+                    {{ files.length }}/{{ isJobsCategory ? 1 : maxImages }} images uploaded
+                  </span>
+                  <span *ngIf="!isJobsCategory && files.length < minImages" class="text-danger ms-2">
+                    ({{ minImages - files.length }} more required)
+                  </span>
+                </small>
+                <small class="text-muted" *ngIf="files.length > 0">
+                  Total size: {{ totalFileSize }}MB
+                </small>
               </div>
             </div>
 
-            <div class="row">
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'STORAGE' | translate }}</label>
-                <input class="form-control" [(ngModel)]="model.storage" name="storage" placeholder="256GB">
-              </div>
-              <div class="col-6 mb-2">
-                <label class="form-label">{{ 'COLOR' | translate }}</label>
-                <input class="form-control" [(ngModel)]="model.color" name="color">
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-6 mb-2">
-                <label>{{ 'WARRANTY_STATUS' | translate }}</label>
-                <select class="form-select" [(ngModel)]="model.warrantyStatus" name="warrantyStatus">
-                  <option value="Active">{{ 'ACTIVE' | translate }}</option>
-                  <option value="Expired">{{ 'EXPIRED' | translate }}</option>
-                  <option value="None">{{ 'NONE' | translate }}</option>
-                </select>
-              </div>
-              <div class="col-6 mb-2">
-                <label>{{ 'CONDITION' | translate }}</label>
-                <select class="form-select" [(ngModel)]="model.condition" name="condition">
-                  <option value="New">{{ 'NEW' | translate }}</option>
-                  <option value="Like New">{{ 'LIKE_NEW' | translate }}</option>
-                  <option value="Used">{{ 'USED' | translate }}</option>
-                </select>
+            <div class="row g-2 mt-3" *ngIf="imagePreviews.length">
+              <div class="col-3 col-md-2" *ngFor="let preview of imagePreviews; let i = index">
+                <div class="preview-card-modern">
+                  <img [src]="preview" alt="Preview" class="img-fluid">
+                  <div class="remove-badge" (click)="removeImage(i)" title="Remove image">
+                    <i class="bi bi-x"></i>
+                  </div>
+                  <div class="image-info">
+                    <small class="text-muted">{{ (files[i].size / 1024 / 1024).toFixed(1) }}MB</small>
+                    <br>
+                    <small [class]="getImageQualityClass(files[i])">{{ getImageQualityStatus(files[i]) }}</small>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div class="d-flex gap-3 mb-3">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox"
-                       [(ngModel)]="model.hasOriginalBox" name="hasOriginalBox">
-                <label class="form-check-label">{{ 'HAS_ORIGINAL_BOX' | translate }}</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox"
-                       [(ngModel)]="model.hasCharger" name="hasCharger">
-                <label class="form-check-label">{{ 'HAS_CHARGER' | translate }}</label>
-              </div>
-            </div>
-
-          </ng-container>
-
-
-          <!-- ------------------------ CLASSIFIEDS / FURNITURE ------------------------- -->
-          <ng-container *ngIf="selectedMainCategoryId === 4 || selectedMainCategoryId === 6">
-
-            <label class="form-label small text-muted mb-2 fw-bold text-uppercase">{{ 'ITEM_DETAILS' | translate }}</label>
-
-            <div class="mb-2">
-              <label>{{ 'BRAND' | translate }}</label>
-              <input class="form-control" [(ngModel)]="model.brand" name="brand">
-            </div>
-
-            <div class="row">
-              <div class="col-6 mb-2">
-                <label>{{ 'MATERIAL' | translate }}</label>
-                <input class="form-control" [(ngModel)]="model.material" name="material">
-              </div>
-              <div class="col-6 mb-2">
-                <label>{{ 'CONDITION' | translate }}</label>
-                <select class="form-select" [(ngModel)]="model.condition" name="condition">
-                  <option value="New">{{ 'NEW' | translate }}</option>
-                  <option value="Good">{{ 'GOOD' | translate }}</option>
-                  <option value="Fair">{{ 'FAIR' | translate }}</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <label>{{ 'DIMENSIONS' | translate }}</label>
-              <input class="form-control"
-                     [(ngModel)]="model.dimensions" name="dimensions"
-                     placeholder="200x150x90 cm">
-            </div>
-
-          </ng-container>
+          </div>
 
         </div>
 
-
-        <!-- -------------------- RIGHT SIDE --------------------- -->
-
-        <div class="col-md-6">
-
-          <!-- Transmission (Motors) -->
-          <ng-container *ngIf="selectedMainCategoryId === 1">
-            <div class="mb-3 price-box p-3">
-              <label class="form-label d-block">{{ 'TRANSMISSION' | translate }}</label>
-              <div class="btn-group w-100">
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.transmission === 'Automatic'"
-                        (click)="model.transmission = 'Automatic'">{{ 'AUTOMATIC' | translate }}</button>
-
-                <button type="button" class="btn btn-outline-light"
-                        [class.active]="model.transmission === 'Manual'"
-                        (click)="model.transmission = 'Manual'">{{ 'MANUAL' | translate }}</button>
-              </div>
-            </div>
-          </ng-container>
-
-          <!-- PRICE -->
-          <div class="price-box mb-3 form-group" *ngIf="selectedMainCategoryId !== 2">
-            <label class="form-label d-block">{{ 'PRICE' | translate }}</label>
-            <div class="input-group mb-2">
-              <span class="input-group-text">{{ 'AED' | translate }}</span>
-              <input class="form-control"
-                     type="number"
-                     [(ngModel)]="model.price"
-                     name="price"
-                     required />
-            </div>
-            <div class="form-check small">
-              <input type="checkbox" class="form-check-input"
-                     [(ngModel)]="model.isNegotiable" name="isNegotiable">
-              <label class="form-check-label">{{ 'PRICE_IS_NEGOTIABLE' | translate }}</label>
+        <!-- Right Column -->
+        <div class="col-lg-5">
+          
+          <div class="mb-4">
+            <label class="form-label-custom">{{ 'PRICE' | translate }} / Salary</label>
+            <div class="input-group-custom">
+              <span class="input-group-text-custom">AED</span>
+              <input class="form-control-premium border-0" type="number" [(ngModel)]="model.price" name="price" placeholder="0.00">
             </div>
           </div>
 
-          <!-- LOCATION -->
-          <div class="price-box mb-3 form-group">
-            <label class="form-label">{{ 'LOCATION' | translate }}</label>
-            <input class="form-control mb-2"
-                   placeholder="City"
-                   [(ngModel)]="model.city"
-                   name="city">
-
-            <input class="form-control"
-                   placeholder="Neighbourhood / Address"
-                   [(ngModel)]="model.address"
-                   name="address">
+          <div class="mb-4">
+            <label class="form-label-custom">{{ 'LOCATION' | translate }}</label>
+            <input class="form-control-premium mb-2" placeholder="{{ 'CITY' | translate }}" [(ngModel)]="model.city" name="city">
+            <input class="form-control-premium" placeholder="{{ 'ADDRESS_DETAILS' | translate }}" [(ngModel)]="model.address" name="address">
           </div>
 
-          <!-- CONTACT -->
-          <div class="price-box mb-3 form-group">
-            <label class="form-label">{{ 'CONTACT_INFORMATION' | translate }}</label>
-            <input class="form-control mb-2" placeholder="Name"
-                   [(ngModel)]="model.contactName" name="contactName">
-
-            <div class="input-group mb-1">
-              <span class="input-group-text">+971</span>
-              <input class="form-control"
-                     placeholder="Mobile Number"
-                     [(ngModel)]="model.contactPhone"
-                     name="contactPhone">
+          <div class="mb-4">
+            <h6 class="section-title-premium">Contact Details</h6>
+            <input class="form-control-premium mb-2" placeholder="{{ 'NAME' | translate }}" [(ngModel)]="model.contactName" name="contactName">
+            <div class="input-group-custom">
+              <span class="input-group-text-custom">+971</span>
+              <input class="form-control-premium border-0" placeholder="{{ 'PHONE' | translate }}" [(ngModel)]="model.contactPhone" name="contactPhone">
             </div>
+          </div>
 
-            <div class="form-check small mt-1">
-              <input class="form-check-input" type="checkbox"
-                     [(ngModel)]="model.contactWhatsapp"
-                     name="contactWhatsapp"
-                     [value]="model.contactPhone"
-                    >
-              <label>{{ 'AVAILABLE_ON_WHATSAPP' | translate }}</label>
-            </div>
+          <!-- AI DESCRIPTION -->
+          <div class="glass-info-card mt-4">
+             <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="m-0 fw-bold text-white"><i class="bi bi-stars me-2 text-warning"></i>Smart AI Desc</h6>
+                <button type="button" class="btn btn-light btn-sm rounded-pill fw-bold" (click)="generateDescription()">{{ 'GENERATE' | translate }}</button>
+             </div>
+             <textarea class="form-control border-0 rounded-4 small" rows="7" [(ngModel)]="model.description" name="description" placeholder="Write or generate description..."></textarea>
           </div>
 
         </div>
       </div>
 
-      <!-- FILE UPLOAD -->
-      <div class="mb-3">
-        <label class="form-label">{{ fileUploadLabel }}</label>
-
-     
-        <!-- NORMAL IMAGES -->
-        <ng-container >
-      <div class="file-drop-zone"
-     (dragover)="onDragOver($event)"
-     (dragleave)="onDragLeave($event)"
-     (drop)="onDropFiles($event)"
-     [class.disabled]="files.length >= maxImages">
-
-  <i class="bi bi-cloud-upload"></i>
-  <p>
-    Upload {{ selectedMainCategoryId === 2 ? 'Company Logo' : 'Images' }}
-    (Max {{ maxImages }})
-  </p>
-
-  <input type="file"
-         class="form-control"
-         [accept]="acceptedFileTypes"
-         [multiple]="selectedMainCategoryId !== 2"
-         (change)="onFileChange($event)"
-         [disabled]="files.length >= maxImages" />
-</div>
-
-
-          <div class="image-preview-container mt-3" *ngIf="imagePreviews.length">
-            <div class="preview-grid">
-              <div class="preview-item position-relative"
-                   *ngFor="let preview of imagePreviews; let i = index">
-                <img [src]="preview" />
-                <button type="button" class="btn-remove" (click)="removeImage(i)">{{ '_TIMES_' | translate }}</button>
-                <div class="order-badge" *ngIf="i === 0">{{ 'COVER' | translate }}</div>
-              </div>
-            </div>
-          </div>
-        </ng-container>
-      </div>
-
-      <!-- AI BOX -->
-      <div class="ai-box mb-3 d-flex flex-row justify-content-center align-items-center">
-        <div class="ai-icon me-2"></div>
-        <div class="flex-grow-1">
-          <p class="fw-bold mb-1 small">{{ 'SAVE_TIME_WITH_AI_' | translate }}</p>
-          <p class="small mb-0">{{ 'GENERATE_DESCRIPTION_FROM_GIVEN_DATA_' | translate }}</p>
+      <div class="text-center">
+        <div class="alert alert-danger border-0 mb-3" *ngIf="!f.valid || (selectedMainCategoryId !== 2 && files.length < minImages) || imageUploadError" style="background: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545;">
+          <i class="bi bi-x-circle-fill me-2"></i>
+          <strong>Cannot Submit:</strong>
+          <span *ngIf="!f.valid"> Please fill all required fields.</span>
+          <span *ngIf="selectedMainCategoryId !== 2 && files.length < minImages"> At least {{ minImages }} images required.</span>
+          <span *ngIf="imageUploadError"> Image upload issues need to be resolved.</span>
         </div>
-        <button type="button"
-                class="btn btn-warning rounded-pill px-4 py-2 text-white"
-                (click)="generateDescription()">{{ 'GENERATE' | translate }}</button>
-      </div>
-
-      <!-- DESCRIPTION -->
-      <div class="form-group mb-4">
-        <label class="form-label">{{ 'DESCRIPTION' | translate }}</label>
-        <textarea class="form-control"
-                  rows="6"
-                  [(ngModel)]="model.description"
-                  name="description"></textarea>
-      </div>
-
-      <div class="text-center pb-3 mt-4">
-        <button class="btn btn-warning px-5 py-2 text-dark fw-bold"
-                type="submit"
-                [disabled]="f.invalid">{{ 'NEXT_STEP' | translate }}</button>
+        <button type="submit" class="btn-submit-premium" [disabled]="!f.valid || (selectedMainCategoryId !== 2 && files.length < minImages) || imageUploadError">
+           {{ 'PLACE_YOUR_AD' | translate }}
+        </button>
       </div>
     </form>
-  </div>
-</div>
-
-<!-- MODAL -->
-<div class="modal-backdrop-custom" *ngIf="showSelectCategoryModal">
-  <div class="modal-dialog-custom">
-    <h5 class="mb-3">{{ 'SELECT_A_CATEGORY' | translate }}</h5>
-    <p class="mb-3">{{ 'PLEASE_CHOOSE_A_CATEGORY_TO_SEE_RELEVANT' | translate }}</p>
-    <button class="btn btn-warning" (click)="closeCategoryModal()">{{ 'OK' | translate }}</button>
   </div>
 </div>

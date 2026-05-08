@@ -11,14 +11,16 @@ export class LoadingService {
 
   show() {
     this.loadingCount++;
-    this.loadingSubject.next(true);
+    if (this.loadingCount === 1) {
+      Promise.resolve().then(() => this.loadingSubject.next(true));
+    }
   }
 
   hide() {
     this.loadingCount--;
     if (this.loadingCount <= 0) {
       this.loadingCount = 0;
-      this.loadingSubject.next(false);
+      Promise.resolve().then(() => this.loadingSubject.next(false));
     }
   }
 }

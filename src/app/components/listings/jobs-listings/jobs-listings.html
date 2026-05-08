@@ -50,30 +50,31 @@
         <h2>{{ 'RESULTS' | translate }}</h2>
       </div>
 
-      <div class="jobs-list">
-        <div *ngFor="let job of paginatedJobs" class="job-card" (click)="viewJobDetails(job.id)">
-          <div class="job-card-left">
-            <span *ngIf="job.isFeatured" class="badge-featured">{{ 'FEATURED' | translate }}</span>
-            <h3 class="job-title">{{ job.title }}</h3>
-            <p class="company-name">{{ job.company }}</p>
+        <div *ngFor="let job of paginatedJobs" class="job-card-premium" (click)="viewJobDetails(job.id)">
+          <div class="job-card-inner">
+            <div class="job-card-main">
+              <div class="job-card-header">
+                <span *ngIf="job.isFeatured" class="featured-badge">{{ 'FEATURED' | translate }}</span>
+                <button class="btn-bookmark-premium">
+                  <i class="bi bi-bookmark"></i>
+                </button>
+              </div>
+              
+              <h3 class="job-title-premium">{{ job.title }}</h3>
+              <p class="company-name-premium">{{ job.company }}</p>
+              
+              <div class="job-meta-row">
+                <span class="meta-pill">{{ job.type }}</span>
+                <span class="location-pill"><i class="bi bi-geo-alt"></i> {{ job.location }}</span>
+              </div>
+            </div>
             
-            <div class="job-pill">{{ job.type }}</div>
-            
-            <p class="location-text">📍 {{ job.location }}</p>
-          </div>
-          
-          <div class="job-card-right">
-             <button class="btn-bookmark">
-                <svg width="14" height="18" viewBox="0 0 14 18" fill="none" stroke="#999" stroke-width="1.5">
-                    <path d="M1 1H13V17L7 12L1 17V1Z"/>
-                </svg>
-             </button>
-             <div class="card-image">
-                 <img [src]="job.imageUrl" alt="Office">
-             </div>
+            <div class="job-card-image">
+              <img [src]="job.imageUrl" alt="Company Logo">
+              <div class="image-overlay-premium"></div>
+            </div>
           </div>
         </div>
-      </div>
 
       <div class="pagination" *ngIf="totalPages > 1">
         <button class="page-arrow" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">‹</button>
@@ -89,69 +90,89 @@
   </div>
 
 
-  <div *ngIf="currentView() === 'details' && selectedJob" class="details-layout">
-    <div class="details-container">
+  <!-- JOB DETAILS VIEW -->
+  <div *ngIf="currentView() === 'details' && selectedJob" class="details-layout animate-fade-in">
+    <div class="details-container shadow-lg">
       
-      <div class="details-top-nav">
+      <div class="details-top-nav mb-4">
          <div class="breadcrumbs">
-            Jobs / {{ selectedJob.category }} / <span class="current">{{ selectedJob.title }}</span>
+            <span class="text-orange fw-bold">Jobs</span> / {{ selectedJob.category }} / <span class="current">{{ selectedJob.title }}</span>
          </div>
-         <button class="btn-back" (click)="goBack()">{{ '_BACK' | translate }}</button>
+         <button class="btn btn-outline-warning rounded-pill px-4" (click)="goBack()">
+           <i class="bi bi-arrow-left me-2"></i>{{ '_BACK' | translate }}
+         </button>
       </div>
 
-      <div class="details-hero">
-        <div class="">
-             <img [src]="selectedJob.imageUrl" alt="Logo"> 
+      <div class="details-hero bg-light rounded-4 p-4 mb-5 border">
+        <div class="hero-logo-box">
+             <img [src]="selectedJob.imageUrl" alt="Logo" class="rounded-3 shadow-sm"> 
         </div>
-        <div class="hero-info">
-            <h1>{{ selectedJob.title }}</h1>
-            <p class="hero-company">{{ selectedJob.company }}</p>
-            <div class="hero-meta">
-                <span>{{ selectedJob.type }}</span>
-                <span class="text-green">{{ selectedJob.currency }} {{ selectedJob.minSalary | number }} - {{ selectedJob.currency }} {{ selectedJob.maxSalary | number }}</span>
-                <span>{{ 'REMOTE' | translate }}</span>
-                <span>📍 {{ selectedJob.location }}</span>
+        <div class="hero-info ms-md-4 mt-3 mt-md-0">
+            <h1 class="display-6 fw-bold mb-2">{{ selectedJob.title }}</h1>
+            <p class="hero-company fs-5 text-orange mb-3">{{ selectedJob.company }}</p>
+            <div class="hero-meta d-flex flex-wrap gap-3 align-items-center">
+                <span class="badge bg-orange-subtle text-orange px-3 py-2 rounded-pill">{{ selectedJob.type }}</span>
+                <span class="fw-bold text-success fs-5">{{ selectedJob.currency }} {{ selectedJob.minSalary | number }} - {{ selectedJob.maxSalary | number }}</span>
+                <span class="text-muted"><i class="bi bi-geo-alt-fill me-1"></i>{{ selectedJob.location }}</span>
+                <span class="text-muted"><i class="bi bi-clock-fill me-1"></i>Remote Available</span>
             </div>
         </div>
       </div>
 
-      <p class="intro-text">
-         {{ selectedJob.description }}
-      </p>
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="content-section mb-5">
+            <h3 class="fw-bold border-bottom pb-2 mb-4">{{ 'JOB_DESCRIPTION' | translate }}</h3>
+            <p class="lead text-secondary mb-4">{{ selectedJob.description }}</p>
+            <p class="text-muted" style="white-space: pre-line;">{{ selectedJob.longDescription }}</p>
+          </div>
 
-      <div class="content-section">
-        <h3>{{ 'JOB_DESCRIPTION' | translate }}</h3>
-        <p>{{ selectedJob.longDescription }}</p>
+          <div class="content-section mb-5">
+            <h3 class="fw-bold border-bottom pb-2 mb-4">{{ 'RESPONSIBILITIES' | translate }}</h3>
+            <ul class="list-group list-group-flush border-0">
+                <li *ngFor="let item of selectedJob.responsibilities" class="list-group-item bg-transparent border-0 px-0 py-2">
+                  <i class="bi bi-check2-circle text-orange me-2"></i>{{ item }}
+                </li>
+            </ul>
+          </div>
+
+          <div class="content-section mb-5">
+            <h3 class="fw-bold border-bottom pb-2 mb-4">{{ 'REQUIREMENTS' | translate }}</h3>
+            <ul class="list-group list-group-flush border-0">
+                <li *ngFor="let item of selectedJob.requirements" class="list-group-item bg-transparent border-0 px-0 py-2">
+                  <i class="bi bi-dot text-orange fs-4 me-1"></i>{{ item }}
+                </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="sticky-top" style="top: 100px;">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-orange-subtle mb-4">
+              <h4 class="fw-bold mb-3">{{ 'APPLY_NOW' | translate }}</h4>
+              <p class="small text-muted mb-4">Be among the first to apply for this exciting opportunity!</p>
+              <button class="btn btn-warning w-100 py-3 rounded-3 fw-bold mb-3" (click)="goToApply()">
+                {{ 'APPLY_NOW' | translate }}
+              </button>
+              <button class="btn btn-outline-dark w-100 py-3 rounded-3 fw-bold">
+                <i class="bi bi-bookmark me-2"></i>{{ 'SAVE_JOB' | translate }}
+              </button>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 border-start border-4 border-warning">
+              <h5 class="fw-bold mb-2">{{ 'CONTACT_INFORMATION' | translate }}</h5>
+              <p class="small text-muted mb-0">{{ 'PLEASE_SEND_YOUR_RESUME_AND_COVER_LETTER' | translate }}</p>
+              <a href="mailto:{{selectedJob.applicationEmail}}" class="text-orange fw-bold">{{selectedJob.applicationEmail}}</a>
+            </div>
+            
+            <div class="text-center mt-4">
+              <button class="btn btn-link text-muted small text-decoration-none">
+                <i class="bi bi-flag me-1"></i>{{ 'REPORT_THIS_AD_' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div class="content-section">
-        <h3>{{ 'RESPONSIBILITIES' | translate }}</h3>
-        <ul>
-            <li *ngFor="let item of selectedJob.responsibilities">{{ item }}</li>
-        </ul>
-      </div>
-
-      <div class="content-section">
-        <h3>{{ 'REQUIREMENTS' | translate }}</h3>
-        <ul>
-            <li *ngFor="let item of selectedJob.requirements">{{ item }}</li>
-        </ul>
-      </div>
-
-   
-
-      <div class="content-section" *ngIf="selectedJob.applicationEmail">
-         <h3>{{ 'CONTACT_INFORMATION' | translate }}</h3>
-         <p class="contact-text">{{ 'PLEASE_SEND_YOUR_RESUME_AND_COVER_LETTER' | translate }}<a href="#">{{selectedJob.applicationEmail}}</a></p>
-      </div>
-
-      <div class="details-actions">
-         <button class="btn-save">{{ 'SAVE_JOB' | translate }}</button>
-         <button class="btn-orange-wide" (click)="goToApply()">{{ 'APPLY_NOW' | translate }}</button>
-      </div>
-       
-       <div class="report-ad">{{ 'REPORT_THIS_AD_' | translate }}</div>
-
     </div>
   </div>
 

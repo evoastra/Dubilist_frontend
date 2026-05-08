@@ -156,6 +156,9 @@
         </svg>
         <div class="image-wrapper">
           <img [src]="item.imageUrl" [alt]="item.title" />
+          <button class="wishlist-btn" (click)="$event.stopPropagation()">
+            <i class="bi bi-heart"></i>
+          </button>
         </div>
         <div class="card-details">
           <h5 class="card-title">{{ item.title }}</h5>
@@ -326,13 +329,13 @@
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-5">
     <div class="col" *ngFor="let cat of popularCategoriesData">
       <div class="category-group">
-        <h5 class="category-header d-flex align-items-center gap-2 fw-bold mb-4 cursor-pointer" [routerLink]="'/listings/' + cat.slug">
+        <h5 class="category-header d-flex align-items-center gap-2 fw-bold mb-4 cursor-pointer" [routerLink]="'/listings/' + cat.routePath" [queryParams]="{ category: cat.slug }">
           <i [class]="'bi ' + cat.icon" class="text-warning fs-4"></i>
           <span class="header-title text-black">{{ cat.title }}</span>
         </h5>
         <ul class="list-unstyled category-links">
           <li *ngFor="let item of cat.items" class="mb-2">
-            <a [routerLink]="'/listings/' + item.slug" class="text-decoration-none d-flex align-items-center gap-2">
+            <a [routerLink]="'/listings/' + cat.routePath" [queryParams]="{ category: item.slug }" class="text-decoration-none d-flex align-items-center gap-2">
               <span class="link-label" [class.text-warning]="item.isAll" [class.fw-bold]="item.isAll">{{ item.label }}</span>
               <span *ngIf="item.isNew" class="badge-new">NEW</span>
               <i *ngIf="item.isAll" class="bi bi-arrow-right small text-warning"></i>
@@ -358,6 +361,9 @@
         <div class="image-wrapper">
           <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
           <div class="card-badge">{{ 'FEATURED' | translate }}</div>
+          <button class="wishlist-btn" (click)="$event.stopPropagation()">
+            <i class="bi bi-heart"></i>
+          </button>
         </div>
         <div class="card-details">
           <h5 class="card-title">{{ item.title }}</h5>
@@ -384,6 +390,9 @@
         </svg>
         <div class="image-wrapper">
           <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
+          <button class="wishlist-btn" (click)="$event.stopPropagation()">
+            <i class="bi bi-heart"></i>
+          </button>
         </div>
         <div class="card-details">
           <h5 class="card-title">{{ item.title }}</h5>
@@ -410,6 +419,9 @@
         </svg>
         <div class="image-wrapper">
           <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
+          <button class="wishlist-btn" (click)="$event.stopPropagation()">
+            <i class="bi bi-heart"></i>
+          </button>
         </div>
         <div class="card-details">
           <h5 class="card-title">{{ item.title }}</h5>
@@ -436,6 +448,9 @@
         </svg>
         <div class="image-wrapper">
           <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
+          <button class="wishlist-btn" (click)="$event.stopPropagation()">
+            <i class="bi bi-heart"></i>
+          </button>
         </div>
         <div class="card-details">
           <h5 class="card-title">{{ item.title }}</h5>
@@ -462,6 +477,9 @@
         </svg>
         <div class="image-wrapper">
           <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
+          <button class="wishlist-btn" (click)="$event.stopPropagation()">
+            <i class="bi bi-heart"></i>
+          </button>
         </div>
         <div class="card-details">
           <h5 class="card-title">{{ item.title }}</h5>
@@ -488,6 +506,9 @@
         </svg>
         <div class="image-wrapper">
           <img [src]="item.imageUrl" [alt]="item.title" (error)="handleImageError($event)" />
+          <button class="wishlist-btn" (click)="$event.stopPropagation()">
+            <i class="bi bi-heart"></i>
+          </button>
         </div>
         <div class="card-details">
           <h5 class="card-title">{{ item.title }}</h5>
