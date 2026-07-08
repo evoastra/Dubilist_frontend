@@ -82,7 +82,13 @@ generatePreviews(): void {
       
     } catch (err: any) {
       console.error('Publishing error:', err);
-      const msg = err.error?.message || err.message || 'Something went wrong. Please try again.';
+      // Backend sends { success:false, error:{ message } }, so the real reason is
+      // at err.error.error.message — check that first before the generic HTTP message.
+      const msg =
+        err.error?.error?.message ||
+        err.error?.message ||
+        err.message ||
+        'Something went wrong. Please try again.';
       alert(`Error: ${msg}`);
     } finally {
       this.isSubmitting = false;
