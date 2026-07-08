@@ -51,6 +51,15 @@ export const routes: Routes = [
   { path: 'listings/classifieds', component: ClassifiedListingsComponent },
   { path: 'listings/interior-designers', component: InteriorDesignerListingsComponent },
 
+  /* PRODUCT DETAILS */
+  {
+    path: 'listing/:id',
+    loadComponent: () =>
+      import('./components/product-details/product-details').then(
+        m => m.ProductDetailsComponent
+      )
+  },
+
   /* PUBLIC JOB ROUTES */
  
 

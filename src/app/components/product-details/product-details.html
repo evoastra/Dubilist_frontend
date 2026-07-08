@@ -1,0 +1,198 @@
+<div class="pd-page">
+
+  <!-- ============ LOADING ============ -->
+  <div class="pd-container" *ngIf="isLoading">
+    <div class="pd-skeleton">
+      <div class="sk-gallery"></div>
+      <div class="sk-info">
+        <div class="sk-line w-60"></div>
+        <div class="sk-line w-40"></div>
+        <div class="sk-line w-80"></div>
+        <div class="sk-block"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ NOT FOUND ============ -->
+  <div class="pd-container" *ngIf="!isLoading && notFound">
+    <div class="pd-empty">
+      <i class="bi bi-exclamation-circle"></i>
+      <h2>Listing not found</h2>
+      <p>This ad may have been removed or is no longer available.</p>
+      <button class="btn-primary-cta" routerLink="/home">Back to Home</button>
+    </div>
+  </div>
+
+  <!-- ============ CONTENT ============ -->
+  <div class="pd-container" *ngIf="!isLoading && !notFound && listing">
+
+    <!-- Breadcrumb -->
+    <nav class="pd-breadcrumb">
+      <a routerLink="/home">Home</a>
+      <i class="bi bi-chevron-right"></i>
+      <a [routerLink]="'/listings/' + categorySlug">{{ categoryName }}</a>
+      <i class="bi bi-chevron-right"></i>
+      <span class="crumb-current">{{ listing.title }}</span>
+    </nav>
+
+    <button class="pd-back" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+
+    <div class="pd-grid">
+
+      <!-- ========== LEFT : GALLERY + DETAILS ========== -->
+      <div class="pd-left">
+
+        <!-- Gallery -->
+        <div class="pd-gallery">
+          <div class="gallery-main">
+            <img
+              [src]="images[currentImageIndex]"
+              [alt]="listing.title"
+              (error)="handleImageError($event)" />
+
+            <span class="gallery-badge" *ngIf="listing.isFeatured">
+              <i class="bi bi-star-fill"></i> FEATURED
+            </span>
+
+            <button class="gallery-nav prev" *ngIf="images.length > 1" (click)="previousImage()">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="gallery-nav next" *ngIf="images.length > 1" (click)="nextImage()">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+
+            <span class="gallery-count" *ngIf="images.length > 1">
+              {{ currentImageIndex + 1 }} / {{ images.length }}
+            </span>
+          </div>
+
+          <div class="gallery-thumbs" *ngIf="images.length > 1">
+            <div
+              class="thumb"
+              *ngFor="let img of images; let i = index"
+              [class.active]="i === currentImageIndex"
+              (click)="selectImage(i)">
+              <img [src]="img" (error)="handleImageError($event)" [alt]="'thumb ' + (i + 1)" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="pd-card">
+          <h3 class="card-title">Description</h3>
+          <p class="pd-description">{{ listing.description || 'No description provided.' }}</p>
+        </div>
+
+        <!-- Dynamic Details -->
+        <div class="pd-card" *ngIf="detailRows.length">
+          <h3 class="card-title">Details</h3>
+          <div class="pd-specs">
+            <div class="spec-item" *ngFor="let row of detailRows">
+              <span class="spec-label">{{ row.label }}</span>
+              <span class="spec-value">{{ row.value }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Safety tips -->
+        <div class="pd-card pd-safety">
+          <h3 class="card-title"><i class="bi bi-shield-check"></i> Safety Tips</h3>
+          <ul>
+            <li>Meet the seller in a safe, public place.</li>
+            <li>Never pay in advance before inspecting the item.</li>
+            <li>Check the item thoroughly before you buy.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ========== RIGHT : SUMMARY / ACTIONS ========== -->
+      <aside class="pd-right">
+
+        <div class="pd-summary pd-card">
+          <div class="price-row">
+            <div class="price">{{ formattedPrice }}</div>
+            <button class="fav-btn" [class.active]="isFavorite" (click)="toggleFavorite()">
+              <i class="bi" [class.bi-heart-fill]="isFavorite" [class.bi-heart]="!isFavorite"></i>
+            </button>
+          </div>
+
+          <span class="negotiable" *ngIf="listing.isNegotiable">Negotiable</span>
+
+          <h1 class="pd-title">{{ listing.title }}</h1>
+
+          <div class="pd-meta">
+            <span *ngIf="listing.city"><i class="bi bi-geo-alt"></i> {{ listing.city }}</span>
+            <span><i class="bi bi-eye"></i> {{ listing.viewsCount || 0 }} views</span>
+            <span><i class="bi bi-clock"></i> {{ listing.createdAt | date:'mediumDate' }}</span>
+          </div>
+
+          <div class="pd-actions">
+            <button class="act-btn call" (click)="callSeller()">
+              <i class="bi bi-telephone-fill"></i> Call
+            </button>
+            <button class="act-btn whatsapp" (click)="chatWhatsApp()">
+              <i class="bi bi-whatsapp"></i> WhatsApp
+            </button>
+            <button class="act-btn chat" (click)="startChat()">
+              <i class="bi bi-chat-dots-fill"></i> Chat
+            </button>
+          </div>
+
+          <div class="pd-secondary">
+            <button (click)="shareListing()"><i class="bi bi-share"></i> Share</button>
+            <button (click)="openReport()"><i class="bi bi-flag"></i> Report</button>
+          </div>
+        </div>
+
+        <!-- Seller card -->
+        <div class="pd-card pd-seller" *ngIf="listing.user">
+          <h3 class="card-title">Seller</h3>
+          <div class="seller-row">
+            <img
+              class="seller-avatar"
+              [src]="listing.user.avatarUrl || 'assets/avatar.png'"
+              (error)="handleImageError($event)"
+              alt="seller" />
+            <div class="seller-info">
+              <div class="seller-name">{{ listing.user.name || 'Private Seller' }}</div>
+              <div class="seller-since" *ngIf="listing.user.createdAt">
+                Member since {{ listing.user.createdAt | date:'MMM yyyy' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ============ SHARE TOAST ============ -->
+  <div class="pd-toast" *ngIf="showShareToast">
+    <i class="bi bi-check-circle-fill"></i> Link copied to clipboard
+  </div>
+
+  <!-- ============ REPORT MODAL ============ -->
+  <div class="pd-modal-overlay" *ngIf="showReportModal" (click)="closeReport()">
+    <div class="pd-modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Report this ad</h3>
+        <i class="bi bi-x-lg" (click)="closeReport()"></i>
+      </div>
+
+      <label class="modal-label">Reason</label>
+      <select class="modal-input" [(ngModel)]="reportReason">
+        <option value="" disabled>Select a reason</option>
+        <option *ngFor="let r of reportReasons" [value]="r">{{ r }}</option>
+      </select>
+
+      <label class="modal-label">Details (optional)</label>
+      <textarea class="modal-input" rows="3" [(ngModel)]="reportDetails"
+        placeholder="Add more details..."></textarea>
+
+      <button class="btn-primary-cta w-100" (click)="submitReport()" [disabled]="isReporting">
+        {{ isReporting ? 'Submitting...' : 'Submit Report' }}
+      </button>
+    </div>
+  </div>
+</div>
