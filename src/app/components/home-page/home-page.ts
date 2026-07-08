@@ -2,11 +2,13 @@ import { isPlatformBrowser, NgFor, CommonModule } from '@angular/common';
 import { Component, Inject, PLATFORM_ID, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ListingsService } from '../../services/listing-service';
+import { environment } from '../../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { BannerService, Banner } from '../../services/banner.service';
 
 interface Listing {
+  id: number;
   title: string;
   price: string;
   city: string;
@@ -68,6 +70,8 @@ export class HomePage {
 
   banners: Banner[] = [];
   dynamicCategories: any[] = [];
+  // Categories hidden from the Browse-by-Category grid (keeps it at 12 cards).
+  private readonly hiddenCategorySlugs = ['services', 'interior-designers', 'home-appliances'];
   categoryIntervals: any[] = [];
 
   isLoading = false;
@@ -222,11 +226,26 @@ export class HomePage {
   loadCategories(): void {
     this.listingsService.getCategories().subscribe({
       next: (res: any) => {
-        this.dynamicCategories = res.data.map((cat: any) => ({
-          ...cat,
-          currentThumbIndex: 0,
-          thumbnails: Array.isArray(cat.thumbnails) ? cat.thumbnails : (cat.imageUrl ? [cat.imageUrl] : [])
-        }));
+        this.dynamicCategories = res.data
+          .filter((cat: any) => !this.hiddenCategorySlugs.includes(cat.slug))
+          .map((cat: any) => {
+          const rawThumbs = Array.isArray(cat.thumbnails)
+            ? cat.thumbnails
+            : (cat.imageUrl ? [cat.imageUrl] : []);
+          return {
+            ...cat,
+            currentThumbIndex: 0,
+            // Prefix relative /uploads paths with the backend origin so images
+            // resolve against the API server, not the frontend host.
+            thumbnails: rawThumbs
+              .filter((t: any) => !!t)
+              .map((t: string) =>
+                typeof t === 'string' && t.startsWith('/uploads/')
+                  ? `${environment.apiUrl}${t}`
+                  : t
+              )
+          };
+        });
         this.startThumbnailRotation();
       },
       error: (err: any) => console.error('Failed to load categories', err)
@@ -391,19 +410,34 @@ export class HomePage {
 
   /* ===================== MAPPER ===================== */
   mapListings(data: any[]): Listing[] {
-    return (data || []).map(item => ({
-      title: item.title,
-      price: `${item.currency || 'AED'} ${Number(item.price).toLocaleString()}`,
-      city: item.city,
-      imageUrl: item.images?.[0]?.imageUrl || 'assets/placeholder.png',
-      categorySlug: item.category?.name.toLowerCase()
-    }));
+    return (data || []).map(item => {
+      // Prefer the lightweight thumbnail for cards; fall back to the full image.
+      const firstImage = item.images?.[0];
+      let imgUrl = firstImage?.thumbnailUrl || firstImage?.imageUrl || 'assets/placeholder.png';
+      if (imgUrl.startsWith('/uploads/')) {
+        imgUrl = `${environment.apiUrl}${imgUrl}`;
+      }
+      return {
+        id: item.id,
+        title: item.title,
+        price: `${item.currency || 'AED'} ${Number(item.price).toLocaleString()}`,
+        city: item.city,
+        imageUrl: imgUrl,
+        categorySlug: item.category?.name?.toLowerCase() || ''
+      };
+    });
   }
 
   /* ===================== NAVIGATION ===================== */
   goToCategory(listing: Listing): void {
     if (!listing.categorySlug) return;
     this.router.navigate([`/listings/${listing.categorySlug}`]);
+  }
+
+  /** Open the full product details page for a listing. */
+  goToProduct(listing: Listing): void {
+    if (!listing.id) return;
+    this.router.navigate([`/listing/${listing.id}`]);
   }
 
   handleImageError(event: any): void {

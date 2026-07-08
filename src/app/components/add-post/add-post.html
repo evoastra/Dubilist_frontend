@@ -63,7 +63,7 @@
           </div>
 
           <!-- CATEGORY SPECIFIC FIELDS -->
-          <div class="category-specific-zone py-3" style="border-top: 1px solid rgba(255,255,255,0.1);">
+          <div class="category-specific-zone py-3" style="border-top: 1px solid rgba(0,0,0,0.12);">
             
             <!-- MOTORS spec -->
             <ng-container *ngIf="selectedMainCategoryId === 1">
@@ -160,8 +160,8 @@
 
             <!-- GENERAL PLACEHOLDER FOR OTHERS -->
             <ng-container *ngIf="!selectedMainCategoryId">
-               <div class="py-4 text-center" style="background: rgba(255,255,255,0.05); border-radius: 15px; border: 2px dashed rgba(255,255,255,0.2);">
-                 <p class="m-0 fw-bold text-white opacity-50">Select category for detailed specifications</p>
+               <div class="py-4 text-center" style="background: rgba(255,255,255,0.35); border-radius: 15px; border: 2px dashed rgba(0,0,0,0.15);">
+                 <p class="m-0 fw-bold text-dark opacity-75">Select category for detailed specifications</p>
                </div>
             </ng-container>
 
@@ -169,33 +169,41 @@
 
           <!-- PHOTO UPLOAD -->
           <div class="mt-5">
-            <h6 class="section-title-premium text-white">{{ fileUploadLabel }}</h6>
+            <h6 class="section-title-premium">{{ fileUploadLabel }}</h6>
 
             <!-- Minimum Requirement Warning -->
-            <div class="alert alert-warning border-0 mb-3" *ngIf="!isJobsCategory && files.length < minImages" style="background: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107;">
-              <i class="bi bi-exclamation-triangle-fill me-2"></i>
-              <strong>Important:</strong> At least {{ minImages }} high-quality images are required to submit your listing.
+            <div class="alert-premium alert-premium-warning mb-3" *ngIf="!isJobsCategory && files.length < minImages">
+              <span class="alert-premium-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
+              <div class="alert-premium-body">
+                <strong>Important:</strong> Please add at least one image to submit your listing. High-quality photos are recommended, but smaller images work too.
+              </div>
             </div>
 
             <!-- Image Requirements Alert -->
-            <div class="alert alert-info border-0 mb-3" style="background: rgba(13, 110, 253, 0.1); border-left: 4px solid #0d6efd;">
-              <i class="bi bi-info-circle-fill me-2"></i>
-              <strong>Image Requirements:</strong><br>
-              <small>{{ imageRequirementMessage }}</small>
+            <div class="alert-premium alert-premium-info mb-3">
+              <span class="alert-premium-icon"><i class="bi bi-info-circle-fill"></i></span>
+              <div class="alert-premium-body">
+                <strong>Image Requirements:</strong>
+                <small>{{ imageRequirementMessage }}</small>
+              </div>
             </div>
 
             <!-- Success Alert -->
-            <div class="alert alert-success border-0 mb-3" *ngIf="imageUploadSuccess" style="background: rgba(25, 135, 84, 0.1); border-left: 4px solid #198754;">
-              <i class="bi bi-check-circle-fill me-2"></i>
-              <strong>Success!</strong><br>
-              <small>{{ imageUploadSuccess }}</small>
+            <div class="alert-premium alert-premium-success mb-3" *ngIf="imageUploadSuccess">
+              <span class="alert-premium-icon"><i class="bi bi-check-circle-fill"></i></span>
+              <div class="alert-premium-body">
+                <strong>Success!</strong>
+                <small>{{ imageUploadSuccess }}</small>
+              </div>
             </div>
 
             <!-- Error Alert -->
-            <div class="alert alert-danger border-0 mb-3" *ngIf="imageUploadError" style="background: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545;">
-              <i class="bi bi-exclamation-triangle-fill me-2"></i>
-              <strong>Upload Error:</strong><br>
-              <small [innerHTML]="imageUploadError.replace(/\n/g, '<br>')"></small>
+            <div class="alert-premium alert-premium-danger mb-3" *ngIf="imageUploadError">
+              <span class="alert-premium-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
+              <div class="alert-premium-body">
+                <strong>Upload Error:</strong>
+                <small [innerHTML]="imageUploadError.replace(/\n/g, '<br>')"></small>
+              </div>
             </div>
 
             <div class="upload-zone-modern" (click)="fileInput.click()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDropFiles($event)">
@@ -218,8 +226,8 @@
                 <div class="mt-2">
                   <small class="text-muted">
                     <i class="bi bi-check-circle-fill text-success me-1"></i>PNG, JPEG, JPG, WebP supported<br>
-                    <i class="bi bi-check-circle-fill text-success me-1"></i>Min: 100KB | Max: 10MB per image<br>
-                    <i class="bi bi-check-circle-fill text-success me-1"></i>High resolution recommended
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>Up to 10MB per image<br>
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>High-quality images recommended (smaller is fine too)
                   </small>
                 </div>
               </div>
@@ -227,7 +235,7 @@
 
             <!-- Image Counter and Status -->
             <div class="mt-2 mb-3">
-              <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
                 <small class="text-muted">
                   <span [class]="files.length >= minImages ? 'text-success fw-bold' : 'text-warning'">
                     {{ files.length }}/{{ isJobsCategory ? 1 : maxImages }} images uploaded
@@ -242,8 +250,8 @@
               </div>
             </div>
 
-            <div class="row g-2 mt-3" *ngIf="imagePreviews.length">
-              <div class="col-3 col-md-2" *ngFor="let preview of imagePreviews; let i = index">
+            <div class="row g-2 g-md-3 mt-3" *ngIf="imagePreviews.length">
+              <div class="col-4 col-sm-3 col-md-2" *ngFor="let preview of imagePreviews; let i = index">
                 <div class="preview-card-modern">
                   <img [src]="preview" alt="Preview" class="img-fluid">
                   <div class="remove-badge" (click)="removeImage(i)" title="Remove image">
@@ -290,7 +298,7 @@
           <!-- AI DESCRIPTION -->
           <div class="glass-info-card mt-4">
              <div class="d-flex align-items-center justify-content-between mb-3">
-                <h6 class="m-0 fw-bold text-white"><i class="bi bi-stars me-2 text-warning"></i>Smart AI Desc</h6>
+                <h6 class="m-0 fw-bold text-dark"><i class="bi bi-stars me-2 text-warning"></i>Smart AI Desc</h6>
                 <button type="button" class="btn btn-light btn-sm rounded-pill fw-bold" (click)="generateDescription()">{{ 'GENERATE' | translate }}</button>
              </div>
              <textarea class="form-control border-0 rounded-4 small" rows="7" [(ngModel)]="model.description" name="description" placeholder="Write or generate description..."></textarea>

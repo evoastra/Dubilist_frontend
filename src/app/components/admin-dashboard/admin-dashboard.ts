@@ -8,6 +8,8 @@ import { AuthService } from '../../services/auth-service';
 import { ListingsService } from '../../services/listing-service';
 import { TranslateModule } from '@ngx-translate/core';
 import { BannerService, Banner } from '../../services/banner.service';
+import { environment } from '../../../environments/environment';
+
 
 type DashboardTab = 'PENDING' | 'APPROVED' | 'REJECTED' | 'ALL';
 type ApiStatus = 'pending' | 'approved' | 'rejected' | 'all';
@@ -54,6 +56,13 @@ export class AdminDashboardComponent implements OnInit {
   users: any[] = [];
   reports: any[] = [];
   categories: any[] = [];
+  readonly categoryImageMaxCount = 2;
+  // Categories hidden from the Browse-by-Category grid (home page + admin).
+  // Keeps the grid at 12 cards without deleting the categories or their listings.
+  private readonly hiddenCategorySlugs = ['services', 'interior-designers', 'home-appliances'];
+  readonly categoryImageMaxSizeMb = 1;
+  private readonly categoryImageMaxSizeBytes = 1 * 1024 * 1024;
+  isAddingHomeAppliances = false;
 
   /* ================= PAGINATION ================= */
   limit = 10;
@@ -152,7 +161,9 @@ async loadListings(page: number = 1) {
       categoryName: item.category?.name || 'Uncategorized',
       userName: item.user?.name || 'Unknown',
       createdDate: item.createdAt,
-      displayImage: item.images?.[0]?.imageUrl || 'assets/images/no-image.png',
+      displayImage: item.images?.[0]?.imageUrl?.startsWith('/uploads/') 
+        ? `${environment.apiUrl}${item.images[0].imageUrl}` 
+        : (item.images?.[0]?.imageUrl || 'assets/images/no-image.png'),
       status: item.status || 'pending'
     }));
    
@@ -208,13 +219,24 @@ async loadListings(page: number = 1) {
     this.loading = true;
     try {
       const res: any = await this.adminService.getCategories();
-      this.categories = res.data.map((cat: any) => ({
-        ...cat,
-        thumbnails: Array.isArray(cat.thumbnails) ? cat.thumbnails : [],
-        isUploading: false,
-        isSaving: false,
-        _dirty: false
-      }));
+      this.categories = res.data
+        .filter((cat: any) => !this.hiddenCategorySlugs.includes(cat.slug))
+        .map((cat: any) => {
+        const rawThumbs = Array.isArray(cat.thumbnails) ? cat.thumbnails : [];
+        const mappedThumbs = rawThumbs.map((thumb: any) => {
+          if (typeof thumb === 'string' && thumb.startsWith('/uploads/')) {
+            return `${environment.apiUrl}${thumb}`;
+          }
+          return thumb;
+        });
+        return {
+          ...cat,
+          thumbnails: mappedThumbs.slice(0, this.categoryImageMaxCount),
+          isUploading: false,
+          isSaving: false,
+          _dirty: false
+        };
+      });
     } catch (err: any) {
       this.triggerToast('Failed to load categories', 'danger');
     } finally {
@@ -222,12 +244,61 @@ async loadListings(page: number = 1) {
     }
   }
 
+  get hasHomeAppliancesCategory(): boolean {
+    return this.categories.some(cat => cat.slug === 'home-appliances');
+  }
+
+  async addHomeAppliancesCategory() {
+    if (this.hasHomeAppliancesCategory || this.isAddingHomeAppliances) return;
+
+    try {
+      this.isAddingHomeAppliances = true;
+      const nextOrderIndex = this.categories.reduce((max, cat) => Math.max(max, Number(cat.orderIndex) || 0), 0) + 1;
+
+      await this.adminService.createCategory({
+        name: 'Home Appliances',
+        slug: 'home-appliances',
+        description: 'Large appliances, kitchen appliances, outdoor appliances, and home utility items',
+        orderIndex: nextOrderIndex,
+        parentId: null,
+        imageUrl: '',
+        thumbnails: []
+      });
+
+      this.triggerToast('Home Appliances category added successfully');
+      await this.loadCategories();
+    } catch (err: any) {
+      const message = err?.error?.error?.message || 'Failed to add Home Appliances category';
+      this.triggerToast(message, 'danger');
+    } finally {
+      this.isAddingHomeAppliances = false;
+    }
+  }
+
+
   async saveCategory(cat: any) {
     try {
+      if ((cat.thumbnails?.length || 0) > this.categoryImageMaxCount) {
+        this.triggerToast(`Only ${this.categoryImageMaxCount} images are allowed for each category`, 'danger');
+        return;
+      }
+
       cat.isSaving = true;
+
+      const cleanThumbs = cat.thumbnails.map((thumb: string) => {
+        if (thumb.startsWith(environment.apiUrl)) {
+          return thumb.substring(environment.apiUrl.length);
+        }
+        return thumb;
+      });
+
+      const cleanImageUrl = cat.imageUrl && cat.imageUrl.startsWith(environment.apiUrl)
+        ? cat.imageUrl.substring(environment.apiUrl.length)
+        : cat.imageUrl;
+
       await this.adminService.updateCategory(cat.id, {
-        thumbnails: cat.thumbnails,
-        imageUrl: cat.imageUrl || (cat.thumbnails?.[0] ?? null)
+        thumbnails: cleanThumbs,
+        imageUrl: cleanImageUrl || (cleanThumbs?.[0] ?? null)
       });
       cat._dirty = false;
       this.triggerToast(`✓ ${cat.name} updated successfully`);
@@ -242,16 +313,36 @@ async loadListings(page: number = 1) {
     const files: FileList = event.target.files;
     if (!files || files.length === 0) return;
 
+    if (!cat.thumbnails) cat.thumbnails = [];
+
+    const remainingSlots = this.categoryImageMaxCount - cat.thumbnails.length;
+    if (remainingSlots <= 0) {
+      this.triggerToast(`Each category can have only ${this.categoryImageMaxCount} images`, 'danger');
+      event.target.value = '';
+      return;
+    }
+
+    const selectedFiles = Array.from(files);
+    const oversizedFiles = selectedFiles.filter(file => file.size > this.categoryImageMaxSizeBytes);
+    if (oversizedFiles.length) {
+      this.triggerToast(`Category images must be ${this.categoryImageMaxSizeMb}MB or smaller`, 'danger');
+      event.target.value = '';
+      return;
+    }
+
+    const filesToUpload = selectedFiles.slice(0, remainingSlots);
+    if (selectedFiles.length > remainingSlots) {
+      this.triggerToast(`Only ${remainingSlots} more image(s) can be added to this category`, 'danger');
+    }
+
     cat.isUploading = true;
-    const uploads = Array.from(files).map(file => this.auth.uploadImage(file, 'categories'));
+    const uploads = filesToUpload.map(file => this.auth.uploadImage(file, 'categories'));
 
     forkJoin(uploads).subscribe({
       next: (responses: any[]) => {
-        if (!cat.thumbnails) cat.thumbnails = [];
-        
         let successCount = 0;
         responses.forEach(res => {
-          if (res.success) {
+          if (res.success && cat.thumbnails.length < this.categoryImageMaxCount) {
             cat.thumbnails.push(res.data.url);
             if (!cat.imageUrl) cat.imageUrl = res.data.url;
             successCount++;
@@ -259,6 +350,7 @@ async loadListings(page: number = 1) {
         });
 
         if (successCount > 0) {
+          cat._dirty = true;
           this.triggerToast(`${successCount} image(s) added — click "Save Changes" to apply!`);
         }
         cat.isUploading = false;
@@ -266,8 +358,10 @@ async loadListings(page: number = 1) {
       },
       error: (err: any) => {
         console.error('Upload failed', err);
-        this.triggerToast('Some or all uploads failed', 'danger');
+        const message = err?.error?.error?.message || 'Some or all uploads failed';
+        this.triggerToast(message, 'danger');
         cat.isUploading = false;
+        event.target.value = '';
       }
     });
   }
@@ -404,7 +498,12 @@ async openReview(listingId: number) {
     this.reviewMainCatId = listing.category.id;
     this.reviewMainCatName = listing.category.name;
 
-    this.reviewImages = listing.images?.map((i: any) => i.imageUrl) || [];
+    this.reviewImages = listing.images?.map((i: any) => {
+      if (i.imageUrl?.startsWith('/uploads/')) {
+        return `${environment.apiUrl}${i.imageUrl}`;
+      }
+      return i.imageUrl;
+    }) || [];
     this.reviewModel = this.mapApiListingToReviewModel(listing);
 
     this.showReviewModal = true;
