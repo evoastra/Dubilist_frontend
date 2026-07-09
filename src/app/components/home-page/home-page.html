@@ -146,7 +146,7 @@
     <div
       class="listing-card"
       *ngFor="let item of searchResults"
-      (click)="goToCategory(item)"
+      (click)="goToProduct(item)"
     >
       <div class="listing-card-inner inner-border-container">
         <!-- SVG moving border line -->
@@ -268,7 +268,7 @@
 
     <!-- Dynamic Category Grid -->
     <div class="category-grid" *ngIf="dynamicCategories.length > 0; else loaderCategories">
-      <div class="premium-cat-card" *ngFor="let cat of dynamicCategories" [routerLink]="'/listings/' + cat.slug">
+      <div class="premium-cat-card" *ngFor="let cat of dynamicCategories; let catIndex = index" [routerLink]="'/listings/' + cat.slug">
         <!-- SVG moving border line -->
         <svg class="card-border-svg" aria-hidden="true">
           <rect class="card-border-track" width="100%" height="100%" rx="16" ry="16"/>
@@ -282,14 +282,20 @@
                   [src]="thumb" 
                   [alt]="cat.name" 
                   (error)="handleImageError($event)"
+                  [attr.loading]="catIndex < 4 && i === 0 ? 'eager' : 'lazy'"
+                  decoding="async"
+                  [attr.fetchpriority]="catIndex < 4 && i === 0 ? 'high' : 'low'"
                   class="cat-bg-img carousel-img transition-opacity"
                   [class.opacity-100]="i === cat.currentThumbIndex"
                   [class.opacity-0]="i !== cat.currentThumbIndex" />
           </ng-container>
           <ng-template #singleImg>
-            <img [src]="cat.thumbnails?.[0] || cat.imageUrl || '/assets/images/' + cat.name + '.jpg'" 
+            <img [src]="cat.thumbnails?.[0]" 
                  [alt]="cat.name" 
                  (error)="handleImageError($event)"
+                 [attr.loading]="catIndex < 4 ? 'eager' : 'lazy'"
+                 decoding="async"
+                 [attr.fetchpriority]="catIndex < 4 ? 'high' : 'low'"
                  class="cat-bg-img" />
           </ng-template>
         </div>
@@ -351,7 +357,7 @@
   <h2>{{ 'FEATURED_FOR_YOU' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of featuredListings" (click)="goToCategory(item)">
+    <div class="listing-card" *ngFor="let item of featuredListings" (click)="goToProduct(item)">
       <div class="listing-card-inner inner-border-container">
         <!-- SVG moving border line -->
         <svg class="card-border-svg" aria-hidden="true">
@@ -381,7 +387,7 @@
   <h2>{{ 'POPULAR_IN_MOTORS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of popularCars" (click)="goToCategory(item)">
+    <div class="listing-card" *ngFor="let item of popularCars" (click)="goToProduct(item)">
       <div class="listing-card-inner inner-border-container">
         <!-- SVG moving border line -->
         <svg class="card-border-svg" aria-hidden="true">
@@ -410,7 +416,7 @@
   <h2>{{ 'POPULAR_IN_FURNITURE' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of popularFurniture" (click)="goToCategory(item)">
+    <div class="listing-card" *ngFor="let item of popularFurniture" (click)="goToProduct(item)">
       <div class="listing-card-inner inner-border-container">
         <!-- SVG moving border line -->
         <svg class="card-border-svg" aria-hidden="true">
@@ -439,7 +445,7 @@
   <h2>{{ 'POPULAR_IN_RESDENTIALS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of residentialListings" (click)="goToCategory(item)">
+    <div class="listing-card" *ngFor="let item of residentialListings" (click)="goToProduct(item)">
       <div class="listing-card-inner inner-border-container">
         <!-- SVG moving border line -->
         <svg class="card-border-svg" aria-hidden="true">
@@ -468,7 +474,7 @@
   <h2>{{ 'POPULAR_IN_ELECTRONICS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of electronicsListings" (click)="goToCategory(item)">
+    <div class="listing-card" *ngFor="let item of electronicsListings" (click)="goToProduct(item)">
       <div class="listing-card-inner inner-border-container">
         <!-- SVG moving border line -->
         <svg class="card-border-svg" aria-hidden="true">
@@ -497,7 +503,7 @@
   <h2>{{ 'POPULAR_IN_CLASSIFIEDS' | translate }}</h2>
 
   <div class="featured-row p-3 p-md-4">
-    <div class="listing-card" *ngFor="let item of classifiedListings" (click)="goToCategory(item)">
+    <div class="listing-card" *ngFor="let item of classifiedListings" (click)="goToProduct(item)">
       <div class="listing-card-inner inner-border-container">
         <!-- SVG moving border line -->
         <svg class="card-border-svg" aria-hidden="true">

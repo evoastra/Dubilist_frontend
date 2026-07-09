@@ -1105,6 +1105,19 @@
   height: auto;
 }
 
+.banner-car-icon {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(21, 101, 192, 0.12);
+  color: #1565c0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
 .motors-services-section {
   padding: 15px 20px;
   border-top: 1px solid #eee;
@@ -1161,6 +1174,10 @@
   cursor: pointer;
 }
 
+.view-all::after {
+  content: " \2192";
+}
+
 .brands-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1191,7 +1208,11 @@
 }
 
 [dir="rtl"] .view-all {
-  direction: ltr; /* Keeps the arrow correct */
+  direction: rtl;
+}
+
+[dir="rtl"] .view-all::after {
+  content: " \2190";
 }
 
 /* ============================================
@@ -1368,5 +1389,803 @@
 @media (max-width: 576px) {
   .brands-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   NAVBAR RESPONSIVE + RTL HARDENING
+   ========================================================================== */
+.navbar-top-inner,
+.navbar-bottom-inner,
+.top-alert-container {
+  width: min(100%, 1320px);
+}
+
+.navbar-top-inner {
+  min-width: 0;
+  gap: 12px;
+}
+
+.navbar-top-inner > .d-flex:first-child {
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.navbar-logo {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.navbar-logo img {
+  max-width: 128px;
+}
+
+.utility-icons-wrapper {
+  min-width: 0;
+  gap: clamp(6px, 1vw, 15px);
+}
+
+.util-btn {
+  min-width: 54px;
+  max-width: 82px;
+}
+
+.util-btn span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-login,
+.btn-place-ad,
+.user-pill,
+.lang-selector {
+  flex: 0 0 auto;
+}
+
+.category-tabs {
+  justify-content: space-between;
+  gap: clamp(14px, 3vw, 40px);
+  min-width: 0;
+}
+
+.sub-nav-item {
+  min-width: max-content;
+}
+
+.property-dropdown-menu {
+  width: min(812px, calc(100vw - 48px));
+  min-width: 0;
+  max-width: calc(100vw - 48px);
+}
+
+.motors-dropdown {
+  width: min(1060px, calc(100vw - 48px));
+  min-width: 0;
+  max-width: calc(100vw - 48px);
+}
+
+.category-tabs .cat-tab:nth-child(n + 3) .property-dropdown-menu {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+
+.category-tabs .cat-tab:nth-child(-n + 2) .property-dropdown-menu {
+  left: 0;
+  right: auto;
+  transform: none;
+}
+
+.category-tabs .cat-tab:nth-last-child(-n + 2) .property-dropdown-menu {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.motors-dropdown-wrapper {
+  height: min(550px, calc(100vh - 180px));
+  min-height: 360px;
+}
+
+.motors-sidebar {
+  flex: 0 0 min(320px, 34vw);
+  width: auto;
+  min-width: 250px;
+}
+
+.motors-main-content {
+  min-width: 0;
+}
+
+.brands-grid span,
+.col-list li,
+.community-list li,
+.sidebar-list li {
+  overflow-wrap: anywhere;
+}
+
+.mobile-menu-panel {
+  display: none;
+}
+
+[dir="rtl"] .dubilist-navbar,
+[dir="rtl"] .mobile-menu-panel {
+  direction: rtl;
+}
+
+[dir="rtl"] .navbar-top-inner {
+  flex-direction: row;
+}
+
+[dir="rtl"] .location-selector {
+  margin-left: 0;
+  margin-right: 12px;
+}
+
+[dir="rtl"] .location-chevron {
+  margin-left: 0 !important;
+  margin-right: 4px !important;
+}
+
+[dir="rtl"] .alert-text {
+  margin-left: 0;
+  margin-right: 10px;
+}
+
+[dir="rtl"] .category-tabs .cat-tab:nth-child(n + 3) .property-dropdown-menu {
+  left: auto;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+[dir="rtl"] .category-tabs .cat-tab:nth-child(-n + 2) .property-dropdown-menu {
+  left: auto;
+  right: 0;
+}
+
+[dir="rtl"] .category-tabs .cat-tab:nth-last-child(-n + 2) .property-dropdown-menu {
+  left: 0;
+  right: auto;
+}
+
+[dir="rtl"] .content-header,
+[dir="rtl"] .dropdown-content-wrapper,
+[dir="rtl"] .motors-dropdown-wrapper,
+[dir="rtl"] .sell-car-banner,
+[dir="rtl"] .services-grid {
+  direction: rtl;
+}
+
+[dir="rtl"] .brands-grid,
+[dir="rtl"] .col-list,
+[dir="rtl"] .sidebar-list {
+  text-align: right;
+}
+
+[dir="rtl"] .tab-label,
+[dir="rtl"] .content-header h6,
+[dir="rtl"] .col-title,
+[dir="rtl"] .sidebar-list li,
+[dir="rtl"] .brands-grid span,
+[dir="rtl"] .mobile-menu-action,
+[dir="rtl"] .util-btn {
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+[dir="rtl"] .badge-new-inline {
+  margin-left: 0;
+  margin-right: 5px;
+}
+
+@media (max-width: 1200px) {
+  .navbar-top-inner {
+    padding-inline: 16px;
+  }
+
+  .navbar-bottom-inner {
+    padding-inline: 16px;
+  }
+
+  .utility-icons-wrapper {
+    gap: 6px;
+  }
+
+  .util-btn {
+    min-width: 44px;
+    max-width: 58px;
+  }
+
+  .util-btn span {
+    font-size: 10px;
+  }
+
+  .btn-place-ad {
+    padding-inline: 12px;
+  }
+}
+
+@media (max-width: 992px) {
+  .top-alert-container {
+    padding: 8px 14px;
+  }
+
+  .top-alert-content {
+    align-items: stretch;
+  }
+
+  .top-alert-content > .d-flex:first-child {
+    justify-content: center;
+  }
+
+  .alert-text {
+    line-height: 1.35;
+  }
+
+  .navbar-top {
+    position: relative;
+  }
+
+  .navbar-top-inner {
+    overflow: visible;
+  }
+
+  .navbar-bottom-inner {
+    padding-inline: 0;
+  }
+
+  .category-tabs {
+    justify-content: flex-start;
+    gap: 22px;
+    padding-inline: 16px;
+    scroll-padding-inline: 16px;
+  }
+
+  .property-dropdown-menu,
+  .motors-dropdown,
+  .community-dropdown-menu,
+  [dir="rtl"] .property-dropdown-menu,
+  [dir="rtl"] .motors-dropdown,
+  [dir="rtl"] .community-dropdown-menu {
+    position: fixed;
+    top: var(--navbar-dropdown-top, 174px);
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    height: min(72vh, calc(100vh - var(--navbar-dropdown-top, 174px) - 8px));
+    max-height: calc(100vh - var(--navbar-dropdown-top, 174px) - 8px);
+    margin: 0;
+    transform: none !important;
+    border-radius: 0;
+    overflow-y: auto;
+  }
+
+  .motors-dropdown-wrapper {
+    height: auto;
+    min-height: 0;
+  }
+
+  .motors-sidebar {
+    flex: 0 0 auto;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .mobile-menu-panel {
+    display: block;
+    border-top: 1px solid #f0f0f0;
+    background: #fff;
+    padding: 12px 16px 14px;
+    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.08);
+  }
+
+  .mobile-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .mobile-menu-action {
+    display: flex;
+    min-height: 58px;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fff;
+    color: #333;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .mobile-menu-action i {
+    color: #ffa500;
+    font-size: 16px;
+  }
+
+  .mobile-menu-action span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-menu-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .mobile-place-ad {
+    flex: 1;
+    margin: 0 !important;
+  }
+
+  .mobile-lang-selector {
+    display: block !important;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar-top-inner {
+    flex-wrap: nowrap;
+  }
+
+  .btn-place-ad {
+    max-width: 42vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-menu-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .property-dropdown-menu,
+  .motors-dropdown,
+  .community-dropdown-menu {
+    top: var(--navbar-dropdown-top, 150px);
+    height: min(76vh, calc(100vh - var(--navbar-dropdown-top, 150px) - 8px));
+    max-height: calc(100vh - var(--navbar-dropdown-top, 150px) - 8px);
+    padding-inline: 14px;
+  }
+
+  .content-header {
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .view-all {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .rtl-nav .property-dropdown-menu.motors-dropdown .motors-dropdown-wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+  }
+
+  .rtl-nav .property-dropdown-menu.motors-dropdown .motors-sidebar {
+    width: 100% !important;
+    max-height: 42vh;
+    border-left: none !important;
+    border-bottom: 1px solid #eee !important;
+  }
+
+  .rtl-nav .property-dropdown-menu.motors-dropdown .motors-main-content {
+    width: 100% !important;
+  }
+
+  .rtl-nav .cat-tab:nth-child(2) > .property-dropdown-menu:not(.motors-dropdown) {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: calc(100vh - var(--navbar-dropdown-top, 145px) - 8px) !important;
+    max-height: calc(100vh - var(--navbar-dropdown-top, 145px) - 8px) !important;
+    padding: 16px !important;
+    border-radius: 0 !important;
+    transform: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .rtl-nav .cat-tab:nth-child(2) > .property-dropdown-menu:not(.motors-dropdown) .dropdown-content-wrapper {
+    display: block !important;
+  }
+
+  .rtl-nav .cat-tab:nth-child(2) > .property-dropdown-menu:not(.motors-dropdown) .dropdown-col {
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #eee !important;
+    padding: 0 0 14px !important;
+    margin-bottom: 14px;
+  }
+
+  .rtl-nav .cat-tab:nth-child(2) > .property-dropdown-menu:not(.motors-dropdown) .dropdown-col:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0;
+  }
+}
+
+/* ==========================================================================
+   ARABIC NAVBAR OVERRIDES THAT DO NOT DEPEND ON GLOBAL dir SELECTORS
+   ========================================================================== */
+.rtl-nav {
+  direction: rtl;
+}
+
+.rtl-nav .navbar-top-inner {
+  direction: rtl;
+}
+
+.rtl-nav .navbar-top-inner > .d-flex:first-child {
+  flex-direction: row-reverse;
+}
+
+.rtl-nav .location-selector {
+  margin-left: 0;
+  margin-right: 12px;
+}
+
+.rtl-nav .location-chevron {
+  margin-left: 0 !important;
+  margin-right: 4px !important;
+}
+
+.rtl-nav .category-tabs {
+  direction: rtl;
+}
+
+.rtl-nav .property-dropdown-menu,
+.rtl-nav .motors-dropdown,
+.rtl-nav .community-dropdown-menu {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-nav .motors-dropdown-wrapper,
+.rtl-nav .dropdown-content-wrapper,
+.rtl-nav .content-header,
+.rtl-nav .sell-car-banner,
+.rtl-nav .services-grid {
+  direction: rtl;
+}
+
+.rtl-nav .motors-sidebar {
+  border-right: none;
+  border-left: 1px solid #eee;
+}
+
+.rtl-nav .sidebar-list li.active {
+  box-shadow: 4px 0 0 #000 inset;
+}
+
+.rtl-nav .dropdown-col {
+  border-right: none;
+  border-left: 1px solid #eee;
+  padding-right: 0;
+  padding-left: 20px;
+}
+
+.rtl-nav .dropdown-col:last-child {
+  border-left: none;
+  padding-left: 0;
+}
+
+.rtl-nav .view-all {
+  direction: rtl;
+}
+
+.rtl-nav .view-all::after {
+  content: " \2190";
+}
+
+.rtl-nav .badge-new-inline {
+  margin-left: 0;
+  margin-right: 5px;
+}
+
+.rtl-nav .community-dropdown-menu {
+  right: auto;
+  left: 0;
+}
+
+.rtl-nav .community-list li {
+  text-align: right;
+}
+
+.rtl-nav .property-dropdown-menu.motors-dropdown {
+  position: fixed !important;
+  top: var(--navbar-dropdown-top, 145px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100vw !important;
+  min-width: 0 !important;
+  max-width: 100vw !important;
+  height: calc(100vh - var(--navbar-dropdown-top, 145px) - 8px) !important;
+  max-height: calc(100vh - var(--navbar-dropdown-top, 145px) - 8px) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden auto !important;
+  transform: none !important;
+}
+
+.rtl-nav .property-dropdown-menu.motors-dropdown .motors-dropdown-wrapper {
+  display: grid !important;
+  grid-template-columns: minmax(260px, 32%) minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  min-height: 0 !important;
+}
+
+.rtl-nav .property-dropdown-menu.motors-dropdown .motors-sidebar,
+.rtl-nav .property-dropdown-menu.motors-dropdown .motors-main-content {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow-y: auto;
+}
+
+.rtl-nav .cat-tab:nth-child(2) > .property-dropdown-menu:not(.motors-dropdown) {
+  position: fixed !important;
+  top: var(--navbar-dropdown-top, 145px) !important;
+  left: 50% !important;
+  right: auto !important;
+  width: min(900px, calc(100vw - 32px)) !important;
+  min-width: 0 !important;
+  max-width: calc(100vw - 32px) !important;
+  height: auto !important;
+  max-height: calc(100vh - var(--navbar-dropdown-top, 145px) - 16px) !important;
+  margin: 0 !important;
+  padding: 24px !important;
+  border-radius: 8px !important;
+  overflow: hidden auto !important;
+  transform: translateX(-50%) !important;
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-nav .cat-tab:nth-child(2) > .property-dropdown-menu:not(.motors-dropdown) .dropdown-content-wrapper {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 !important;
+  direction: rtl;
+}
+
+.rtl-nav .cat-tab:nth-child(2) > .property-dropdown-menu:not(.motors-dropdown) .dropdown-col {
+  min-width: 0;
+  padding: 0 22px !important;
+}
+
+.rtl-nav .cat-tab:nth-child(2) > .property-dropdown-menu:not(.motors-dropdown) .dropdown-col:last-child {
+  padding-left: 0 !important;
+}
+
+@media (min-width: 761px) {
+  .rtl-nav .property-dropdown-menu.motors-dropdown {
+    left: 50% !important;
+    right: auto !important;
+    width: min(1180px, calc(100vw - 32px)) !important;
+    max-width: calc(100vw - 32px) !important;
+    height: min(600px, calc(100vh - var(--navbar-dropdown-top, 145px) - 16px)) !important;
+    max-height: calc(100vh - var(--navbar-dropdown-top, 145px) - 16px) !important;
+    border-radius: 8px !important;
+    transform: translateX(-50%) !important;
+    overflow: hidden !important;
+  }
+
+  .rtl-nav .property-dropdown-menu.motors-dropdown .motors-dropdown-wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    height: 100% !important;
+  }
+
+  .rtl-nav .property-dropdown-menu.motors-dropdown .motors-sidebar {
+    flex: 0 0 320px;
+    width: 320px !important;
+  }
+
+  .rtl-nav .property-dropdown-menu.motors-dropdown .motors-main-content {
+    flex: 1 1 auto;
+    padding: 28px 36px !important;
+  }
+
+  .rtl-nav .property-dropdown-menu.motors-dropdown .brands-grid {
+    grid-template-columns: repeat(2, minmax(150px, 1fr)) !important;
+    gap: 18px 44px !important;
+    text-align: right;
+  }
+}
+
+@media (max-width: 992px) {
+  .rtl-nav .property-dropdown-menu,
+  .rtl-nav .motors-dropdown,
+  .rtl-nav .community-dropdown-menu,
+  .property-dropdown-menu,
+  .motors-dropdown,
+  .community-dropdown-menu {
+    position: fixed !important;
+    top: var(--navbar-dropdown-top, 150px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    min-width: 0 !important;
+    max-width: 100vw !important;
+    height: calc(100vh - var(--navbar-dropdown-top, 150px) - 8px) !important;
+    max-height: calc(100vh - var(--navbar-dropdown-top, 150px) - 8px) !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    overflow: hidden auto !important;
+    transform: none !important;
+  }
+
+  .rtl-nav .motors-dropdown-wrapper,
+  .motors-dropdown-wrapper {
+    display: grid !important;
+    grid-template-columns: minmax(124px, 38%) minmax(0, 1fr);
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .rtl-nav .motors-sidebar,
+  .motors-sidebar {
+    width: auto !important;
+    min-width: 0 !important;
+    height: 100%;
+    overflow-y: auto;
+    border-bottom: none !important;
+  }
+
+  .rtl-nav .sidebar-list,
+  .sidebar-list {
+    display: block !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    margin: 0 !important;
+    padding: 8px 0 !important;
+  }
+
+  .rtl-nav .sidebar-list li,
+  .sidebar-list li {
+    justify-content: flex-start;
+    min-height: 44px;
+    padding: 10px 14px !important;
+    line-height: 1.35;
+    white-space: normal;
+  }
+
+  .rtl-nav .sidebar-list li.active,
+  .sidebar-list li.active {
+    box-shadow: 4px 0 0 #ffa500 inset !important;
+    background: #fff !important;
+  }
+
+  .rtl-nav .motors-main-content,
+  .motors-main-content {
+    padding: 18px !important;
+    min-width: 0;
+    overflow-y: auto;
+  }
+
+  .rtl-nav .brands-grid,
+  .brands-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .rtl-nav .dropdown-content-wrapper,
+  .dropdown-content-wrapper {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 !important;
+    padding: 18px !important;
+  }
+
+  .rtl-nav .dropdown-col,
+  .dropdown-col {
+    padding: 0 14px !important;
+    border-bottom: none !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .rtl-nav .motors-dropdown-wrapper,
+  .motors-dropdown-wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .rtl-nav .property-dropdown-menu.motors-dropdown,
+  .property-dropdown-menu.motors-dropdown {
+    position: fixed !important;
+    top: var(--navbar-dropdown-top, 150px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100dvw !important;
+    min-width: 0 !important;
+    max-width: 100dvw !important;
+    height: calc(100dvh - var(--navbar-dropdown-top, 150px) - 8px) !important;
+    max-height: calc(100dvh - var(--navbar-dropdown-top, 150px) - 8px) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    border-radius: 0 !important;
+  }
+
+  .rtl-nav .motors-sidebar,
+  .motors-sidebar {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 42dvh;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #eee !important;
+    overflow-y: auto !important;
+  }
+
+  .rtl-nav .sidebar-list li,
+  .sidebar-list li {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .rtl-nav .motors-main-content,
+  .motors-main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .rtl-nav .dropdown-content-wrapper,
+  .dropdown-content-wrapper {
+    grid-template-columns: 1fr !important;
+    padding: 14px !important;
+  }
+
+  .rtl-nav .dropdown-col,
+  .dropdown-col {
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #eee !important;
+    padding: 0 0 14px !important;
+    margin-bottom: 14px;
+  }
+
+  .rtl-nav .dropdown-col:last-child,
+  .dropdown-col:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0;
+  }
+
+  .rtl-nav .content-header,
+  .content-header {
+    display: block;
+    margin-bottom: 14px;
+  }
+
+  .rtl-nav .view-all,
+  .view-all {
+    display: inline-block;
+    margin-top: 8px;
   }
 }

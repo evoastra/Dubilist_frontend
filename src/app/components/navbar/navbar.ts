@@ -35,6 +35,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   showFurnitureDropdown = false;
   showMobilesDropdown = false;
   showCommunityDropdown = false;
+  isMobileMenuOpen = false;
   activeMotorsCategory = 'USED_CARS';
   activeJobsCategory = 'JOBS_BY_CATEGORIES';
   activeClassifiedsCategory = 'ELECTRONICS';
@@ -86,7 +87,7 @@ constructor(
     this.currentLang = savedLang;
     this.translate.use(savedLang);
 
-    document.body.setAttribute('dir', savedLang === 'ar' ? 'rtl' : 'ltr');
+    this.applyDocumentLanguage(savedLang);
   }
 }
 
@@ -125,6 +126,8 @@ constructor(
        
         
         this.isOverlayOpen = false; // Close overlay when navigating
+        this.isMobileMenuOpen = false;
+        this.closeAllDropdowns();
       });
   }
 
@@ -168,10 +171,19 @@ switchLang(event: Event) {
 
   if (isPlatformBrowser(this.platformId)) {
     localStorage.setItem("app_lang", lang);
-    document.body.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    this.applyDocumentLanguage(lang);
   }
 
   this.currentLang = lang;
+}
+
+private applyDocumentLanguage(lang: string): void {
+  if (!isPlatformBrowser(this.platformId)) return;
+
+  const direction = lang === 'ar' ? 'rtl' : 'ltr';
+  document.documentElement.setAttribute('lang', lang);
+  document.documentElement.setAttribute('dir', direction);
+  document.body.setAttribute('dir', direction);
 }
 
 
@@ -319,6 +331,7 @@ switchLang(event: Event) {
   }
 
   onLoginClick(): void {
+    this.isMobileMenuOpen = false;
     this.router.navigate(['/auth/login']);
   }
 
@@ -333,19 +346,55 @@ switchLang(event: Event) {
      ========================= */
 
   navigateToFavourites(): void {
+    this.isMobileMenuOpen = false;
     if (!this.isAdmin) this.router.navigate(['/my-favourites']);
   }
 
   navigateToChats(): void {
+    this.isMobileMenuOpen = false;
     if (!this.isAdmin) this.router.navigate(['/my-chats']);
   }
 
   navigateToMyAds(): void {
+    this.isMobileMenuOpen = false;
     if (!this.isAdmin) this.router.navigate(['/my-ads']);
   }
 
   navigateToProfile(): void {
+    this.isMobileMenuOpen = false;
     if (!this.isAdmin) this.toggleOverlay();
+  }
+
+  openNotifications(): void {
+    this.isMobileMenuOpen = false;
+    this.triggerToast('Notifications will be available soon.');
+  }
+
+  openMySearches(): void {
+    this.isMobileMenuOpen = false;
+    this.triggerToast('Saved searches will be available soon.');
+  }
+
+  private closeAllDropdowns(): void {
+    this.closePropertyDropdown();
+    this.closeMotorsDropdown();
+    this.closeJobsDropdown();
+    this.closeClassifiedsDropdown();
+    this.closeFurnitureDropdown();
+    this.closeMobilesDropdown();
+    this.showCommunityDropdown = false;
+  }
+
+  private syncDropdownTop(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const navbarBottom = this.elRef.nativeElement
+      .querySelector('.navbar-bottom')
+      ?.getBoundingClientRect().bottom;
+    const navbarTop = this.elRef.nativeElement.getBoundingClientRect().bottom;
+    const top = Math.ceil(navbarBottom || navbarTop || 0);
+
+    this.elRef.nativeElement.style.setProperty('--navbar-dropdown-top', `${top}px`);
   }
 
   /* =========================
@@ -354,9 +403,11 @@ switchLang(event: Event) {
   toggleCommunityDropdown(event: Event): void {
     event.stopPropagation();
     this.showCommunityDropdown = !this.showCommunityDropdown;
+    if (this.showCommunityDropdown) this.syncDropdownTop();
   }
   openCommunityDropdown(): void {
     clearTimeout(this.communityTimeout);
+    this.syncDropdownTop();
     this.showCommunityDropdown = true;
   }
   keepCommunityDropdownOpen(): void {
@@ -379,6 +430,7 @@ switchLang(event: Event) {
   togglePropertyDropdown(event: Event): void {
     event.stopPropagation();
     this.showPropertyDropdown = !this.showPropertyDropdown;
+    if (this.showPropertyDropdown) this.syncDropdownTop();
   }
 
   closePropertyDropdown(): void {
@@ -387,6 +439,7 @@ switchLang(event: Event) {
 
   openPropertyDropdown(): void {
     clearTimeout(this.propertyTimeout);
+    this.syncDropdownTop();
     this.showPropertyDropdown = true;
     this.closeMotorsDropdown(); // Ensure only one is open
   }
@@ -405,14 +458,15 @@ switchLang(event: Event) {
   onDocumentClick(event: MouseEvent): void {
     if (isPlatformBrowser(this.platformId)) {
       if (!this.elRef.nativeElement.contains(event.target)) {
-        this.closePropertyDropdown();
-        this.closeMotorsDropdown();
-        this.closeJobsDropdown();
-        this.closeClassifiedsDropdown();
-        this.closeFurnitureDropdown();
-        this.closeMobilesDropdown();
+        this.closeAllDropdowns();
+        this.isMobileMenuOpen = false;
       }
     }
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.syncDropdownTop();
   }
 
   navigateToPropertySub(type: string, sub: string): void {
@@ -428,7 +482,10 @@ switchLang(event: Event) {
   toggleMotorsDropdown(event: Event): void {
     event.stopPropagation();
     this.showMotorsDropdown = !this.showMotorsDropdown;
-    if (this.showMotorsDropdown) this.showPropertyDropdown = false;
+    if (this.showMotorsDropdown) {
+      this.syncDropdownTop();
+      this.showPropertyDropdown = false;
+    }
   }
 
   closeMotorsDropdown(): void {
@@ -437,6 +494,7 @@ switchLang(event: Event) {
 
   openMotorsDropdown(): void {
     clearTimeout(this.motorsTimeout);
+    this.syncDropdownTop();
     this.showMotorsDropdown = true;
     this.closePropertyDropdown(); // Ensure only one is open
   }
@@ -470,6 +528,7 @@ switchLang(event: Event) {
     event.stopPropagation();
     this.showJobsDropdown = !this.showJobsDropdown;
     if (this.showJobsDropdown) {
+      this.syncDropdownTop();
       this.showPropertyDropdown = false;
       this.showMotorsDropdown = false;
     }
@@ -481,6 +540,7 @@ switchLang(event: Event) {
 
   openJobsDropdown(): void {
     clearTimeout(this.jobsTimeout);
+    this.syncDropdownTop();
     this.showJobsDropdown = true;
     this.closePropertyDropdown();
     this.closeMotorsDropdown();
@@ -514,6 +574,7 @@ switchLang(event: Event) {
     event.stopPropagation();
     this.showClassifiedsDropdown = !this.showClassifiedsDropdown;
     if (this.showClassifiedsDropdown) {
+      this.syncDropdownTop();
       this.showPropertyDropdown = false;
       this.showMotorsDropdown = false;
       this.showJobsDropdown = false;
@@ -526,6 +587,7 @@ switchLang(event: Event) {
 
   openClassifiedsDropdown(): void {
     clearTimeout(this.classifiedsTimeout);
+    this.syncDropdownTop();
     this.showClassifiedsDropdown = true;
     this.closePropertyDropdown();
     this.closeMotorsDropdown();
@@ -560,6 +622,7 @@ switchLang(event: Event) {
     event.stopPropagation();
     this.showFurnitureDropdown = !this.showFurnitureDropdown;
     if (this.showFurnitureDropdown) {
+      this.syncDropdownTop();
       this.showPropertyDropdown = false;
       this.showMotorsDropdown = false;
       this.showJobsDropdown = false;
@@ -573,6 +636,7 @@ switchLang(event: Event) {
 
   openFurnitureDropdown(): void {
     clearTimeout(this.furnitureTimeout);
+    this.syncDropdownTop();
     this.showFurnitureDropdown = true;
     this.closePropertyDropdown();
     this.closeMotorsDropdown();
@@ -608,6 +672,7 @@ switchLang(event: Event) {
     event.stopPropagation();
     this.showMobilesDropdown = !this.showMobilesDropdown;
     if (this.showMobilesDropdown) {
+      this.syncDropdownTop();
       this.showPropertyDropdown = false;
       this.showMotorsDropdown = false;
       this.showJobsDropdown = false;
@@ -622,6 +687,7 @@ switchLang(event: Event) {
 
   openMobilesDropdown(): void {
     clearTimeout(this.mobilesTimeout);
+    this.syncDropdownTop();
     this.showMobilesDropdown = true;
     this.closePropertyDropdown();
     this.closeMotorsDropdown();
@@ -652,11 +718,14 @@ switchLang(event: Event) {
   }
 
   toggleMobileMenu(): void {
-    // Mobile menu toggle logic — expand as needed
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    if (this.isMobileMenuOpen) {
+      this.closeAllDropdowns();
+    }
   }
 
   goToWebsite(): void {
     this.router.navigate(['/home']);
   }
 }
-
+

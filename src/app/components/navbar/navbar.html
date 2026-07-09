@@ -1,4 +1,4 @@
-<nav class="dubilist-navbar" *ngIf="!hideNavbar">
+<nav class="dubilist-navbar" [class.rtl-nav]="currentLang === 'ar'" *ngIf="!hideNavbar">
 
   <!-- ======== TOP ALERT BANNER ======== -->
   <div class="top-alert-banner" *ngIf="showTopAlert">
@@ -6,10 +6,10 @@
       <div class="top-alert-content">
         <div class="d-flex align-items-center">
           <i class="bi bi-patch-check-fill verify-badge-icon"></i>
-          <span class="alert-text ms-2">Join us in building a safer community. Get verified to boost your credibility and assist us in creating trust amongst our users!</span>
+          <span class="alert-text ms-2">{{ 'VERIFY_COMMUNITY_BANNER' | translate }}</span>
         </div>
         <div class="d-flex align-items-center alert-actions">
-          <button class="btn btn-outline-light verify-now-btn btn-sm">Verify Now</button>
+          <button class="btn btn-outline-light verify-now-btn btn-sm">{{ 'VERIFY_NOW' | translate }}</button>
           <button class="close-alert-btn" aria-label="Close alert" (click)="showTopAlert = false">
             <i class="bi bi-x-lg"></i>
           </button>
@@ -30,7 +30,7 @@
 
         <!-- Location Selector -->
         <div class="location-selector" *ngIf="!isAdmin">
-          <span class="location-label">Dubai</span>
+          <span class="location-label">{{ 'DUBAI' | translate }}</span>
           <i class="bi bi-chevron-down location-chevron ms-1" style="font-size: 12px; font-weight: bold;"></i>
         </div>
       </div>
@@ -40,11 +40,11 @@
 
       <!-- Utility Icons -->
       <div class="utility-icons-wrapper" *ngIf="!isAdmin">
-        <button class="util-btn">
+        <button class="util-btn" (click)="user ? openNotifications() : onLoginClick()">
           <i class="bi bi-bell"></i>
           <span>{{ 'NOTIFICATIONS' | translate }}</span>
         </button>
-        <button class="util-btn">
+        <button class="util-btn" (click)="user ? openMySearches() : onLoginClick()">
           <i class="bi bi-bookmark"></i>
           <span>{{ 'MY_SEARCHES' | translate }}</span>
         </button>
@@ -66,7 +66,7 @@
 
       <!-- Guest Login -->
       <button class="btn-login ms-4" *ngIf="!user && !isAdmin" (click)="onLoginClick()">
-        Log in or sign up
+        {{ 'LOG_IN_SIGN_UP' | translate }}
       </button>
 
       <!-- User Pill -->
@@ -85,20 +85,59 @@
 
       <!-- Place Ad CTA -->
       <button class="btn-place-ad ms-4" *ngIf="!isAdmin" (click)="onPlaceAdClick()">
-        Place Your Ad
+        {{ 'PLACE_AD' | translate }}
       </button>
       
       <!-- Language Selector -->
-      <select class="lang-selector ms-3" (change)="switchLang($event)" *ngIf="!isAdmin">
+      <select class="lang-selector ms-3" [value]="currentLang" (change)="switchLang($event)" *ngIf="!isAdmin">
         <option value="en">EN</option>
         <option value="ar">AR</option>
       </select>
 
       <!-- Mobile Hamburger -->
-      <button class="mobile-hamburger ms-2" (click)="toggleMobileMenu()">
-        <i class="bi bi-list"></i>
+      <button class="mobile-hamburger ms-2" (click)="toggleMobileMenu()" [attr.aria-expanded]="isMobileMenuOpen" aria-label="Open navigation menu">
+        <i class="bi" [class.bi-list]="!isMobileMenuOpen" [class.bi-x-lg]="isMobileMenuOpen"></i>
       </button>
 
+    </div>
+
+    <div class="mobile-menu-panel" *ngIf="isMobileMenuOpen && !isAdmin">
+      <div class="mobile-menu-grid">
+        <button class="mobile-menu-action" (click)="user ? openNotifications() : onLoginClick()">
+          <i class="bi bi-bell"></i>
+          <span>{{ 'NOTIFICATIONS' | translate }}</span>
+        </button>
+        <button class="mobile-menu-action" (click)="user ? openMySearches() : onLoginClick()">
+          <i class="bi bi-bookmark"></i>
+          <span>{{ 'MY_SEARCHES' | translate }}</span>
+        </button>
+        <button class="mobile-menu-action" (click)="user ? navigateToFavourites() : onLoginClick()">
+          <i class="bi bi-heart"></i>
+          <span>{{ 'FAVORITES' | translate }}</span>
+        </button>
+        <button class="mobile-menu-action" (click)="user ? navigateToChats() : onLoginClick()">
+          <i class="bi bi-chat-dots"></i>
+          <span>{{ 'CHATS' | translate }}</span>
+        </button>
+        <button class="mobile-menu-action" (click)="user ? navigateToMyAds() : onLoginClick()">
+          <i class="bi bi-card-list"></i>
+          <span>{{ 'MY_ADS' | translate }}</span>
+        </button>
+        <button class="mobile-menu-action" (click)="user ? navigateToProfile() : onLoginClick()">
+          <i class="bi bi-person"></i>
+          <span>{{ user ? ('MY_PROFILE' | translate) : ('LOGIN' | translate) }}</span>
+        </button>
+      </div>
+
+      <div class="mobile-menu-footer">
+        <button class="btn-place-ad mobile-place-ad" (click)="onPlaceAdClick()">
+          {{ 'PLACE_AD' | translate }}
+        </button>
+        <select class="lang-selector mobile-lang-selector" [value]="currentLang" (change)="switchLang($event)">
+          <option value="en">EN</option>
+          <option value="ar">AR</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -145,7 +184,7 @@
                   <div class="banner-text">
                     <span>{{ 'SELL_MY_CAR' | translate }}</span>
                   </div>
-                  <img src="/assets/images/sell-car-icon.png" alt="Car" class="banner-car-img">
+                  <i class="bi bi-car-front-fill banner-car-icon" aria-hidden="true"></i>
                 </div>
 
                 <!-- Services Section -->
@@ -163,26 +202,26 @@
               <div class="motors-main-content">
                 <div class="content-header">
                   <h6>{{ activeMotorsCategory | translate }}</h6>
-                  <span class="view-all" (click)="navigateToMotorsSub(activeMotorsCategory, 'all')">{{ 'VIEW_ALL' | translate }} →</span>
+                  <span class="view-all" (click)="navigateToMotorsSub(activeMotorsCategory, 'all')">{{ 'VIEW_ALL' | translate }}</span>
                 </div>
                 <div class="brands-grid" [ngSwitch]="activeMotorsCategory">
                   <ng-container *ngSwitchCase="'USED_CARS'">
-                    <span (click)="navigateToMotorsSub('USED_CARS','Toyota')">Toyota</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Nissan')">Nissan</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Honda')">Honda</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','BMW')">BMW</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Mercedes')">Mercedes</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Audi')">Audi</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Hyundai')">Hyundai</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Ford')">Ford</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Chevrolet')">Chevrolet</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Kia')">Kia</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Mitsubishi')">Mitsubishi</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Land Rover')">Land Rover</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Jeep')">Jeep</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Porsche')">Porsche</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Lexus')">Lexus</span>
-                    <span (click)="navigateToMotorsSub('USED_CARS','Dodge')">Dodge</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Toyota')">{{ 'TOYOTA' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Nissan')">{{ 'NISSAN' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Honda')">{{ 'HONDA' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','BMW')">{{ 'BMW' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Mercedes')">{{ 'MERCEDES' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Audi')">{{ 'AUDI' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Hyundai')">{{ 'HYUNDAI' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Ford')">{{ 'FORD' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Chevrolet')">{{ 'CHEVROLET' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Kia')">{{ 'KIA' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Mitsubishi')">{{ 'MITSUBISHI' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Land Rover')">{{ 'LAND_ROVER' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Jeep')">{{ 'JEEP' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Porsche')">{{ 'PORSCHE' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Lexus')">{{ 'LEXUS' | translate }}</span>
+                    <span (click)="navigateToMotorsSub('USED_CARS','Dodge')">{{ 'DODGE' | translate }}</span>
                   </ng-container>
                   <ng-container *ngSwitchDefault>
                     <span (click)="navigateToMotorsSub(activeMotorsCategory, 'all')">{{ 'VIEW_ALL' | translate }}</span>
@@ -270,18 +309,18 @@
               <div class="motors-main-content">
                 <div class="content-header">
                   <h6>{{ activeJobsCategory | translate }}</h6>
-                  <span class="view-all" (click)="navigateToJobsSub(activeJobsCategory, 'all')">{{ 'VIEW_ALL' | translate }} →</span>
+                  <span class="view-all" (click)="navigateToJobsSub(activeJobsCategory, 'all')">{{ 'VIEW_ALL' | translate }}</span>
                 </div>
                 <div class="brands-grid jobs-grid" [ngSwitch]="activeJobsCategory">
                   <ng-container *ngSwitchCase="'JOBS_BY_CATEGORIES'">
-                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','IT')">IT & Telecoms</span>
-                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Finance')">Finance & Banking</span>
-                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Healthcare')">Healthcare</span>
-                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Engineering')">Engineering</span>
-                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Sales')">Sales & Marketing</span>
-                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Education')">Education</span>
-                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Hospitality')">Hospitality & Tourism</span>
-                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Construction')">Construction</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','IT')">{{ 'IT_TELECOMS' | translate }}</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Finance')">{{ 'FINANCE_BANKING' | translate }}</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Healthcare')">{{ 'HEALTHCARE' | translate }}</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Engineering')">{{ 'ENGINEERING' | translate }}</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Sales')">{{ 'SALES_MARKETING' | translate }}</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Education')">{{ 'EDUCATION' | translate }}</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Hospitality')">{{ 'HOSPITALITY_TOURISM' | translate }}</span>
+                    <span (click)="navigateToJobsSub('JOBS_BY_CATEGORIES','Construction')">{{ 'CONSTRUCTION' | translate }}</span>
                   </ng-container>
                   <ng-container *ngSwitchDefault>
                     <span (click)="navigateToJobsSub(activeJobsCategory, 'all')">{{ 'VIEW_ALL' | translate }}</span>
@@ -326,7 +365,7 @@
               <div class="motors-main-content">
                 <div class="content-header">
                   <h6>{{ activeClassifiedsCategory | translate }}</h6>
-                  <span class="view-all" (click)="navigateToClassifiedsSub(activeClassifiedsCategory, 'all')">{{ 'VIEW_ALL' | translate }} →</span>
+                  <span class="view-all" (click)="navigateToClassifiedsSub(activeClassifiedsCategory, 'all')">{{ 'VIEW_ALL' | translate }}</span>
                 </div>
                 <div class="brands-grid" [ngSwitch]="activeClassifiedsCategory">
                   <ng-container *ngSwitchCase="'ELECTRONICS'">
@@ -385,7 +424,7 @@
               <div class="motors-main-content">
                 <div class="content-header">
                   <h6>{{ activeFurnitureCategory | translate }}</h6>
-                  <span class="view-all" (click)="navigateToFurnitureSub(activeFurnitureCategory, 'all')">{{ 'VIEW_ALL' | translate }} →</span>
+                  <span class="view-all" (click)="navigateToFurnitureSub(activeFurnitureCategory, 'all')">{{ 'VIEW_ALL' | translate }}</span>
                 </div>
                 <div class="brands-grid" [ngSwitch]="activeFurnitureCategory">
                   <ng-container *ngSwitchCase="'FURNITURE'">
@@ -436,7 +475,7 @@
               <div class="motors-main-content">
                 <div class="content-header">
                   <h6>{{ activeMobilesCategory | translate }}</h6>
-                  <span class="view-all" (click)="navigateToMobilesSub(activeMobilesCategory, 'all')">{{ 'VIEW_ALL' | translate }} →</span>
+                  <span class="view-all" (click)="navigateToMobilesSub(activeMobilesCategory, 'all')">{{ 'VIEW_ALL' | translate }}</span>
                 </div>
                 <div class="brands-grid" [ngSwitch]="activeMobilesCategory">
                   <ng-container *ngSwitchCase="'MOBILE_PHONES'">
@@ -491,18 +530,18 @@
                (mouseleave)="closeCommunityDropdownDelayed()"
                (click)="$event.stopPropagation()">
             <ul class="community-list">
-              <li (click)="navigateToCommunitySub('Auto Services')">Auto Services</li>
-              <li (click)="navigateToCommunitySub('Consultancy Services')">Consultancy Services</li>
-              <li (click)="navigateToCommunitySub('Domestic')">Domestic</li>
-              <li (click)="navigateToCommunitySub('Event & Entertainment')">Event & Entertainment</li>
-              <li (click)="navigateToCommunitySub('Freelancers')">Freelancers</li>
-              <li (click)="navigateToCommunitySub('Health & Wellbeing Services')">Health & Wellbeing Services</li>
-              <li (click)="navigateToCommunitySub('Home Maintenance')">Home Maintenance</li>
-              <li (click)="navigateToCommunitySub('Movers & Removals')">Movers & Removals</li>
-              <li (click)="navigateToCommunitySub('Other Services')">Other Services</li>
-              <li (click)="navigateToCommunitySub('Restoration & Repairs')">Restoration & Repairs</li>
-              <li (click)="navigateToCommunitySub('Tutors & Classes')">Tutors & Classes</li>
-              <li (click)="navigateToCommunitySub('Web & Computer Services')">Web & Computer Services</li>
+              <li (click)="navigateToCommunitySub('Auto Services')">{{ 'AUTO_SERVICES' | translate }}</li>
+              <li (click)="navigateToCommunitySub('Consultancy Services')">{{ 'CONSULTANCY_SERVICES' | translate }}</li>
+              <li (click)="navigateToCommunitySub('Domestic')">{{ 'DOMESTIC' | translate }}</li>
+              <li (click)="navigateToCommunitySub('Event & Entertainment')">{{ 'EVENT_ENTERTAINMENT' | translate }}</li>
+              <li (click)="navigateToCommunitySub('Freelancers')">{{ 'FREELANCERS' | translate }}</li>
+              <li (click)="navigateToCommunitySub('Health & Wellbeing Services')">{{ 'HEALTH_WELLBEING_SERVICES' | translate }}</li>
+              <li (click)="navigateToCommunitySub('Home Maintenance')">{{ 'HOME_MAINTENANCE' | translate }}</li>
+              <li (click)="navigateToCommunitySub('Movers & Removals')">{{ 'MOVERS_REMOVALS' | translate }}</li>
+              <li (click)="navigateToCommunitySub('Other Services')">{{ 'OTHER_SERVICES' | translate }}</li>
+              <li (click)="navigateToCommunitySub('Restoration & Repairs')">{{ 'RESTORATION_REPAIRS' | translate }}</li>
+              <li (click)="navigateToCommunitySub('Tutors & Classes')">{{ 'TUTORS_CLASSES' | translate }}</li>
+              <li (click)="navigateToCommunitySub('Web & Computer Services')">{{ 'WEB_COMPUTER_SERVICES' | translate }}</li>
             </ul>
           </div>
         </li>

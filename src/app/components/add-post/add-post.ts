@@ -79,7 +79,7 @@ export class AddPostComponent implements OnInit {
   files: File[] = [];
   imagePreviews: string[] = [];
   maxImages = 10; // Increased default to allow more images
-  minImages = 3;
+  minImages = 1; // Require at least one image; any count above that (2, 3…) is fine
   imageUploadError: string | null = null;
   imageUploadSuccess: string | null = null;
   showImageQualityInfo = false;
@@ -374,20 +374,20 @@ export class AddPostComponent implements OnInit {
 
   get imageRequirementMessage(): string {
     if (this.isJobsCategory) {
-      return 'Upload a professional company logo (PNG, JPEG, JPG, or WebP, minimum 100KB)';
+      return 'Upload a professional company logo (PNG, JPEG, JPG, or WebP). Higher-quality images look best.';
     }
-    return `Upload at least ${this.minImages} high-quality images (PNG, JPEG, JPG, or WebP only). Each image must be at least 100KB for good quality.`;
+    return 'Add clear photos (PNG, JPEG, JPG, or WebP). For the best results, use high-quality images above 100KB — smaller images are fine too.';
   }
 
   getImageQualityStatus(file: File): string {
-    if (file.size < this.minFileSize) return 'Low Quality';
     if (file.size > this.maxFileSize) return 'Too Large';
+    if (file.size < this.minFileSize) return 'Standard';   // allowed, just lower quality
     return 'Good Quality';
   }
 
   getImageQualityClass(file: File): string {
-    if (file.size < this.minFileSize) return 'text-danger';
     if (file.size > this.maxFileSize) return 'text-danger';
+    if (file.size < this.minFileSize) return 'text-warning'; // soft hint, not an error
     return 'text-success';
   }
 
@@ -399,25 +399,9 @@ export class AddPostComponent implements OnInit {
 
       img.onload = () => {
         URL.revokeObjectURL(url);
-        const { width, height } = img;
-
-        // Check minimum dimensions
-        if (width < this.minResolution || height < this.minResolution) {
-          resolve({
-            isValid: false,
-            message: `Image too small (${width}x${height}). Minimum ${this.minResolution}x${this.minResolution} recommended.`
-          });
-        }
-        // Check aspect ratio (avoid extremely wide/tall images)
-        else if (width / height > 3 || height / width > 3) {
-          resolve({
-            isValid: false,
-            message: `Image aspect ratio too extreme (${width}x${height}). Please use more balanced dimensions.`
-          });
-        }
-        else {
-          resolve({ isValid: true, message: 'Good quality image' });
-        }
+        // Dimensions/aspect are only recommendations now — never block the upload.
+        // Any readable image is accepted; higher resolution is simply preferred.
+        resolve({ isValid: true, message: 'Image accepted' });
       };
 
       img.onerror = () => {
@@ -450,7 +434,7 @@ export class AddPostComponent implements OnInit {
       this.minImages = 1;
     } else {
       this.maxImages = 10;
-      this.minImages = 3;
+      this.minImages = 1;
     }
   }
 
@@ -505,11 +489,8 @@ export class AddPostComponent implements OnInit {
         continue;
       }
 
-      // Check file size
-      if (file.size < this.minFileSize) {
-        errors.push(`${file.name}: File too small (${(file.size / 1024).toFixed(1)}KB). Minimum 100KB required for good quality.`);
-        continue;
-      }
+      // Note: images below 100KB are allowed — quality is only a recommendation,
+      // shown as a soft label per image rather than blocking the upload.
 
       if (file.size > this.maxFileSize) {
         errors.push(`${file.name}: File too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Maximum 10MB allowed.`);
@@ -585,18 +566,8 @@ export class AddPostComponent implements OnInit {
     // Skip validation for jobs (only need company logo)
     if (this.selectedMainCategoryId === 2) return;
 
-    // Check minimum image requirement
-    if (this.files.length < this.minImages) {
-      this.imageUploadError = `⚠️ At least ${this.minImages} high-quality images are required to proceed. You currently have ${this.files.length} image${this.files.length !== 1 ? 's' : ''}.`;
-      return;
-    }
-
-    // Check for low quality images
-    const lowQualityFiles = this.files.filter(f => f.size < this.minFileSize);
-    if (lowQualityFiles.length > 0) {
-      this.imageUploadError = `❌ ${lowQualityFiles.length} image${lowQualityFiles.length > 1 ? 's are' : ' is'} too low quality. Minimum file size is 100KB for good quality.`;
-      return;
-    }
+    // Images below 100KB are allowed — no minimum-count or minimum-size blocking.
+    // Only genuinely oversized files (over the 10MB storage cap) are rejected.
 
     // Check for oversized images
     const oversizedFiles = this.files.filter(f => f.size > this.maxFileSize);
@@ -709,7 +680,7 @@ export class AddPostComponent implements OnInit {
     }
 
     if (this.files.length < this.minImages && this.selectedMainCategoryId !== 2) {
-      this.imageUploadError = 'UPLOAD_AT_LEAST_3_IMAGES_TO_PROCEED';
+      this.imageUploadError = 'Please add at least one image to proceed.';
       return;
     }
     if (this.selectedMainCategoryId === 2) {

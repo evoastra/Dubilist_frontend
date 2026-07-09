@@ -582,12 +582,13 @@
               <div class="mb-3">
                 <div class="upload-container position-relative">
                   <input type="file" #fileInput hidden
-                         (change)="onCategoryFileSelected($event, cat); cat._dirty = true"
+                         (change)="onCategoryFileSelected($event, cat)"
                          accept=".jpg, .jpeg, .png, .webp, .avif" multiple>
 
                   <div class="upload-box p-4 border-2 border-dashed rounded-4 bg-white text-center"
-                       (click)="!cat.isUploading && fileInput.click()"
-                       [style.cursor]="cat.isUploading ? 'not-allowed' : 'pointer'"
+                       (click)="!cat.isUploading && cat.thumbnails.length < categoryImageMaxCount && fileInput.click()"
+                       [class.opacity-50]="cat.thumbnails.length >= categoryImageMaxCount"
+                       [style.cursor]="cat.isUploading || cat.thumbnails.length >= categoryImageMaxCount ? 'not-allowed' : 'pointer'"
                        style="border: 2px dashed #ffab00 !important; background: #fffcf5 !important; transition: all 0.3s;">
 
                     <!-- Uploading state -->
@@ -604,8 +605,10 @@
                       <div class="upload-icon-wrapper mb-2">
                         <i class="bi bi-cloud-plus-fill text-warning fs-1"></i>
                       </div>
-                      <p class="mb-1 fw-bold text-dark">Click to select multiple images</p>
-                      <p class="text-muted x-small mb-0">Supports JPG, PNG, WebP or AVIF (Max 5MB each)</p>
+                      <p class="mb-1 fw-bold text-dark">
+                        {{ cat.thumbnails.length >= categoryImageMaxCount ? 'Maximum images added' : 'Click to select up to 2 images' }}
+                      </p>
+                      <p class="text-muted x-small mb-0">Supports JPG, PNG, WebP or AVIF (Max 1MB each)</p>
                     </ng-template>
                   </div>
                 </div>
@@ -636,13 +639,13 @@
                   <i class="bi bi-collection-play-fill text-success fs-5"></i>
                   <div>
                     <p class="text-success small fw-bold mb-0">Carousel mode — {{ cat.thumbnails.length }} images</p>
-                    <p class="text-muted x-small mb-0">Images rotate every 3s on the home page</p>
+                    <p class="text-muted x-small mb-0">Maximum 2 images rotate every 3s on the home page</p>
                   </div>
                 </div>
                 <div *ngIf="cat.thumbnails?.length === 1"
                      class="p-3 bg-light rounded-3 d-flex align-items-center gap-2">
                   <i class="bi bi-image text-primary fs-5"></i>
-                  <p class="text-secondary small fw-bold mb-0">Single thumbnail — add more images to enable carousel</p>
+                  <p class="text-secondary small fw-bold mb-0">Single thumbnail — add 1 more image to enable carousel</p>
                 </div>
               </div>
             </div>

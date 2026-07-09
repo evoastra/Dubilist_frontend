@@ -15,23 +15,41 @@ export class AddPostService {
     const m = draft.model;
     const mainCatId = draft.selectedMainCategoryId;
 
+    // The "Others" sub-category option is a synthetic entry (id = parentId*1000+999)
+    // that does NOT exist as a real category row. If it's selected, fall back to the
+    // real parent (main) category id so the backend can find the category.
+    const mainId = Number(mainCatId ?? draft.categoryId);
+    const subId = Number(draft.selectedSubCategoryId);
+    const isSyntheticOthers = !!subId && subId === mainId * 1000 + 999;
+    const resolvedCategoryId =
+      draft.selectedSubCategoryId && !isSyntheticOthers ? subId : mainId;
+
     /* ================= BASE PAYLOAD ================= */
     const payload: any = {
       title: m.title,
-      description: m.description || '',
+      description: m.description,
       price: mainCatId === 2 ? 0 : Number(m.price),
       currency: 'AED',
 
-      categoryId: Number(draft.categoryId),
+      // Real sub-category id, or the parent id when "Others" (synthetic) is chosen
+      categoryId: resolvedCategoryId,
       city: m.city,
       country: 'UAE',
       address: m.address || '',
-      status:'pending',
+      status: 'pending',
       contactPhone: m.contactPhone,
       contactEmail: m.contactEmail || null,
       contactWhatsapp: m.contactWhatsapp ? m.contactPhone : null,
       isNegotiable: !!m.isNegotiable
     };
+
+    // Guard: ensure required fields are present before sending
+    if (!payload.title || !payload.description || payload.description.trim().length < 5) {
+      throw new Error('Title and description (min 5 characters) are required');
+    }
+    if (!payload.categoryId || isNaN(payload.categoryId)) {
+      throw new Error('Please select a valid category');
+    }
 
     /* ================= MOTORS ================= */
     if (mainCatId === 1) {
@@ -160,6 +178,7 @@ export class AddPostService {
       await firstValueFrom(
         this.http.post(`${this.baseUrl}/listings/${listingId}/images`, {
           url: uploadRes.url,
+          thumbnailUrl: uploadRes.thumbnailUrl,
           s3Key: uploadRes.s3Key,
           orderIndex: i,
           isPrimary: i === 0
