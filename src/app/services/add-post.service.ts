@@ -13,6 +13,7 @@ export class AddPostService {
 
   async createListingFromDraft(draft: DraftListingData) {
     const m = draft.model;
+    const mainCatSlug = draft.selectedMainCategorySlug;
     const mainCatId = draft.selectedMainCategoryId;
 
     // The "Others" sub-category option is a synthetic entry (id = parentId*1000+999)
@@ -28,7 +29,7 @@ export class AddPostService {
     const payload: any = {
       title: m.title,
       description: m.description,
-      price: mainCatId === 2 ? 0 : Number(m.price),
+      price: mainCatSlug === 'jobs' ? 0 : Number(m.price),
       currency: 'AED',
 
       // Real sub-category id, or the parent id when "Others" (synthetic) is chosen
@@ -52,7 +53,7 @@ export class AddPostService {
     }
 
     /* ================= MOTORS ================= */
-    if (mainCatId === 1) {
+    if (mainCatSlug === 'motors') {
       Object.assign(payload, {
         make: m.make,
         model: m.motorModel,
@@ -69,7 +70,7 @@ export class AddPostService {
     }
 
     /* ================= JOBS ================= */
-    if (mainCatId === 2) {
+    if (mainCatSlug === 'jobs') {
       Object.assign(payload, {
         jobTitle: m.jobTitle,
         companyName: m.companyName,
@@ -88,7 +89,7 @@ export class AddPostService {
     }
 
     /* ================= PROPERTY ================= */
-    if (mainCatId === 3) {
+    if (mainCatSlug === 'property') {
       Object.assign(payload, {
         listingType: m.listingType,
         propertyType: m.propertyType,
@@ -103,7 +104,7 @@ export class AddPostService {
     }
 
     /* ================= ELECTRONICS ================= */
-    if (mainCatId === 5) {
+    if (mainCatSlug === 'mobiles-tablets') {
       Object.assign(payload, {
         subCategory: m.electronicSubCategory,
         brand: m.electronicBrand,
@@ -118,7 +119,7 @@ export class AddPostService {
     }
 
     /* ================= CLASSIFIEDS / FURNITURE ================= */
-    if (mainCatId === 4 || mainCatId === 6) {
+    if (mainCatSlug === 'classifieds' || mainCatSlug === 'furniture-garden') {
       Object.assign(payload, {
         subCategory: m.subCategory,
         brand: m.brand,

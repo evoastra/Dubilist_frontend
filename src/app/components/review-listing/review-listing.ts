@@ -15,8 +15,15 @@ import { TranslateModule } from '@ngx-translate/core';
 export class ReviewListingComponent implements OnInit, OnDestroy {
   draft!: DraftListingData | null;
   model: any = {};
-  mainCatId!: number;
+  mainCatSlug: string | null = null;
   mainCatName = '';
+
+  get isMotorsCategory(): boolean { return this.mainCatSlug === 'motors'; }
+  get isJobsCategory(): boolean { return this.mainCatSlug === 'jobs'; }
+  get isPropertyCategory(): boolean { return this.mainCatSlug === 'property'; }
+  get isClassifiedsCategory(): boolean { return this.mainCatSlug === 'classifieds'; }
+  get isMobilesCategory(): boolean { return this.mainCatSlug === 'mobiles-tablets'; }
+  get isFurnitureCategory(): boolean { return this.mainCatSlug === 'furniture-garden'; }
   
   // For display
   imagePreviews: string[] = [];
@@ -40,8 +47,8 @@ export class ReviewListingComponent implements OnInit, OnDestroy {
     }
 
     this.model = this.draft.model;
-    this.mainCatId = this.draft.selectedMainCategoryId!;
-    this.mainCatName = this.getMainCategoryName(this.mainCatId);
+    this.mainCatSlug = this.draft.selectedMainCategorySlug;
+    this.mainCatName = this.getMainCategoryName(this.mainCatSlug);
     
     this.generatePreviews();
   }
@@ -55,16 +62,17 @@ generatePreviews(): void {
 }
 
 
-  getMainCategoryName(id: number): string {
-    const map: Record<number, string> = {
-      1: 'Motors',
-      2: 'Jobs',
-      3: 'Property',
-      4: 'Classifieds',
-      5: 'Electronics',
-      6: 'Furniture'
+  getMainCategoryName(slug: string | null): string {
+    const map: Record<string, string> = {
+      motors: 'Motors',
+      jobs: 'Jobs',
+      property: 'Property',
+      classifieds: 'Classifieds',
+      'mobiles-tablets': 'Mobiles & Tablets',
+      'furniture-garden': 'Furniture & Garden',
+      community: 'Community',
     };
-    return map[id] || 'Listing';
+    return slug ? (map[slug] || 'Listing') : 'Listing';
   }
 
   async publishAd() {

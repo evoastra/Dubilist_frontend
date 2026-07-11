@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 export interface DraftListingData {
   categoryId: number; // This is the specific sub-category ID (or main if no sub)
   selectedMainCategoryId: number | null;
+  selectedMainCategorySlug: string | null;
   selectedSubCategoryId: number | null;
 
   model: any; // The raw form data from AddPostComponent
@@ -25,6 +26,7 @@ export class DraftListingService {
     this.draft = {
       categoryId: data.categoryId,
       selectedMainCategoryId: data.selectedMainCategoryId,
+      selectedMainCategorySlug: data.selectedMainCategorySlug,
       selectedSubCategoryId: data.selectedSubCategoryId,
       
       // Create a copy of the model to avoid reference issues
