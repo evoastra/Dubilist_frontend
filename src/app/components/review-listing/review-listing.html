@@ -15,12 +15,12 @@
     <div class="card-body p-4">
       <h4 class="mb-3 text-dark">{{ model.title }}</h4>
       
-      <h6 class="text-muted mb-3">{{ mainCatId === 2 ? 'Company Logo' : 'Uploaded Photos' }}</h6>
+      <h6 class="text-muted mb-3">{{ isJobsCategory ? 'Company Logo' : 'Uploaded Photos' }}</h6>
       
       <div class="d-flex flex-wrap gap-2" *ngIf="imagePreviews.length; else noMedia">
         <div *ngFor="let img of imagePreviews" class="preview-wrapper">
           <img [src]="img" class="rounded border shadow-sm" style="width: 150px; height: 150px; object-fit: cover;">
-          <span *ngIf="mainCatId === 2" class="badge bg-dark d-block mt-1">{{ 'OFFICIAL_LOGO' | translate }}</span>
+          <span *ngIf="isJobsCategory" class="badge bg-dark d-block mt-1">{{ 'OFFICIAL_LOGO' | translate }}</span>
         </div>
       </div>
       <ng-template #noMedia><p class="text-warning small">{{ 'NO_IMAGES_ATTACHED_' | translate }}</p></ng-template>
@@ -33,44 +33,45 @@
       
       <div class="row g-4">
         
-        <ng-container *ngIf="mainCatId === 1">
+        <ng-container *ngIf="isMotorsCategory">
           <div class="col-md-4"><strong>{{ 'MAKE_' | translate }}</strong><br>{{ model.make }}</div>
           <div class="col-md-4"><strong>{{ 'MODEL_' | translate }}</strong><br>{{ model.model }}</div>
           <div class="col-md-4"><strong>{{ 'YEAR_' | translate }}</strong><br>{{ model.year }}</div>
+          <div class="col-md-4"><strong>{{ 'CONDITION_' | translate }}</strong><br>{{ model.condition }}</div>
           <div class="col-md-4"><strong>{{ 'KM_' | translate }}</strong><br>{{ model.kilometres }}</div>
           <div class="col-md-4"><strong>{{ 'FUEL_' | translate }}</strong><br>{{ model.fuelType }}</div>
           <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
 
-        <ng-container *ngIf="mainCatId === 2">
+        <ng-container *ngIf="isJobsCategory">
           <div class="col-md-4"><strong>{{ 'COMPANY_' | translate }}</strong><br>{{ model.companyName }}</div>
           <div class="col-md-4"><strong>{{ 'ROLE_' | translate }}</strong><br>{{ model.jobTitle }}</div>
           <div class="col-md-4"><strong>{{ 'TYPE_' | translate }}</strong><br>{{ model.jobType }}</div>
           <div class="col-md-4"><strong>{{ 'SALARY_' | translate }}</strong><br>{{ model.salaryMin }} - {{ model.salaryMax }} AED</div>
         </ng-container>
 
-        <ng-container *ngIf="mainCatId === 3">
+        <ng-container *ngIf="isPropertyCategory">
           <div class="col-md-4"><strong>{{ 'TYPE_' | translate }}</strong><br>{{ model.propertyType }}</div>
           <div class="col-md-4"><strong>{{ 'AREA_' | translate }}</strong><br>{{ model.areaSqft }} sq.ft</div>
           <div class="col-md-4"><strong>{{ 'BED_BATH_' | translate }}</strong><br>{{ model.bedrooms }} Bed / {{ model.bedrooms }} Bath / {{ model.bathrooms }}</div>
           <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
 
-        <ng-container *ngIf="mainCatId === 5">
+        <ng-container *ngIf="isMobilesCategory">
           <div class="col-md-4"><strong>{{ 'BRAND_' | translate }}</strong><br>{{ model.brand }}</div>
           <div class="col-md-4"><strong>{{ 'MODEL_' | translate }}</strong><br>{{ model.electronicsModel }}</div>
           <div class="col-md-4"><strong>{{ 'CONDITION_' | translate }}</strong><br>{{ model.condition }}</div>
           <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
 
-         <ng-container *ngIf="mainCatId === 4">
+         <ng-container *ngIf="isClassifiedsCategory">
           <div class="col-md-4"><strong>{{ 'BRAND_' | translate }}</strong><br>{{ model.brand }}</div>
           <div class="col-md-4"><strong>{{ 'MATERIAL_' | translate }}</strong><br>{{ model.material }}</div>
           <div class="col-md-4"><strong>{{ 'CONDITION_' | translate }}</strong><br>{{ model.condition }}</div>
           <div class="col-md-4"><strong>{{ 'PRICE_' | translate }}</strong><br><span class="text-success fw-bold">AED {{ model.price }}</span></div>
         </ng-container>
 
-        <ng-container *ngIf="mainCatId === 6">
+        <ng-container *ngIf="isFurnitureCategory">
           <div class="col-md-4"><strong>{{ 'BRAND_' | translate }}</strong><br>{{ model.brand }}</div>
           <div class="col-md-4"><strong>{{ 'MATERIAL_' | translate }}</strong><br>{{ model.material }}</div>
           <div class="col-md-4"><strong>{{ 'CONDITION_' | translate }}</strong><br>{{ model.condition }}</div>
@@ -84,9 +85,9 @@
     <div class="card-body p-4">
       <h5>{{ 'ADDITIONAL_INFORMATION' | translate }}</h5>
       
-      <p class="text-secondary" style="white-space: pre-line;" *ngIf="mainCatId !== 2">{{ model.description }}</p>
+      <p class="text-secondary" style="white-space: pre-line;" *ngIf="!isJobsCategory">{{ model.description }}</p>
 
-      <div *ngIf="mainCatId === 2">
+      <div *ngIf="isJobsCategory">
         <strong class="d-block mt-3">{{ 'JOB_DESCRIPTION_' | translate }}</strong>
         <p class="text-secondary small" style="white-space: pre-line;">{{ model.description }}</p>
         

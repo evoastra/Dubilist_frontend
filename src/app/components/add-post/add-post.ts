@@ -71,6 +71,7 @@ export class AddPostComponent implements OnInit {
   amenitiesOptions = ['Parking', 'Gym', 'Pool', 'AC', 'Lift', 'Security', 'Balcony'];
 
   selectedMainCategoryId: number | null = null;
+  selectedMainCategorySlug: string | null = null;
   selectedSubCategoryId: number | null = null;
   showSelectCategoryModal = false;
 
@@ -335,12 +336,23 @@ export class AddPostComponent implements OnInit {
 
   /* -------------------- GETTERS -------------------- */
 
+  get isMotorsCategory(): boolean { return this.selectedMainCategorySlug === 'motors'; }
+  get isPropertyCategory(): boolean { return this.selectedMainCategorySlug === 'property'; }
+  get isClassifiedsCategory(): boolean { return this.selectedMainCategorySlug === 'classifieds'; }
+  get isMobilesCategory(): boolean { return this.selectedMainCategorySlug === 'mobiles-tablets'; }
+  get isFurnitureCategory(): boolean { return this.selectedMainCategorySlug === 'furniture-garden'; }
+
   get filteredSubCategories(): SubCategory[] {
     return this.subCategories.filter(s => s.parentId === this.selectedMainCategoryId);
   }
 
   get isJobsCategory(): boolean {
-    return this.selectedMainCategoryId === 2;
+    return this.selectedMainCategorySlug === 'jobs';
+  }
+
+  /** Backend requires condition for Motors, Mobiles, and Furniture. */
+  get requiresCondition(): boolean {
+    return this.isMotorsCategory || this.isMobilesCategory || this.isFurnitureCategory;
   }
 
   get isOthersSelected(): boolean {
@@ -417,9 +429,12 @@ export class AddPostComponent implements OnInit {
 
   onMainCategoryChange(id: number) {
     this.selectedMainCategoryId = id;
-    this.mainCategoryName = this.mainCategories.find(c => c.id === id)?.name || '';
+    const selected = this.mainCategories.find(c => c.id === id);
+    this.mainCategoryName = selected?.name || '';
+    this.selectedMainCategorySlug = selected?.slug || null;
     this.selectedSubCategoryId = null;
     this.model.subCategory = ''; // Clear custom subcategory
+    this.model.condition = '';
 
     this.files = [];
     this.imagePreviews.forEach(u => URL.revokeObjectURL(u));
@@ -429,7 +444,7 @@ export class AddPostComponent implements OnInit {
     this.imageUploadError = null;
     this.showImageQualityInfo = true;
 
-    if (id === 2) {
+    if (this.isJobsCategory) {
       this.maxImages = 1;
       this.minImages = 1;
     } else {
@@ -564,7 +579,7 @@ export class AddPostComponent implements OnInit {
     this.imageUploadError = null;
 
     // Skip validation for jobs (only need company logo)
-    if (this.selectedMainCategoryId === 2) return;
+    if (this.isJobsCategory) return;
 
     // Images below 100KB are allowed — no minimum-count or minimum-size blocking.
     // Only genuinely oversized files (over the 10MB storage cap) are rejected.
@@ -597,40 +612,40 @@ export class AddPostComponent implements OnInit {
   // Handle "Others" case - use custom input value
   if (sub.name === 'Others') {
     if (!this.model) return;
-    switch (this.selectedMainCategoryId) {
-      case 1:
+    switch (this.selectedMainCategorySlug) {
+      case 'motors':
         this.model.motor_type = this.model.subCategory || 'Others';
         break;
-      case 2:
+      case 'jobs':
         this.model.jobType = this.model.subCategory || 'Others';
         break;
-      case 3:
+      case 'property':
         this.model.propertyType = this.model.subCategory || 'Others';
         break;
-      case 4:
-      case 5:
-      case 6:
-      case 7:
+      case 'classifieds':
+      case 'mobiles-tablets':
+      case 'furniture-garden':
+      case 'community':
         this.model.subCategory = this.model.subCategory || 'Others';
         break;
     }
   } else {
     // Handle regular subcategory selection
     if (!this.model) return;
-    switch (this.selectedMainCategoryId) {
-      case 1:
+    switch (this.selectedMainCategorySlug) {
+      case 'motors':
         this.model.motor_type = sub.name;
         break;
-      case 2:
+      case 'jobs':
         this.model.jobType = sub.name;
         break;
-      case 3:
+      case 'property':
         this.model.propertyType = sub.name;
         break;
-      case 4:
-      case 5:
-      case 6:
-      case 7:
+      case 'classifieds':
+      case 'mobiles-tablets':
+      case 'furniture-garden':
+      case 'community':
         this.model.subCategory = sub.name;
         break;
     }
@@ -654,7 +669,7 @@ export class AddPostComponent implements OnInit {
         title: this.model.title,
         category: this.mainCategoryName,
         brand: this.model.brand || '',
-        model: this.selectedMainCategoryId === 1 ? this.model.model : (this.model.modelName || ''),
+        model: this.isMotorsCategory ? this.model.model : (this.model.modelName || ''),
         price: this.model.price,
         city: this.model.city
       }
@@ -679,11 +694,11 @@ export class AddPostComponent implements OnInit {
       return;
     }
 
-    if (this.files.length < this.minImages && this.selectedMainCategoryId !== 2) {
+    if (this.files.length < this.minImages && !this.isJobsCategory) {
       this.imageUploadError = 'Please add at least one image to proceed.';
       return;
     }
-    if (this.selectedMainCategoryId === 2) {
+    if (this.isJobsCategory) {
   this.model.skillsRequired =
     typeof this.model.skillsRequired === 'string'
       ? this.model.skillsRequired.split('\n').filter(Boolean)
@@ -696,8 +711,13 @@ export class AddPostComponent implements OnInit {
 }
 
 
-    if (this.selectedMainCategoryId !== 2 && !this.model.price) {
+    if (!this.isJobsCategory && !this.model.price) {
       alert('Price is required');
+      return;
+    }
+
+    if (this.requiresCondition && !this.model.condition) {
+      alert('Please select a condition for this category');
       return;
     }
 
@@ -705,6 +725,7 @@ export class AddPostComponent implements OnInit {
       categoryId: this.selectedMainCategoryId,
 
       selectedMainCategoryId: this.selectedMainCategoryId,
+      selectedMainCategorySlug: this.selectedMainCategorySlug,
       selectedSubCategoryId: this.selectedSubCategoryId,
       model: this.model,
       files: this.files,

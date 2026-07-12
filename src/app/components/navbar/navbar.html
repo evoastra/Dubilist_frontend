@@ -76,12 +76,12 @@
       </div>
 
       <!-- Admin controls -->
-      <ng-container *ngIf="isAdmin">
+      <div class="admin-controls ms-4" *ngIf="isAdmin">
         <span class="admin-label">{{ user?.name }} (Admin)</span>
-        <button routerLink="/admin" class="btn-admin">{{ 'ADMIN_PANEL' | translate }}</button>
-        <button class="btn-outline-sm" (click)="goToWebsite()">{{ 'GO_TO_WEBSITE' | translate }}</button>
-        <button class="btn-danger-sm" (click)="onLogout()">{{ 'LOGOUT' | translate }}</button>
-      </ng-container>
+        <button type="button" routerLink="/admin" class="btn-admin">{{ 'ADMIN_PANEL' | translate }}</button>
+        <button type="button" class="btn-outline-sm" (click)="goToWebsite()">{{ 'GO_TO_WEBSITE' | translate }}</button>
+        <button type="button" class="btn-danger-sm" (click)="onLogout()">{{ 'LOGOUT' | translate }}</button>
+      </div>
 
       <!-- Place Ad CTA -->
       <button class="btn-place-ad ms-4" *ngIf="!isAdmin" (click)="onPlaceAdClick()">

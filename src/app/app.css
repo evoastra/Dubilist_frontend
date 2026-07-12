@@ -1,7 +1,41 @@
 /* Override Bootstrap warning background + text utilities */
 .main-content {
-  /* Adjust based on your navbar height */
   min-height: 100vh;
+}
+
+/* Admin shell: navbar + main fill the viewport with no hardcoded header offset */
+:host.admin-app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+:host.admin-app-shell app-navbar {
+  flex-shrink: 0;
+}
+
+:host.admin-app-shell .main-content {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Admin panel: scroll only inside dashboard main */
+.main-content.admin-layout {
+  display: grid;
+  grid-template-rows: 1fr;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Stack routed view over router-outlet in the same grid cell */
+.main-content.admin-layout > * {
+  grid-row: 1;
+  grid-column: 1;
+  min-height: 0;
+  min-width: 0;
 }
 
 /* Ensure the navbar stays at the top but remains in the document flow */
@@ -150,6 +184,7 @@ app-navbar {
   margin: 0;
   background: linear-gradient(135deg, #ffa500, #ff6a00);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 

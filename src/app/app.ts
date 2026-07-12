@@ -1,4 +1,4 @@
-import { Component, HostListener, signal, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, HostListener, HostBinding, signal, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { LandingPage } from './components/landing-page/landing-page';
 import { HomePage } from './components/home-page/home-page';
@@ -21,11 +21,17 @@ import { Observable, delay } from 'rxjs';
 })
 export class App {
   hideFooter = false;
+  isAdminLayout = false;
   showCmgSoon = false;
 
   protected readonly title = signal('Dubilist');
 
   loading$!: Observable<boolean>;
+
+  @HostBinding('class.admin-app-shell')
+  get adminAppShell(): boolean {
+    return this.isAdminLayout;
+  }
 
 
 
@@ -36,19 +42,25 @@ export class App {
      @Inject(PLATFORM_ID) private platformId: Object
    ) {
     this.loading$ = this.loadingService.loading$.pipe(delay(0));
+    this.updateLayoutForRoute(this.router.url);
+
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        const hiddenRoutes = [
-          '/auth/login',
-          '/auth/register',
-          '/auth/signUp'
-        ];
-
-        this.hideFooter = hiddenRoutes.some(route =>
-          event.urlAfterRedirects.startsWith(route)
-        );
+        this.updateLayoutForRoute(event.urlAfterRedirects);
       });
+  }
+
+  private updateLayoutForRoute(url: string) {
+    const hiddenFooterRoutes = [
+      '/auth/login',
+      '/auth/register',
+      '/auth/signUp',
+      '/admin'
+    ];
+
+    this.hideFooter = hiddenFooterRoutes.some(route => url.startsWith(route));
+    this.isAdminLayout = url.startsWith('/admin');
   }
 
   switchLanguage(lang: string) {
